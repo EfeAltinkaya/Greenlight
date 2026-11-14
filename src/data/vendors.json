@@ -1,0 +1,1581 @@
+{
+  "source": "USG Funding Department Vendor List (Google Sheet)",
+  "fetched": "2026-11-14",
+  "vendors": [
+    {
+      "supplierId": "SUP-00018338",
+      "name": "Casablanca Restaurant [Ensueno Corp]",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Mexican and Seafood",
+      "website": "http://www.casablancacatering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00013055",
+      "name": "El Nopal Mexican Restaurant [Vasquez Restaurant Group]",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00006328",
+      "name": "Sky's Gourmet Marketplace, Inc",
+      "category": "Mexican/ South American Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00016855",
+      "name": "El Pollo Inka [The Inka Group LLC]",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Peruvian",
+      "website": "https://elpolloinka.com/gardena/",
+      "active": true,
+      "registration": "unknown",
+      "note": "Gardena Location"
+    },
+    {
+      "supplierId": "SUP-00010316",
+      "name": "Holbox Restaurant Group Inc",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://www.holboxla.com",
+      "active": true,
+      "registration": "approved",
+      "note": "Registration: Approved"
+    },
+    {
+      "supplierId": "SUP-00015552",
+      "name": "Casa Sanchez Restaurant, Inc (CASA SANCHEZ RESTAURANT INC)",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": "Mexican, Vegan Options",
+      "website": "http://www.casa-sanchez.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00017080",
+      "name": "Caveman Kitchen",
+      "category": "Mexican/ South American Food",
+      "kinds": [],
+      "cuisine": "Peruvian",
+      "website": "https://www.eatcaveman.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE Location: 2215 South Vermont Ave"
+    },
+    {
+      "supplierId": "SUP-00018016",
+      "name": "Taqueria Vista Hermosa (Mercado La Paloma)",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE Note: use supplier # to look up"
+    },
+    {
+      "supplierId": "SUP-00014315",
+      "name": "Mexicali Taco",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": "Bajan Dishes",
+      "website": "http://www.mexicalitaco.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00018568",
+      "name": "Restaurant Santa Cecilia, Inc",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00019041",
+      "name": "Catering By Herach And Ara",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Mexican, Italian, Chinese, Mediterranean, Japanese, European and Hawaiian",
+      "website": null,
+      "active": true,
+      "registration": "in_progress",
+      "note": "Active / Registration: IP"
+    },
+    {
+      "supplierId": "SUP-00018512",
+      "name": "La Taquiza Inc",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Active/ Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00014576",
+      "name": "Little Lady Enterprise [Mamas Int'l Tamales]",
+      "category": "Mexican/ South American Food",
+      "kinds": [],
+      "cuisine": "Tamales",
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE"
+    },
+    {
+      "supplierId": null,
+      "name": "Border Grill [Ciudad]",
+      "category": "Mexican/ South American Food",
+      "kinds": [
+        "Restaurant",
+        "Food truck",
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "http://www.bordergrill.com",
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE DTLA branch Registration: Approved"
+    },
+    {
+      "supplierId": null,
+      "name": "Taqueria Los Altos, Inc",
+      "category": "Mexican/ South American Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": null,
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE Registration: Approved"
+    },
+    {
+      "supplierId": "SUP-00019271",
+      "name": "Charlie's Trio",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Italian",
+      "website": "http://www.charliestrio.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00008253",
+      "name": "Il Giardino Ristorante",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": "Italian",
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00018625",
+      "name": "Pasta Roma (Kasgo LLC)",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Italian",
+      "website": "http://pastaroma.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00016937",
+      "name": "Wolfgang Puck Catering",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Pizza, Sandwhiches, and other lighter fare",
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017557",
+      "name": "Yameel Pizza [2 for 1 pizza]",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Pizza",
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017419",
+      "name": "Viztango Cafe (VIZTANGO CAFE)",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Italian",
+      "website": "http://www.viztangocafe.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: None"
+    },
+    {
+      "supplierId": null,
+      "name": "East Side Mario's (Perkin and Marie)",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Italian-American",
+      "website": null,
+      "active": false,
+      "registration": "none",
+      "note": "INACTIVE Registration: NONE"
+    },
+    {
+      "supplierId": null,
+      "name": "Fireworks Pizza, LLC. (Pitfire Artisan Pizza)",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering",
+        "Restaurant",
+        "Food truck"
+      ],
+      "cuisine": "Pizza",
+      "website": "http://www.pitfirepizza.com/home",
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE Registration: Approved"
+    },
+    {
+      "supplierId": null,
+      "name": "Marios Italian Imports, Inc (Mario's Italian Deli)",
+      "category": "Italian/Pizza",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Italian Deli",
+      "website": null,
+      "active": false,
+      "registration": "in_progress",
+      "note": "INACTIVE Registraton: In Progress"
+    },
+    {
+      "supplierId": "SUP-00018750",
+      "name": "North American Services, Inc- Command Performance Catering-Ventura County",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "\"New American\"",
+      "website": "https://www.cpcatering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00018125",
+      "name": "Terrapin Illini- Rosies Bbq Kitchen",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Hamburgers, Hotdogs, and Sausage, BBQ",
+      "website": "https://www.rosies-catering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00010877",
+      "name": "WingStop (Far West Restaurant Group LLC)",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": "Wings",
+      "website": "https://www.wingstop.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 3584 S Figueroa"
+    },
+    {
+      "supplierId": "SUP-00009785",
+      "name": "Chick-Fil-A [Park Enterprise LLC]",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": "Chicken",
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 3758 S. Figueroa St."
+    },
+    {
+      "supplierId": "SUP-00015900",
+      "name": "Presidio Foods INC [Dulans Restaurant and Catering]",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Southern and Soul Food",
+      "website": "http://dulansoncrenshaw.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017440",
+      "name": "Pink's Hot Dogs, Inc. (PINK S HOT DOGS INC) Globally Connceted Inc (Phat daddys burgers)",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": "Hot Dogs",
+      "website": "https://www.pinkshollywood.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 709 N. La Brea Ave"
+    },
+    {
+      "supplierId": "SUP-00017926",
+      "name": "Quiznos Classic Subs - MB Light House Inc (Quizno's Sub #2593 & 4584) QUIZNOS CLASSIC SUBS MB LIGHT HOUSE INC)",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": "Sandwiches",
+      "website": "https://www.quiznos.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 3738 S Figueroa St"
+    },
+    {
+      "supplierId": "SUP-00010515",
+      "name": "Rock & Reilly USC, LLC",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://www.rockandreillysusc.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: USC"
+    },
+    {
+      "supplierId": null,
+      "name": "Stonefire Grill 6, Inc.",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00008327",
+      "name": "(Stonefire Grill, STONEFIRE GRILL 6 INC)",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": "BBQ, Chicken, Pizza, Pasta,etc",
+      "website": "https://www.stonefiregrill.com/menu/",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 473 N. Rosemead Ave."
+    },
+    {
+      "supplierId": "SUP-00016668",
+      "name": "Subway Sandwiches (Dollard Development Inc)",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": "Sandwiches",
+      "website": "https://www.subway.com/en-us",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 3335 S Figueroa St"
+    },
+    {
+      "supplierId": "SUP-00017096",
+      "name": "Frank Further Inc, [Lets Be Frank (Truck)]",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Food truck"
+      ],
+      "cuisine": "Hotdogs",
+      "website": "http://letsbefrankdogs.com/dog/",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration Status: NONE"
+    },
+    {
+      "supplierId": "SUP-00015680",
+      "name": "HBG Franchise, LLC [Habit Burger Grill]",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Restaurant",
+        "Food truck"
+      ],
+      "cuisine": "Hamburgers, Chicken options",
+      "website": "https://www.habitburger.com",
+      "active": true,
+      "registration": "in_progress",
+      "note": "Active Registration Status: In Progress"
+    },
+    {
+      "supplierId": "SUP-00018607",
+      "name": "In-N-Out Burger",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Restaurant",
+        "Food truck"
+      ],
+      "cuisine": "Hamburgers",
+      "website": "https://www.in-n-out.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00017797",
+      "name": "La Spice LLC",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": "American",
+      "website": "https://www.laspicecatering.com",
+      "active": true,
+      "registration": "invited",
+      "note": "Active/Registration Status: Invited"
+    },
+    {
+      "supplierId": "SUP-00015715",
+      "name": "Hofs Hut [Lucille's BBQ]",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "American",
+      "website": "https://www.lucillesbbq.com",
+      "active": true,
+      "registration": "in_progress",
+      "note": "Active / Registration Status: IP"
+    },
+    {
+      "supplierId": null,
+      "name": "Barbecue King",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": "BBQ",
+      "website": null,
+      "active": false,
+      "registration": "unknown",
+      "note": "NOT FOUND"
+    },
+    {
+      "supplierId": null,
+      "name": "Rattler's Bar-B-Que 1, Inc.",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [],
+      "cuisine": "Barbecue",
+      "website": "http://www.rattlersbbq.com",
+      "active": false,
+      "registration": "none",
+      "note": "INACTIVE Registration Status: NONE"
+    },
+    {
+      "supplierId": null,
+      "name": "Simply Southern Cuisine - Gina Dusuau",
+      "category": "American- (BBQ, Hamburgers, Hotdogs, Etc.)",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Southern",
+      "website": null,
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE Registration: Approved"
+    },
+    {
+      "supplierId": "SUP-00009624",
+      "name": "Kobunga Korean Grill [Kobunga LLC]",
+      "category": "Asian Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": "Korean",
+      "website": "https://kobunga.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00010091",
+      "name": "Panda Catering",
+      "category": "Asian Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://www.pandarg.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location:1683 Walnut Grove Ave"
+    },
+    {
+      "supplierId": "SUP-00017143",
+      "name": "Panda Express [Citadel Panda Express]",
+      "category": "Asian Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://www.pandacareers.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017292",
+      "name": "Panda Express",
+      "category": "Asian Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://www.pandaexpress.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 14006 Riverside Dr #254"
+    },
+    {
+      "supplierId": "SUP-00024104",
+      "name": "Maven Restaurants Inc (Paradise Biryani Pointe)",
+      "category": "Asian Food",
+      "kinds": [],
+      "cuisine": "Traditional Hyderabad Nawabi Food",
+      "website": "https://www.laparadisebiryani.com/home",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 18158 Pioner Blvd"
+    },
+    {
+      "supplierId": "SUP-00024672",
+      "name": "Yamashiro [Cedar Restaurant Group LLC]",
+      "category": "Asian Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": null,
+      "website": "https://yamashirohollywood.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "KFS_97341-0",
+      "name": "Soy Japanese Grill and Roll - Goodeats Corp",
+      "category": "Asian Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Sushi and Japenese",
+      "website": null,
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE Registration: Approved"
+    },
+    {
+      "supplierId": "SUP-00011421",
+      "name": "Urban Masala",
+      "category": "Indian Food",
+      "kinds": [],
+      "cuisine": "Indian Food",
+      "website": "http://www.urbanmasalaonline.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 6554 Hollywood Blvd"
+    },
+    {
+      "supplierId": "SUP-00017350",
+      "name": "Manas, Inc.",
+      "category": "Indian Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": "Indian",
+      "website": "http://www.manasla.com",
+      "active": true,
+      "registration": "invited",
+      "note": "Active/ Registration Note: Invited"
+    },
+    {
+      "supplierId": "SUP-00014692",
+      "name": "Radhika restaurant",
+      "category": "Indian Food",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": "Indian",
+      "website": "https://radhikarestaurant.com",
+      "active": true,
+      "registration": "in_progress",
+      "note": "Active / Registration Note: IP"
+    },
+    {
+      "supplierId": "SUP-00015168",
+      "name": "Bella Pita",
+      "category": "Mediterrian",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://bellapita.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 3013 S Figueroa St"
+    },
+    {
+      "supplierId": "SUP-00019704",
+      "name": "Papa Cristos (C&K Importing Co)",
+      "category": "Mediterrian",
+      "kinds": [],
+      "cuisine": "Greek",
+      "website": "https://papacristos.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 2771 W Pico"
+    },
+    {
+      "supplierId": "SUP-00028875",
+      "name": "Sunnin Lebanese Cafe Inc. (Sunnin Lebanese Cafe)",
+      "category": "Mediterrian",
+      "kinds": [],
+      "cuisine": "Lebanese",
+      "website": "https://sunnin.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Westwood"
+    },
+    {
+      "supplierId": "SUP-00014596",
+      "name": "Alonti Cafe & Catering [Pepi Company of California, LLC ]",
+      "category": "Cafe Food",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Boxed lunches, breakfast, pastires",
+      "website": "https://www.alonti.com",
+      "active": true,
+      "registration": "invited",
+      "note": "Active / Registration: Invited Note: use supplier # to look"
+    },
+    {
+      "supplierId": "SUP-00015930",
+      "name": "Baked It Myself, Inc.",
+      "category": "Cafe Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": "Sandwiches, Paninis, and salads",
+      "website": "https://www.bakeditmyself.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00004365",
+      "name": "Bergamot Cafe",
+      "category": "Cafe Food",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "http://www.bergamotcafe.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 2525 Michigan Avenue"
+    },
+    {
+      "supplierId": "SUP-00024417",
+      "name": "Bird's Nest Cafe [Bird’s Nest Vermont LLC ]",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://www.birdsnestla.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 2403 S. Vermont Ave"
+    },
+    {
+      "supplierId": "SUP-00008700",
+      "name": "Cafe Gratitude [Cafe Gratitude Arts District LLC]",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "http://www.cafegratitude.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 300 S. Santa Fe Ave Suite A"
+    },
+    {
+      "supplierId": "SUP-00021150",
+      "name": "Capuyo Cafe",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "http://capuyo-cafe.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 1850 1/2 E 1St St"
+    },
+    {
+      "supplierId": "SUP-00019573",
+      "name": "Coffee Bean & Tea Leaf [Intl Coffee & Tea Leaf Llc]",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": "Coffee House, Breakfast Foods",
+      "website": "https://www.coffeebean.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 5700 Wilshire Blvd."
+    },
+    {
+      "supplierId": "SUP-00010516",
+      "name": "Dulce USC Village LLC",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": "Coffee House, Breakfast/Lunch Food",
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00011514",
+      "name": "Everytable, Pbc",
+      "category": "Cafe Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Breakfast, Salads, wraps, chicken bowls, desserts, vegan options,",
+      "website": "http://www.everytable.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00010653",
+      "name": "Greenleaf 10 USC LLC (Greenleaf Gourmet Chopshop, GREENLEAF 10 USC LLC)",
+      "category": "Cafe Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Breakfast, Sandwiches, wraps, Boxed lunches, soups, salads, taco bar",
+      "website": "http://www.eatdrinkgreenleaf.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "USC Village"
+    },
+    {
+      "supplierId": "SUP-00016569",
+      "name": "Ingallina's Box Lunch LA#1 Inc",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": "Breakfast/Lunch Sandwiches/Salads/Fruit/Dessert",
+      "website": "http://www.ingallina.net",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00009722",
+      "name": "L.A. Cafe [Ambreen Enterprises Inc]",
+      "category": "Cafe Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Breakfast/Lunch",
+      "website": "https://www.thelacafe.com/menus/",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017105",
+      "name": "Lemonade",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://lemonadela.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Note: use supplier # to look"
+    },
+    {
+      "supplierId": "SUP-00029006",
+      "name": "Le Gout Bakery and Cafe [Le Gout INC]",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://legoutpastry.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00025730",
+      "name": "Pitchoun",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": "French Bakery",
+      "website": "https://pitchounbakery.com",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 545 S Olive Street"
+    },
+    {
+      "supplierId": "SUP-00016668",
+      "name": "Subway Sandwiches - Dollard Development Inc",
+      "category": "Cafe Food",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": "Sandwiches and Salads",
+      "website": "https://www.subway.com/en-us",
+      "active": true,
+      "registration": "unknown",
+      "note": "Location: 3335 S Figuero Gateway"
+    },
+    {
+      "supplierId": "SUP-00015971",
+      "name": "URTH Caffe Associates V LLC (Urth Caffe, URTH CAFFE ASSOCIATES V LLC)",
+      "category": "Cafe Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Breakfast, Pizza, Sandwiches, Paninis, Salads, desserts",
+      "website": "https://www.urthcaffe.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017047",
+      "name": "Mendocino Farms",
+      "category": "Cafe Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Boxed lunches, Sandwiches, salads",
+      "website": "https://www.mendocinofarms.com/menus/",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00014336",
+      "name": "Panera Bread Company [Panera, LLC]",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": null,
+      "website": "https://www.panerabread.com/en-us/home.html",
+      "active": true,
+      "registration": "in_progress",
+      "note": "Active / Registration: In Progress"
+    },
+    {
+      "supplierId": null,
+      "name": "Arctic Hotspot Cafe & Catering",
+      "category": "Cafe Food",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": "Breakfast, Sandwiches, wraps, salads, soups, Hors D'oeuvres, Desserts",
+      "website": "https://arctichotspot.com",
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE Registration Status: Approved"
+    },
+    {
+      "supplierId": null,
+      "name": "Watts Coffee house",
+      "category": "Cafe Food",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Coffee House/Breakfast",
+      "website": "http://wattscoffee.menu.com",
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE Registration Status: Approved"
+    },
+    {
+      "supplierId": "SUP-00017200",
+      "name": "Y&K Business Group (Togo's, Y&K BUSINESS GROUP)",
+      "category": "Cafe Food",
+      "kinds": [],
+      "cuisine": "Sandwiches and Salads",
+      "website": "https://togoscatering.olo.com",
+      "active": false,
+      "registration": "approved",
+      "note": "INACTIVE Registration Status: Approved"
+    },
+    {
+      "supplierId": "SUP-00018510",
+      "name": "Alligator Pear, Inc (Alligator Pear)",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Fancy",
+      "website": "https://alligatorpearcatering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00016979",
+      "name": "Anders Catering",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Boxed lunches, BBQ, Breakfast, etc.",
+      "website": "https://www.anderscatering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00012336",
+      "name": "Apetit inc- Good heart Catering",
+      "category": "Everything",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": null,
+      "website": "https://www.goodheartcatering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00014997",
+      "name": "Allegro Catering and Event Planning",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://allegrocateringandevents.net",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00010886",
+      "name": "Bart Karts Inc",
+      "category": "Everything",
+      "kinds": [],
+      "cuisine": "Carnival Snacks and Street Food",
+      "website": "https://bartscarts.com/about/our-history/",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00016626",
+      "name": "Bread Crumbs Catering [Villanueva Enterprises]",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "http://breadcrumbscatering.com/menu_sub.html",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017269",
+      "name": "Bruce's Gourmet Catering",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Fancy",
+      "website": "http://brucescatering.com/private-event- catering/",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00018045",
+      "name": "City Kitchen (Urban Palate Llc)",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00018575",
+      "name": "Food Fetish, Inc. [Food Fetish Catering]",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Breakfast, BBQ, Mediterranean, Mexican, Asian, Picnic food, Greek, etc.",
+      "website": "https://www.foodfetishcatering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00025851",
+      "name": "Frogtown Industries (Brown Paper LA)",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://www.brownpaperla.com/menus",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00012573",
+      "name": "Kiro's Catering",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Breakfast, \"Best of Europe buffet,\" \"Classic American Buffet,\" sandwiches, soups, salads, Mexican food,pastas, BBQ, Mediterranean, desserts",
+      "website": "https://kiroscatering.com/menus",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00018202",
+      "name": "TGIS Catering Services, Inc.",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://www.tgiscatering.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00012296",
+      "name": "Mercado Food Group, LLC",
+      "category": "Everything",
+      "kinds": [
+        "Food truck"
+      ],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00016612",
+      "name": "Modern Art Catering [Spot Gourmet]",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Asian food, apetizers, everything",
+      "website": "https://thespotgourmet.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00015320",
+      "name": "Roaming Hunger, Inc.",
+      "category": "Everything",
+      "kinds": [
+        "Food truck"
+      ],
+      "cuisine": "Food truck vendor",
+      "website": "https://roaminghunger.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00016312",
+      "name": "The Kitchen for Exploring Foods LLC",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://www.thekitchen.net",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00018224",
+      "name": "City Fare, Inc (CITY FARE INC)",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "http://www.cityfarecatering.com",
+      "active": true,
+      "registration": "invited",
+      "note": "Active / Registration Stauts: Invited"
+    },
+    {
+      "supplierId": "SUP-00017456",
+      "name": "Urban Green, LLC",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Sustainable Catering",
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: None Note: use supplier # to look"
+    },
+    {
+      "supplierId": "SUP-00018031",
+      "name": "Back On Broadway Food Co., Inc. (BACK ON BROADWAY FOOD CO INC)",
+      "category": "Everything",
+      "kinds": [],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Note: Annenberg Beach house Active / Registration: None"
+    },
+    {
+      "supplierId": "SUP-00017284",
+      "name": "Serves You Right! Catering [Gan, Michele]",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": null,
+      "active": true,
+      "registration": "invited",
+      "note": "Active / Registration: Invited"
+    },
+    {
+      "supplierId": "SUP-00016024",
+      "name": "California Skewers (Katse Inc)",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://www.californiaskewers.com/caterings. php",
+      "active": true,
+      "registration": "none",
+      "note": "Active /Registration Status: NONE"
+    },
+    {
+      "supplierId": "SUP-00019339",
+      "name": "Jay's Catering",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Breakfast, Sandwiches, Baked goods, boxed lunches, taco bar, Mexican, BBQ, Hors D'oeuvres, healthy snacks, and more",
+      "website": "https://www.jayscatering.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00015494",
+      "name": "Jennie Cooks Catering [BUCKS COUNTY CORPORATION]",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "\"Homestyle Americana with an Emphasis on plant based cuisine\"",
+      "website": "https://jenniecooks.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active / Registration Status: NONE"
+    },
+    {
+      "supplierId": "SUP-00016171",
+      "name": "Food and Co Inc (Joan's On Third)",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Californian, Mediterranean cuisines, Southwestern France, American Southwest, India, Latin America- vegetarian, kosher style or comfort food,",
+      "website": "https://joansonthird.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active/ Registration Status: NONE"
+    },
+    {
+      "supplierId": "SUP-00018002",
+      "name": "Food & Travel [Taste & Company, Food & Travel Inc]",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": null,
+      "website": "https://www.tasteandcompany.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active/ Registration Status: NONE"
+    },
+    {
+      "supplierId": "KFS_31336-0",
+      "name": "Great Dane Catering & Events",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "California Cusine",
+      "website": null,
+      "active": false,
+      "registration": "invited",
+      "note": "INACTIVE Registration Status: Invited"
+    },
+    {
+      "supplierId": "KFS_29244-0",
+      "name": "Bristol Farms",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Including BBQ, sushi, breakfast",
+      "website": "https://www.bristolfarms.com/catering/menu/",
+      "active": false,
+      "registration": "none",
+      "note": "INACTIVE Registration Status: NONE"
+    },
+    {
+      "supplierId": "KFS_53307-0",
+      "name": "Tender Greens (TYP Restaurant Group, Inc)",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Fine Casual",
+      "website": "https://www.tendergreens.com",
+      "active": false,
+      "registration": "none",
+      "note": "INACTIVE Registration Status: NONE"
+    },
+    {
+      "supplierId": null,
+      "name": "Foodlink Catering",
+      "category": "Everything",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Fancy",
+      "website": "http://www.foodinkcatering.com",
+      "active": false,
+      "registration": "unknown",
+      "note": "NOT FOUND"
+    },
+    {
+      "supplierId": "SUP-00029007",
+      "name": "Nitropod Industries, Inc. [NITROPOD]",
+      "category": "Desserts",
+      "kinds": [
+        "Food truck"
+      ],
+      "cuisine": "Ice Cream and Frozen Yogurt",
+      "website": "https://www.nitropod.net",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017067",
+      "name": "Crepes Bonaparte [Brats Berlin, Inc.]",
+      "category": "Desserts",
+      "kinds": [
+        "Food truck",
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Crepes",
+      "website": "https://www.crepesbonaparte.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00015337",
+      "name": "Amazebowls LLC",
+      "category": "Desserts",
+      "kinds": [
+        "Food truck"
+      ],
+      "cuisine": "Acai bowls and smoothies",
+      "website": "https://www.amazebowls.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017267",
+      "name": "Homeboy Industries - Homegirl Cafe/Catering",
+      "category": "Desserts",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Baked goods",
+      "website": "https://www.homeboyfoods.com/default.asp",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00020583",
+      "name": "Ice Cream Occasions",
+      "category": "Desserts",
+      "kinds": [],
+      "cuisine": "Ice-Cream",
+      "website": "https://www.icecreamoccasions.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00017084",
+      "name": "Catholic Charities Of L.A.",
+      "category": "Desserts",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Bakery and Cafe",
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Registration: NONE"
+    },
+    {
+      "supplierId": "SUP-00015122",
+      "name": "COOLHAUS aka Farchitecture",
+      "category": "Desserts",
+      "kinds": [
+        "Food truck"
+      ],
+      "cuisine": "Ice Cream and Cookies",
+      "website": "https://cool.haus",
+      "active": false,
+      "registration": "none",
+      "note": "INACTIVE Registration Status: NONE"
+    },
+    {
+      "supplierId": "KFS_31591-0",
+      "name": "Burbank Scoop Shop",
+      "category": "Desserts",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Ice cream",
+      "website": "https://www.benjerry.com/citywalk",
+      "active": false,
+      "registration": "none",
+      "note": "INACTIVE Registration Status: NONE"
+    },
+    {
+      "supplierId": null,
+      "name": "Dandy Don's Homemade Ice Cream",
+      "category": "Desserts",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Ice Cream",
+      "website": "http://www.dandydons.com",
+      "active": false,
+      "registration": "none",
+      "note": "INACTIVE Registration Status: NONE"
+    },
+    {
+      "supplierId": "SUP-00028333",
+      "name": "Ackee Bamboo Jamaican Cuisine LLC",
+      "category": "More Food Vendors",
+      "kinds": [],
+      "cuisine": "Jamaican",
+      "website": "https://ackeebamboo.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00015394",
+      "name": "Azla, LLC",
+      "category": "More Food Vendors",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": "Ethiopian- Vegan",
+      "website": "http://azlavegan.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00019017",
+      "name": "The Patina Group Newco, LLC",
+      "category": "More Food Vendors",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": null,
+      "website": "https://www.patinagroup.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00010555",
+      "name": "Rutts Hawaiian Cafe",
+      "category": "More Food Vendors",
+      "kinds": [
+        "Catering",
+        "Restaurant"
+      ],
+      "cuisine": "Hawaiian",
+      "website": "https://ruttscafe.com",
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00007197",
+      "name": "Streamline Fish Farm (Malek Restaurant)",
+      "category": "More Food Vendors",
+      "kinds": [
+        "Catering"
+      ],
+      "cuisine": "Persian",
+      "website": null,
+      "active": true,
+      "registration": "unknown",
+      "note": null
+    },
+    {
+      "supplierId": "SUP-00020069",
+      "name": "Jonathan Club",
+      "category": "More Food Vendors",
+      "kinds": [
+        "Restaurant"
+      ],
+      "cuisine": "Fancy",
+      "website": "https://www.jc.org",
+      "active": true,
+      "registration": "invited",
+      "note": "Active/ Registration Status: Invited"
+    },
+    {
+      "supplierId": "SUP-00015779",
+      "name": "Komodo Catering",
+      "category": "More Food Vendors",
+      "kinds": [
+        "Food truck"
+      ],
+      "cuisine": "Modern California Asian Fusion",
+      "website": null,
+      "active": true,
+      "registration": "none",
+      "note": "Active/ Registration Status: NONE"
+    },
+    {
+      "supplierId": "SUP-00018535",
+      "name": "King's Seafood",
+      "category": "More Food Vendors",
+      "kinds": [
+        "Restaurant",
+        "Catering"
+      ],
+      "cuisine": "Seafood",
+      "website": "http://www.kingsseafood.com",
+      "active": true,
+      "registration": "none",
+      "note": "Active/ Registration Status: NONE"
+    }
+  ]
+}

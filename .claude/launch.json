@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "greenlight",
+      "runtimeExecutable": "C:\\Windows\\System32\\cmd.exe",
+      "runtimeArgs": ["/c", "set PATH=C:\\Program Files\\nodejs;%PATH% && npm --prefix C:\\Users\\efeal\\greenlight run dev -- -p 3010"],
+      "port": 3010
+    }
+  ]
+}
