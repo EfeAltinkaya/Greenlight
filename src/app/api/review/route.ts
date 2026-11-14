@@ -5,3 +5,6 @@ export async function POST(req: Request) {
   const { app, checks } = (await req.json()) as { app: Application; checks: Check[] };
   return Response.json(await reviewComments(app, checks));
 }
+
+// AI calls can take 15+ seconds; give them room on Vercel.
+export const maxDuration = 60;

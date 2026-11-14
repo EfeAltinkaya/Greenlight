@@ -13,3 +13,6 @@ export async function POST(req: Request) {
   if (!r) return Response.json({ error: "Reading quotes needs the AI key. Enter the total by hand for now.", offline: true }, { status: 503 });
   return Response.json(r);
 }
+
+// AI calls can take 15+ seconds; give them room on Vercel.
+export const maxDuration = 60;
