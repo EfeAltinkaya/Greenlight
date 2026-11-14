@@ -3,12 +3,12 @@
 // the USG queue on the same machine. The shape matches the database tables in the spec, so this
 // file is the only one to change when we move to Supabase.
 import { useSyncExternalStore } from "react";
-import { SEED_APPS, SEED_CLUBS } from "./seed";
+import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS } from "./seed";
 import type { Application, Club, Status } from "./types";
 
-type State = { clubs: Club[]; apps: Application[] };
-const KEY = "greenlight:v1";
-const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS };
+type State = { clubs: Club[]; apps: Application[]; currentClub?: string };
+const KEY = "greenlight:v2";
+const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS, currentClub: DEMO_CLUB_ID };
 
 let state: State | null = null;
 const listeners = new Set<() => void>();
@@ -71,9 +71,18 @@ export const store = {
     const s = load();
     save({ ...s, clubs: s.clubs.map((c) => (c.id === id ? { ...c, ...patch } : c)) });
   },
+  setClub(id: string) {
+    save({ ...load(), currentClub: id });
+  },
   reset() {
     save(structuredClone(SERVER));
   },
 };
 
 export const newId = () => Math.random().toString(36).slice(2, 9);
+
+/** The club the officer is acting for (demo: pick any sample club). */
+export function useCurrentClub() {
+  const s = useStore();
+  return s.clubs.find((c) => c.id === (s.currentClub ?? DEMO_CLUB_ID)) ?? s.clubs[0];
+}

@@ -1,124 +1,118 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { RULES } from "@/data/rules";
-import { fmtDate, money, requestTotal, runChecks, todayISO } from "@/lib/engine";
-import { DEMO_CLUB_ID } from "@/lib/seed";
-import { newId, store, useStore } from "@/lib/store";
-import type { Application, EventInfo } from "@/lib/types";
-import type { Intake } from "@/lib/ai";
-import { Signal, Spinner, StatusChip, overall, useToast } from "@/components/ui";
+import { ArrowRight, CalendarClock, CircleDollarSign, FilePlus2, Inbox, PartyPopper, TriangleAlert } from "lucide-react";
+import { BOARDS, RULES } from "@/data/rules";
+import { fmtDate, money, requestTotal, runChecks, score, todayISO } from "@/lib/engine";
+import { store, useCurrentClub, useStore } from "@/lib/store";
+import type { Application } from "@/lib/types";
+import { CountPills, StatusPill } from "@/components/ui";
 
-const EXAMPLE =
-  "Hackathon for 120 students in Ginsburg Hall on Feb 18. Catering from Chipotle $5,400, Amazon swag $600, $600 in gift cards for winners.";
+function nextWednesday(today: string) {
+  const d = new Date(today + "T12:00:00Z");
+  const add = (3 - d.getUTCDay() + 7) % 7;
+  d.setUTCDate(d.getUTCDate() + add);
+  return d.toISOString().slice(0, 10);
+}
 
-export default function ClubHome() {
+export default function ClubOverview() {
   const { clubs, apps } = useStore();
+  const club = useCurrentClub();
   const router = useRouter();
-  const [clubId, setClubId] = useState(DEMO_CLUB_ID);
-  const club = clubs.find((c) => c.id === clubId) ?? clubs[0];
   const mine = apps.filter((a) => a.clubId === club.id);
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [toast, say] = useToast();
+  const today = todayISO();
   const left = RULES.annualCap.limit - club.receivedThisYear;
+  const wed = nextWednesday(today);
 
-  async function start() {
-    if (text.trim().length < 8) return say("Describe the event in a sentence or two.");
-    setBusy(true);
-    try {
-      const r = await fetch("/api/intake", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) });
-      const j = (await r.json()) as { data?: Intake; offline?: boolean; error?: string };
-      if (!r.ok || !j.data) throw new Error(j.error ?? "Could not read that description.");
-      const d = j.data;
-      const event: EventInfo = { ...d.event, board: d.board, boardReason: d.boardReason };
-      const app: Application = {
-        id: newId(),
-        clubId: club.id,
-        sample: false,
-        event,
-        items: d.items.map((i) => ({ ...i, id: newId(), link: "", orderBy: "", toSponsor: false })),
-        answers: { description: "", missionFit: "", otherSources: "" },
-        docs: {},
-        uepa: "",
-        status: "draft",
-        createdAt: todayISO(),
-        submittedAt: null,
-        history: [{ at: todayISO(), status: "draft", note: j.offline ? "Started (offline parser)" : "Started from a description" }],
-        aiComments: [],
-        decision: null,
-        sponsorPlan: null,
-      };
-      store.upsertApp(app);
-      router.push(`/club/app/${app.id}`);
-    } catch (e) {
-      say((e as Error).message);
-      setBusy(false);
-    }
+  const attention: { app: Application; text: string; tone: "fix" | "check" | "gold" }[] = [];
+  for (const a of mine) {
+    if (a.status === "needs_info") attention.push({ app: a, text: "USG returned it as incomplete. You have 2 business days to send the missing items.", tone: "fix" });
+    else if (a.status === "draft") {
+      const s = score(runChecks(a, club));
+      if (s.fail) attention.push({ app: a, text: `${s.fail} item${s.fail > 1 ? "s" : ""} to fix before you can submit.`, tone: "check" });
+    } else if ((a.status === "approved" || a.status === "partial") && a.event.date < today) attention.push({ app: a, text: "Post-event evaluation and final invoices are due within 3 business days of the event.", tone: "gold" });
   }
 
   return (
-    <main className="page stack" style={{ gap: 28 }}>
-      {toast}
-      <section className="between" style={{ alignItems: "flex-end" }}>
-        <div className="stack-sm">
-          <span className="label">Your club</span>
-          <select className="select" style={{ width: "auto", fontFamily: "var(--display)", fontWeight: 700, fontSize: 22, padding: "4px 8px", border: "1px solid transparent", background: "transparent" }} value={club.id} onChange={(e) => setClubId(e.target.value)} aria-label="Club">
-            {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
+    <>
+      <div className="page-head">
+        <div>
+          <span className="eyebrow">Club desk</span>
+          <h1>{club.name}</h1>
+          <label className="row small muted" style={{ gap: 8 }}>
+            Acting for
+            <select className="select" style={{ width: "auto", padding: "5px 10px", fontSize: 13 }} value={club.id} onChange={(e) => store.setClub(e.target.value)} aria-label="Club">
+              {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </label>
         </div>
-        <div className="row" style={{ gap: 28 }}>
-          <Stat label="USG money left this year" value={money(left)} sub={`of ${money(RULES.annualCap.limit)}`} />
-          <Stat label="Funded events this semester" value={`${club.eventsThisSemester} of 4`} />
-          <Stat label="School" value={club.school} />
+        <Link href="/club/new" className="btn btn-primary btn-lg"><FilePlus2 />New request</Link>
+      </div>
+
+      <section className="grid cols-3">
+        <div className="card card-pad stack-sm">
+          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><CircleDollarSign /></span><span className="muted small">USG money left this year</span></div>
+          <div className="big-num">{money(left)}</div>
+          <div className="meter" aria-hidden="true"><span style={{ width: `${(club.receivedThisYear / RULES.annualCap.limit) * 100}%` }} /></div>
+          <span className="tiny faint">{money(club.receivedThisYear)} of the {money(RULES.annualCap.limit)} yearly maximum used</span>
+        </div>
+        <div className="card card-pad stack-sm">
+          <div className="row" style={{ gap: 12 }}><span className="icon-tile gold"><PartyPopper /></span><span className="muted small">USG-funded events this semester</span></div>
+          <div className="big-num">{club.eventsThisSemester} <span className="faint" style={{ fontSize: 18, fontWeight: 600 }}>of 4</span></div>
+          <div className="row" style={{ gap: 6 }} aria-hidden="true">
+            {[0, 1, 2, 3].map((i) => <span key={i} style={{ flex: 1, height: 6, borderRadius: 99, background: i < club.eventsThisSemester ? "var(--cardinal)" : "var(--line-2)" }} />)}
+          </div>
+          <span className="tiny faint">USG funds up to 4 events per club each semester</span>
+        </div>
+        <div className="card card-pad stack-sm">
+          <div className="row" style={{ gap: 12 }}><span className="icon-tile dark"><CalendarClock /></span><span className="muted small">Next submission window</span></div>
+          <div className="big-num" style={{ fontSize: 26 }}>{fmtDate(wed, { weekday: "long", month: "short", day: "numeric" })}</div>
+          <span className="tiny faint">Applications open Wednesdays, 8:00 AM to 11:59 PM</span>
+          <Link href="/club/deadlines" className="link small">Find the deadline for an event date <ArrowRight /></Link>
         </div>
       </section>
 
-      <section className="sheet sheet-pad stack" style={{ gap: 14 }}>
-        <div className="between">
-          <div>
-            <h1 style={{ fontSize: 28 }}>Plan an event</h1>
-            <p className="muted" style={{ margin: "4px 0 0" }}>Describe it the way you would text your e-board. Greenlight fills USG&apos;s budget sheet, finds your deadline and checks every line against the 2026-27 rules.</p>
+      {attention.length > 0 && (
+        <section className="stack-sm">
+          <h2>Needs your attention</h2>
+          <div className="card">
+            {attention.map(({ app, text, tone }, i) => (
+              <Link key={app.id} href={`/club/app/${app.id}`} className="between" style={{ padding: "16px 20px", borderTop: i ? "1px solid var(--line-2)" : 0 }}>
+                <div className="row" style={{ gap: 14, flexWrap: "nowrap" }}>
+                  <span className={"icon-tile " + (tone === "gold" ? "gold" : "")} style={tone === "fix" ? { background: "var(--fix-tint)", color: "var(--fix)" } : undefined}><TriangleAlert /></span>
+                  <div className="stack-xs"><strong>{app.event.title}</strong><span className="small muted">{text}</span></div>
+                </div>
+                <ArrowRight style={{ width: 18, height: 18, color: "var(--ink-3)", flex: "none" }} />
+              </Link>
+            ))}
           </div>
-        </div>
-        <textarea
-          id="describe"
-          className="textarea"
-          style={{ minHeight: 110, fontSize: 16 }}
-          placeholder={EXAMPLE}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) start(); }}
-          aria-label="Describe your event"
-        />
-        <div className="between">
-          <button className="btn ghost sm" onClick={() => setText(EXAMPLE)}>Use the example</button>
-          <button className="btn primary" onClick={start} disabled={busy}>
-            {busy ? <Spinner /> : null} {busy ? "Reading your event" : "Build my application"}
-          </button>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="stack-sm">
-        <div className="between"><h2>Applications</h2><span className="faint small">{mine.length} total</span></div>
+        <div className="between"><h2>Requests</h2><span className="small faint">{mine.length} total</span></div>
         {mine.length === 0 ? (
-          <div className="empty">No applications yet. Describe your first event above.</div>
+          <div className="card empty">
+            <Inbox />
+            <strong>No requests yet</strong>
+            <span className="small">Describe your next event and Greenlight builds the USG application with you.</span>
+            <Link href="/club/new" className="btn btn-primary">Start a request</Link>
+          </div>
         ) : (
-          <div className="sheet tablewrap">
-            <table className="ledger">
-              <thead><tr><th className="lamp-cell" /><th>Event</th><th>Date</th><th className="num">Requested</th><th>Status</th><th /></tr></thead>
+          <div className="card table-wrap">
+            <table className="table">
+              <thead><tr><th>Event</th><th>Date</th><th>Board</th><th className="r">Requested</th><th>Checks</th><th>Status</th></tr></thead>
               <tbody>
                 {mine.map((a) => {
-                  const st = overall(runChecks(a, club));
+                  const s = score(runChecks(a, club));
                   return (
-                    <tr key={a.id}>
-                      <td className="lamp-cell"><Signal state={a.status === "draft" ? st : "off"} /></td>
-                      <td><strong>{a.event.title}</strong> {a.sample && <span className="sample">Sample</span>}<div className="small faint">{a.event.location}</div></td>
-                      <td className="mono small">{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
-                      <td className="num">{money(requestTotal(a))}</td>
-                      <td><StatusChip s={a.status} /></td>
-                      <td style={{ textAlign: "right" }}><Link className="btn sm" href={`/club/app/${a.id}`}>Open</Link></td>
+                    <tr key={a.id} className="click" onClick={() => router.push(`/club/app/${a.id}`)}>
+                      <td><Link href={`/club/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{a.event.location}{a.sample ? " · Sample" : ""}</span></Link></td>
+                      <td className="small num" style={{ whiteSpace: "nowrap" }}>{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
+                      <td className="small">{BOARDS[a.event.board].short}</td>
+                      <td className="r">{money(requestTotal(a))}</td>
+                      <td>{a.status === "draft" || a.status === "needs_info" ? <CountPills fail={s.fail} warn={s.warn} /> : <span className="tiny faint">Sent</span>}</td>
+                      <td><StatusPill s={a.status} /></td>
                     </tr>
                   );
                 })}
@@ -127,15 +121,6 @@ export default function ClubHome() {
           </div>
         )}
       </section>
-    </main>
-  );
-}
-
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div className="stack-sm" style={{ gap: 4 }}>
-      <span className="label">{label}</span>
-      <span className="display" style={{ fontSize: 24 }}>{value} {sub && <span className="small faint" style={{ fontFamily: "var(--body)", fontWeight: 400, letterSpacing: 0 }}>{sub}</span>}</span>
-    </div>
+    </>
   );
 }

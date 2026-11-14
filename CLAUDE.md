@@ -12,13 +12,14 @@ One app, two sides. Club officers describe an event in plain words; Greenlight f
 - `src/lib/engine.ts` = the rules engine. Plain code, no AI. All pass/warn/fail results come from here. Tested in `tests/engine.test.ts`.
 - `src/lib/ai.ts` = every Claude call (intake, quote reading, answers, review comments, decision email, sponsor match). Each has a zod schema and an offline fallback (`offline: true`). Models are in `src/lib/claude.ts` (Haiku for reading, Sonnet for writing).
 - `src/lib/store.ts` = demo storage in localStorage (same browser shares club and USG views). Swap for Supabase later; the shapes in `types.ts` match the spec's tables.
-- Pages: `/club`, `/club/app/[id]`, `/usg`, `/usg/app/[id]`. Shared UI in `src/components/`.
+- Pages: `/` (landing), club desk `/club` (overview), `/club/new`, `/club/app/[id]` (stepped request: event, budget, documents, answers, submit, then status and sponsors), `/club/deadlines`, `/club/sponsors`, `/club/rules`; USG `/usg` (queue), `/usg/app/[id]` (review), `/usg/insights`, `/usg/rules`. Shell in `src/components/AppShell.tsx`, shared UI in `src/components/`.
 
 ## Rules for changes
 - A rule change goes in `src/data/rules.ts` + `engine.ts` + a test. Never put rule logic in prompts.
 - Quote USG text exactly; cite the section. Do not invent rules, prices, contacts or USC ties.
 - Before pushing: `npm test` and `npm run build` must pass. Never run `next build` while `next dev` runs in this folder.
-- Design tokens are in `src/app/globals.css` (signal colors carry meaning: red = must fix, amber = check, green = clear). Do not add new colors casually.
+- Design: USC Cardinal #990000 is the brand, USC Gold #FFCC00 the accent, neutral Apple-style surfaces. Tokens live in `src/app/globals.css`. Status (fix/check/clear/note) always has an icon and a word, never color alone. Fonts: Inter Tight (display), Inter (text).
+- Dev server note: CSS edits sometimes need a dev server restart to show up.
 
 ## Decisions log
 - Nov 14: Cache Components turned off; every screen is an interactive client page, and it blocked `useParams` without Suspense. (Efe)

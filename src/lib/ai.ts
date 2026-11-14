@@ -265,7 +265,7 @@ export async function decisionEmail(app: Application, clubName: string, outcome:
         z.object({ email: z.string() }),
         `Draft the email a USG funding director sends to ${clubName} about "${app.event.title}". Decision: ${outcome}, ${money(amount)} of ${money(req)} requested. Reason: ${reasonLabel}.
 Reviewer notes to explain (cite the guideline section named in each): ${notes.join(" | ") || "none"}.
-Be clear, kind and specific: what is funded, what is not and why, and the next steps (USG pays vendors directly; post-event evaluation with photos and final invoices within 3 business days of the event). Sign as "USG Funding Department". Under 180 words.`,
+Only cite the reason and notes given here; do not bring in other rules or limits. Be clear, kind and specific: what is funded, what is not and why, and the next steps (USG pays vendors directly; post-event evaluation with photos and final invoices within 3 business days of the event). Sign as "USG Funding Department". Under 180 words.`,
         1500,
       );
       if (r) return { data: r.email, offline: false };

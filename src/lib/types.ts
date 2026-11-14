@@ -91,6 +91,8 @@ export type Application = {
   items: LineItem[];
   answers: { description: string; missionFit: string; otherSources: string };
   docs: Record<string, boolean>;
+  /** File names attached per document key (names only; files stay on the device). */
+  docFiles?: Record<string, string>;
   uepa: string;
   status: Status;
   createdAt: string;

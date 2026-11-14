@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { TopBar } from "@/components/TopBar";
 
-const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"], weight: ["600", "700", "800"] });
-const body = Instrument_Sans({ variable: "--font-body", subsets: ["latin"] });
-const mono = IBM_Plex_Mono({ variable: "--font-mono", subsets: ["latin"], weight: ["400", "500", "600"] });
+const display = Inter_Tight({ variable: "--font-display", subsets: ["latin"], weight: ["600", "700"] });
+const body = Inter({ variable: "--font-body", subsets: ["latin"] });
+const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"], weight: ["500"] });
 
 export const metadata: Metadata = {
-  title: "Greenlight",
-  description: "USG funding requests for USC clubs, checked against the 2026-27 rules before they are submitted.",
+  title: { default: "Greenlight · USG funding for USC clubs", template: "%s · Greenlight" },
+  description: "Build a USG funding request that is checked against the 2026-27 guidelines before you submit. Reviewers get every application already checked.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body>
-        <TopBar />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

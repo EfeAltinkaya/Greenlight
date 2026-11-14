@@ -21,9 +21,9 @@ npm run build   # must pass before pushing
 
 ## Demo script
 
-1. **Club officer** → "Use the example" → **Build my application**.
+1. Landing page → **Start a request** → pick **Hackathon with catering** → **Build my application**. The request opens as steps: Event, Budget, Documents, Form answers, Review and submit.
 2. Rule check flags: Chipotle is not on USG's Vendor List (so the 9-week deadline applies, and it passed Nov 11), food at $45 per person (limit $35), gift cards are never fundable, missing health permit and UEPA.
-3. Click **Cap food at $4,200**, move gift cards and swag to sponsors, change the vendor to **Panda Catering** (on the list). The deadline becomes **Wed, Nov 18**, and the card notes that moving the event one week later gains 56 days.
+3. Click **Cap food at $4,200**, move gift cards and swag to sponsors, pick **Switch to a listed caterer** under the vendor (any caterer on USG's list). The deadline becomes **Wed, Nov 18**, and the card notes that moving the event one week later gains 56 days.
 4. On the catering line, click **Attach quote** and pick `demo/panda-catering-quote.pdf` (a made-up sample quote). Greenlight reads it and confirms the $4,201.20 total matches the $4,200 line.
 5. Enter UEPA `A31842`, tick the documents, **Draft with AI**, **Submit to USG**.
 6. **USG reviewer** → the Hackathon is in the queue, pre-checked. Agree or disagree with each AI comment, pick the outcome, **Draft the email**, **Send decision**.
