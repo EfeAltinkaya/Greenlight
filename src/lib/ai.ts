@@ -47,7 +47,7 @@ const ItemSchema = z.object({
   total: z.number().describe("Total cost of this line in dollars"),
   category: z.enum(ITEM_CATEGORIES),
   estimate: z.boolean().describe("true when the officer gave no price and you estimated it"),
-  justification: z.string().describe("One sentence on why the event needs this, for USG's budget sheet"),
+  justification: z.string().describe("One sentence in the club's voice on why the event needs this line, for USG's budget sheet. Never mention rules, limits or eligibility."),
 });
 
 const IntakeSchema = z.object({
@@ -64,7 +64,7 @@ const IntakeSchema = z.object({
     travel: z.boolean(),
     international: z.boolean(),
     food: z.boolean(),
-    description: z.string().describe("Two sentences describing the event for USG"),
+    description: z.string().describe("Two sentences describing the event itself (what, who, why). No funding or rule commentary."),
   }),
   board: z.enum(["professional", "philanthropy", "social", "arts"]),
   boardReason: z.string().describe("One sentence: why this board fits, referring to the board's description"),
@@ -81,8 +81,10 @@ export async function intake(text: string, today: string): Promise<Out<Intake>> 
         `Today is ${today}. An officer described an event they want USG funding for. Turn it into the event card and budget rows.
 - Dates without a year are the next upcoming one after today.
 - Split the budget into separate lines. Use the officer's prices; if a line has no price, estimate a typical Los Angeles price and set estimate=true.
-- category: pick the most specific. Use the ineligible categories exactly when they apply (gift cards or prizes bought as gift cards = "gift", performers or DJs = "performer", alcohol = "alcohol", Uber/Lyft/car rental = "rideshare", reusable equipment or uniforms = "durable"). Catered meals = "food". Shirts = "tshirt". Stickers, banners, other branded items = "promo_merch".
+- Food and per-person items: quantity = number of people (the attendance unless stated), unitPrice = total / quantity. Other items: quantity 1 unless a count is given.
+- category: pick the most specific. Use the ineligible categories exactly when they apply (gift cards or prizes bought as gift cards = "gift", performers or DJs = "performer", alcohol = "alcohol", Uber/Lyft/car rental = "rideshare", reusable equipment or uniforms = "durable"). Catered meals = "food". Shirts = "tshirt". Swag, stickers, banners and other branded giveaways = "promo_merch".
 - openToAll is true unless the officer says members only. onCampus is true for USC buildings.
+- Only extract and describe. Do not judge eligibility or mention rules anywhere; the app checks rules separately.
 
 Officer's description:
 """${text}"""`,
@@ -202,7 +204,7 @@ export async function draftAnswers(app: Application, clubName: string): Promise<
       const r = await parse(
         MODELS.write,
         AnswersSchema,
-        `Draft three answers for USG's funding form for "${clubName}". Use only the facts below. 80 to 130 words each for the first two; plain, specific, no hype.
+        `Draft three answers for USG's funding form for "${clubName}". Use only the facts below. 60 to 110 words each for the first two; plain, specific, no hype. Describe the event and its value to students; do not discuss funding rules, limits or per-person costs (the budget sheet covers money).
 1. description: "Description of event"
 2. missionFit: "How does the event align with your mission/vision/goals?"
 3. otherSources: "List of other funding sources" (mention any items the club will ask sponsors to cover in kind; otherwise "N/A").
