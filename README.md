@@ -1,5 +1,7 @@
 # Greenlight
 
+**Live:** https://greenlight-lac-tau.vercel.app (auto-deploys every push to `main`)
+
 USG funding requests for USC clubs, checked against the real 2026-27 rules before they are submitted, and a review queue for USG where every application arrives already checked. Built for the AI@USC Hackathon (Nov 14-15, 2026).
 
 ## Run it
