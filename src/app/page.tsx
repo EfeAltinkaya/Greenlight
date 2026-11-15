@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
-import { Mark } from "@/components/ui";
+import { LogoLockup, Mark } from "@/components/ui";
 import { NavActions, ScrollIn, StartRequest } from "@/components/Landing";
-import { Chapter, FixDemo, HeroStoplight, LedgerBar, QueueDemo, RuleStamps, StoryRail, TextToBudget, type FixState, type LedgerPart, type QueueRow, type StampRow } from "@/components/Story";
+import { Chapter, FixDemo, LedgerBar, QueueDemo, RuleStamps, StoryRail, TextToBudget, type FixState, type LedgerPart, type QueueRow, type StampRow } from "@/components/Story";
 import { fmtDate } from "@/lib/engine";
 import { FIXES, STORY_TEXT, storyApp, storyState, type FixId } from "@/lib/landingStory";
 import { SPONSORS, SPONSOR_NOTE } from "@/data/sponsors";
@@ -83,52 +83,49 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="ed-hero">
-          <div className="ed-hero-copy">
-            <h1 className="ed-h1">What would your club build if <em>every light were green?</em></h1>
-            <p className="ed-sub">Greenlight writes your USG request, checks it against every rule before you send it, finds the rest from USC and sponsors, and keeps every dollar on one ledger.</p>
-            <div className="row" style={{ gap: 12 }}>
-              <StartRequest />
-              <a href="#story" className="btn btn-lg ed-btn-quiet">Follow one event<ArrowRight /></a>
-            </div>
-            <p className="ed-small">From idea to event, without a red light.</p>
+        <section className="ed-hero ed-hero-stack">
+          <ScrollIn className="ed-hero-logo"><LogoLockup className="ed-hero-lockup" /></ScrollIn>
+          <h1 className="ed-h1">What would your club build if <em>every light were green?</em></h1>
+          <p className="ed-sub">Check your USG request against every rule before you send it. Find the rest from USC and sponsors.</p>
+          <div className="row" style={{ gap: 12, justifyContent: "center" }}>
+            <StartRequest />
+            <a href="#story" className="btn btn-lg ed-btn-quiet">Follow one event<ArrowRight /></a>
           </div>
-          <div className="ed-hero-light"><HeroStoplight /></div>
         </section>
 
         <section id="story" className="ed-intro">
-          <p>Follow one event&apos;s money. <b>Robotics Build Night</b>: Trojan Builders, 80 students, Thursday, February 18. It is November 15, and USG&apos;s deadline for that week is three days away.</p>
-          <p className="ed-fine">Trojan Builders and its request are made up. Every check, deadline and total below comes from Greenlight&apos;s rules engine running on that request.</p>
+          <p>Follow one event: <b>Robotics Build Night</b>, 80 students, February 18. USG&apos;s deadline is three days away.</p>
+          <p className="ed-fine">A made-up club. Every check and number below comes from the real rules engine.</p>
         </section>
 
         <StoryRail>
           <Chapter light={0}>
             <h2 className="ed-h2">An officer describes the night in plain words.</h2>
-            <p className="ed-p">No budget sheet, no form. Greenlight reads the plan, fills USG&apos;s budget lines, works out the cost per person and picks the funding board.</p>
+            <p className="ed-p">No form. Greenlight fills USG&apos;s budget sheet and picks the board.</p>
             <TextToBudget text={STORY_TEXT} rows={rows} total={before.total} facts={facts} />
           </Chapter>
 
           <Chapter light={0}>
             <h2 className="ed-h2">Every line gets stamped against the rules.</h2>
-            <p className="ed-p">The checks are plain code, not AI. Each one quotes the USG guideline it comes from, with the section, so nobody has to take Greenlight&apos;s word for it. As typed, this request has {before.fixes} red lights: it would be denied before anyone read it.</p>
+            <p className="ed-p">Plain code, not AI, quoting each guideline. As typed: {before.fixes} red lights.</p>
             <RuleStamps rows={stamps} />
           </Chapter>
 
           <Chapter light={1}>
             <h2 className="ed-h2">Most fixes are one click.</h2>
-            <p className="ed-p">Cap the food at USG&apos;s limit, switch to a caterer on USG&apos;s list, move the gift cards to a sponsor. Try them. The deadline, the total and the red lights all update from the same engine.</p>
+            <p className="ed-p">Try them. The deadline and total update live.</p>
             <FixDemo fixes={FIXES} states={fixStates()} />
           </Chapter>
 
           <Chapter light={2}>
             <h2 className="ed-h2">USG opens a request that is already checked.</h2>
-            <p className="ed-p">In the review queue, reviewers see what is broken, what is late and what is clean before opening a file. The AI writes a note on each check and drafts the decision email. The reviewer agrees, disagrees or edits, sets the amount and presses Send.</p>
+            <p className="ed-p">The AI drafts notes and the email. The reviewer sets the amount and presses Send.</p>
             <QueueDemo rows={queue} note={note} email={email} />
           </Chapter>
 
           <Chapter light={2}>
             <h2 className="ed-h2">What USG won&apos;t fund becomes a sponsor ask.</h2>
-            <p className="ed-p">USG never funds gift cards, so the $500 for prizes goes on a sponsor list. Greenlight ranks companies by who hires from the club&apos;s majors, and shows each company&apos;s USC ties with the source. Sponsors give in kind or pay the vendor directly, never the club.</p>
+            <p className="ed-p">Gift cards go to sponsors, ranked by who hires the club&apos;s majors. Sponsors pay the vendor, never the club.</p>
             <div className="ties">
               {sponsors.map((s) => (
                 <div key={s.id} className="tie">
@@ -147,7 +144,7 @@ export default function Home() {
 
           <Chapter light={2}>
             <h2 className="ed-h2">Every dollar, on one ledger.</h2>
-            <p className="ed-p">USG, Viterbi SOS and the sponsor each cover a different part of the same $5,300 night. One bar shows where every dollar comes from and where each ask stands, for the club and for USG.</p>
+            <p className="ed-p">USG, Viterbi and a sponsor: one bar for every dollar.</p>
             <LedgerBar parts={ledger} />
           </Chapter>
         </StoryRail>
@@ -164,26 +161,26 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <p className="ed-p wide">A USG Funding Department officer told us the guidelines are the main problem: the rules are not changing, clubs just don&apos;t check them, and when a request follows them a denial is rare. What slows money down is the email back-and-forth to fix what could have been caught before submitting. Her top wish was software that knows the guidelines, so a club cannot submit until everything passes. That is Greenlight.</p>
+            <p className="ed-p wide">A USG Funding officer told us most denials are missed guidelines. Her wish: software that won&apos;t let a club submit until everything passes. That&apos;s Greenlight.</p>
           </ScrollIn>
         </section>
 
         <section className="ed-sec">
           <ScrollIn className="ed-wrap">
             <h2 className="ed-h2 big">How it works</h2>
-            <p className="ed-p wide">Three kinds of work, kept apart on purpose.</p>
+            
             <dl className="ed-how">
               <div>
                 <dt>Code checks the rules</dt>
-                <dd>Every pass, check and fix comes from a rules engine written in plain code against USG&apos;s <a href={GUIDELINES_URL} target="_blank" rel="noreferrer">2026-27 Funding Guidelines</a>, the Vendor List and the <a href={DEADLINES_URL} target="_blank" rel="noreferrer">deadline sheet</a>. Each rule carries its exact quote and section. Rules never live in an AI prompt.</dd>
+                <dd>Built from USG&apos;s <a href={GUIDELINES_URL} target="_blank" rel="noreferrer">guidelines</a>, Vendor List and <a href={DEADLINES_URL} target="_blank" rel="noreferrer">deadline sheet</a>, quote for quote.</dd>
               </div>
               <div>
                 <dt>AI reads and writes</dt>
-                <dd>Claude turns an officer&apos;s description into budget lines, reads vendor quotes, drafts form answers, writes reviewer notes and the decision email, and matches sponsors. Every draft can be edited, and the app still works offline without it.</dd>
+                <dd>Claude drafts budgets, answers, notes and emails. Every draft is editable.</dd>
               </div>
               <div>
                 <dt>People decide</dt>
-                <dd>Officers send their own requests and sponsor emails. USG reviewers agree, disagree or edit each AI note, set every amount and press every Send. The AI never decides money.</dd>
+                <dd>Reviewers set every amount. The AI never decides money.</dd>
               </div>
             </dl>
           </ScrollIn>
@@ -193,9 +190,9 @@ export default function Home() {
           <ScrollIn className="ed-wrap">
             <h2 className="ed-h2 big">How USG adopts it</h2>
             <div className="ed-cols">
-              <p><b>No new rules.</b> Greenlight encodes the guidelines USG already publishes, quote for quote. When the guidelines change, a USG officer reviews one file of rules, not a retrained model.</p>
-              <p><b>Start with one board.</b> Clubs on one funding board prepare requests in Greenlight while reviewers on that board use the checked queue. Reviewer accounts need an invite code that USG controls.</p>
-              <p><b>Keep the paper trail.</b> The checks, the reviewer&apos;s notes and the decision email stay with each request, so a denial always has a reason that cites a section, and USG can see how much each board has left.</p>
+              <p><b>No new rules.</b> It uses the guidelines USG already publishes.</p>
+              <p><b>Start with one board.</b> One board pilots it; USG controls reviewer invites.</p>
+              <p><b>Keep the paper trail.</b> Every decision keeps its checks, notes and reason.</p>
             </div>
           </ScrollIn>
         </section>
@@ -212,7 +209,7 @@ export default function Home() {
             <h2 className="ed-h2 big">Team</h2>
             <figure className="ed-team-photo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={TEAM_PHOTO.src} alt={TEAM_PHOTO.alt} width={1024} height={609} />
+              <img src={TEAM_PHOTO.src} alt={TEAM_PHOTO.alt} width={2048} height={1218} />
               <figcaption className="ed-fine">{TEAM_PHOTO.caption}</figcaption>
             </figure>
             <ul className="ed-team">
@@ -235,12 +232,12 @@ export default function Home() {
         <section className="ed-doors" aria-label="Choose your side">
           <div className="door door-club">
             <h2>I run a club.</h2>
-            <p>Describe your next event. Greenlight writes the request, checks it and finds the rest.</p>
+            <p>Describe your next event. We check it and find the rest.</p>
             <StartRequest className="btn btn-lg door-btn" />
           </div>
           <div className="door door-usg">
             <h2>I review for USG.</h2>
-            <p>Open a queue where every request arrives checked, with a note on each rule and a draft email.</p>
+            <p>Every request arrives already checked.</p>
             <Link href="/usg" className="btn btn-lg door-btn">Open the review queue<ArrowRight /></Link>
           </div>
         </section>

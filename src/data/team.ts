@@ -39,6 +39,6 @@ export const TEAM_LINES: Record<string, string> = {
 export const FOUNDER_STORY = {
   confirmed: false,
   paragraphs: [
-    "At the AI@USC kickoff, Hasan Askari, co-founder and Managing Partner of K1 Investment Management, told a story Elon Musk likes to tell about driving from SpaceX in Hawthorne to Malibu: imagine hitting every light green. How far would you get, and how much more would you attempt, if nothing stopped you? We had spent the morning talking to the people who move money for USC clubs. Clubs were stopping at red lights they could not see: a caterer that is not on a list, a deadline that passed two weeks before they knew it existed, an item that cannot be funded, a sponsor nobody had asked. Greenlight is our attempt to turn those lights green before a club reaches them.",
+    "At the AI@USC kickoff, Hasan Askari of K1 Investment Management shared a story Elon Musk tells: imagine hitting every light green on the drive home. USC clubs keep stopping at red lights they can't see. Greenlight turns them green first.",
   ],
 };

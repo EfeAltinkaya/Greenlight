@@ -11,7 +11,7 @@ export const SOURCES: Source[] = [
   {
     id: "fy26-total",
     stat: `$${Math.round(FY26_TOTAL / 1000)}K`,
-    claim: "across USG's four funding boards in FY26, shared by more than 1,000 student organizations.",
+    claim: "across USG's four funding boards in FY26, for 1,000+ clubs.",
     source: "USG FY26 Financial Report",
     url: FUNDING_URL,
     date: "2026",
@@ -19,7 +19,7 @@ export const SOURCES: Source[] = [
   {
     id: "professional-overspent",
     stat: `${Math.round(BOARDS.professional.fy26Used * 100)}%`,
-    claim: "of its FY26 budget used by the Professional/Academic Research Fund, the board that funds engineering and research clubs.",
+    claim: "of the Professional/Academic board's FY26 budget already used.",
     source: "USG FY26 Financial Report",
     url: FUNDING_URL,
     date: "2026",
@@ -27,7 +27,7 @@ export const SOURCES: Source[] = [
   {
     id: "deadline",
     stat: "6 weeks",
-    claim: "before the event is USG's deadline, 9 weeks for travel or a vendor not on USG's list. \"If this deadline is not met the application will be automatically denied.\" (Section 1)",
+    claim: "before the event is the deadline. Miss it and the request is denied automatically.",
     source: "USG Funding Department 2026-27 Guidelines",
     url: GUIDELINES_URL,
     date: "2026-27",
@@ -35,7 +35,7 @@ export const SOURCES: Source[] = [
   {
     id: "same-review",
     stat: "Every request",
-    claim: "gets the same checklist review from a board director, an associate director and a delegate, whether it asks for $500 or $3,000.",
+    claim: "gets the same review, whether it asks for $500 or $3,000.",
     source: "Conversation with a USG Funding Department officer, Nov 14, 2026 (paraphrased, at her request)",
     url: null,
     date: "2026-11-14",

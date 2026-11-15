@@ -717,3 +717,10 @@ button.link { border: 0; background: none; padding: 0; cursor: pointer; }
 .ed-footer .ed-wrap { gap: 10px; font-size: 13.5px; color: #4e4640; }
 
 
+
+/* Landing hero: the big logo first, the words under it, centered. */
+.ed-hero.ed-hero-stack { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; gap: 28px; }
+.ed-hero-stack .ed-h1 { max-width: 16ch; }
+.ed-hero-stack .ed-sub { max-width: 46ch; }
+.ed-hero-lockup { width: min(720px, 88vw); height: auto; display: block; }
+@media (max-width: 760px) { .ed-hero.ed-hero-stack { grid-template-columns: minmax(0, 1fr); } }
