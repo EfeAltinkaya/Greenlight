@@ -406,3 +406,44 @@ h3 { font-weight: 700; letter-spacing: -0.01em; }
 .contract { white-space: pre-wrap; font: 13.5px/1.6 var(--mono); background: #fbf9f6; border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; max-height: 420px; overflow: auto; }
 .moneybar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; gap: 2px; background: var(--line-2); }
 .moneybar span { display: block; min-width: 4px; }
+
+/* Inline field messages: always an icon plus words, never color alone. */
+.field-error, .field-warn { display: flex; gap: 6px; align-items: flex-start; margin: 0; line-height: 1.35; }
+.field-error { color: var(--fix); }
+.field-warn { color: var(--check); }
+.field-error svg, .field-warn svg { width: 15px; height: 15px; flex: none; margin-top: 2px; }
+.input[aria-invalid="true"], .select[aria-invalid="true"], .textarea[aria-invalid="true"] { border-color: var(--fix); box-shadow: 0 0 0 3px color-mix(in srgb, var(--fix) 15%, transparent); }
+
+/* Wide tables become one card per row on phones (label on the left, value on the right). */
+@media (max-width: 640px) {
+  .table.stackable thead { display: none; }
+  .table.stackable, .table.stackable tbody { display: block; }
+  .table.stackable tr { display: grid; gap: 6px; padding: 14px 16px; border-bottom: 1px solid var(--line-2); }
+  .table.stackable td { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0; border: 0; text-align: right; }
+  .table.stackable td:first-child { display: block; text-align: left; margin-bottom: 4px; }
+  .table.stackable td[data-label]::before { content: attr(data-label); color: var(--ink-3, #6b6259); font-size: 13px; text-align: left; }
+  .table-wrap:has(.stackable) { overflow-x: visible; }
+}
+
+/* Error toast: amber-red icon and words, never a success check. */
+.toast.toast-error { background: var(--fix); }
+.toast.toast-error svg { color: #fff; }
+
+/* Documents: the "I have it" tick sits inside the same row as the upload card. */
+.doc-row { display: flex; gap: 10px; align-items: stretch; }
+.doc-row .drop { flex: 1; min-width: 0; }
+.have-it { display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); cursor: pointer; white-space: nowrap; }
+@media (max-width: 600px) { .doc-row { flex-direction: column; } .have-it { padding: 8px 12px; align-self: flex-start; } }
+
+/* Request steps: full list on desktop, a compact "Step 2 of 5" bar on phones. */
+.steps-compact, .mobile-only { display: none; }
+@media (max-width: 1000px) {
+  .steps { display: none; }
+  .steps-compact { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); margin-bottom: 12px; }
+  details.mobile-only { display: block; margin-bottom: 12px; }
+  details.mobile-only summary { cursor: pointer; }
+  aside[aria-label="Checks"] { display: none; }
+}
+
+/* Outreach board: columns side by side on desktop, stacked on phones. */
+@media (max-width: 720px) { .pipeline { grid-template-columns: minmax(0, 1fr); overflow-x: visible; } }

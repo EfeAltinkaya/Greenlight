@@ -29,7 +29,7 @@ export default function Deadlines() {
             <button aria-pressed={!travel} onClick={() => setTravel(false)}>Vendors on USG&apos;s list</button>
             <button aria-pressed={travel} onClick={() => setTravel(true)}>Travel or a new vendor</button>
           </div>
-          <p className="tiny faint">6 academic weeks for approved vendors, 9 for travel and vendors not on the list. Applications open Wednesdays, 8:00 AM to 11:59 PM.</p>
+          <p className="tiny faint">6 academic weeks for approved vendors, 9 for travel and vendors not on the list. Applications are due Wednesdays at 11:59 PM.</p>
         </div>
         {r && r.kind === "ok" ? (
           <div className={"deadline" + (r.passed ? " late" : "")} style={{ alignContent: "center" }}>
@@ -47,7 +47,7 @@ export default function Deadlines() {
       <section className="stack-sm">
         <div className="between"><h2>USG&apos;s 2026-27 deadline sheet</h2><a className="link small" href={DEADLINES_URL} target="_blank" rel="noreferrer">Source</a></div>
         <div className="card table-wrap">
-          <table className="table">
+          <table className="table stackable">
             <thead><tr><th>Event week</th><th>Approved vendors (6 weeks)</th><th>Travel or new vendor (9 weeks)</th></tr></thead>
             <tbody>
               {DEADLINES.map((d) => {
@@ -55,16 +55,16 @@ export default function Deadlines() {
                 const fmt = (x: string | null) => (x ? <span className={x < today ? "faint" : ""} style={x < today ? { textDecoration: "line-through" } : undefined}>{fmtDate(x, { weekday: "short", month: "short", day: "numeric" })}</span> : <span className="faint">No funding</span>);
                 return (
                   <tr key={d.weekStart} className={mine ? "hl click" : "click"} onClick={() => setDate(d.weekStart)}>
-                    <td className="num" style={{ whiteSpace: "nowrap", fontWeight: mine ? 600 : 400 }}>{short(d.weekStart)} – {short(d.weekEnd)}</td>
-                    <td className="num">{fmt(d.six)}</td>
-                    <td className="num">{fmt(d.nine)}</td>
+                    <td className="num" style={{ whiteSpace: "nowrap", fontWeight: mine ? 600 : 400 }}>{d.weekStart === "2026-12-07" ? "Dec 5 – Jan 12 (no funding)" : `${short(d.weekStart)} – ${short(d.weekEnd)}`}{d.weekStart === "2027-01-11" ? <span className="tiny faint"> · events from Jan 13</span> : null}</td>
+                    <td data-label="Approved vendors (6 wk)" className="num">{fmt(d.six)}</td>
+                    <td data-label="Travel or new vendor (9 wk)" className="num">{fmt(d.nine)}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
-        <p className="tiny faint">Crossed-out dates have passed. Events from Dec 5 to Jan 12 and after May 1 are not funded.</p>
+        <p className="tiny faint">Crossed-out dates have passed. Events from Dec 5, 2026 to Jan 12, 2027 and after May 1, 2027 are not funded (sample application, Application Timelines).</p>
       </section>
     </>
   );

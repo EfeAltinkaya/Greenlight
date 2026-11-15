@@ -48,8 +48,8 @@ export default function Home() {
 
         <section className="band">
           <div className="section section-tight grid cols-4 stats-band" style={{ gap: 32 }}>
-            <div className="stat"><b>$388K</b><span>is the Funding Department&apos;s FY27 budget, shared by more than 1,000 clubs.</span></div>
-            <div className="stat"><b>44%</b><span>of the 378 organizations that applied in 2023 got funding: 166 in all.</span></div>
+            <div className="stat"><b>$362K</b><span>across the four funding boards in FY26, shared by more than 1,000 clubs (USG FY26 Financial Report).</span></div>
+            <div className="stat"><b>44%</b><span>of the 378 organizations that applied in 2023 got funding: 166 in all (<a href="https://www.uscannenbergmedia.com/2023/04/29/usg-rejected-funding-for-established-student-organizations/" target="_blank" rel="noreferrer">Annenberg Media</a>).</span></div>
             <div className="stat"><b>2 days</b><span>to fix an incomplete application before USG denies it.</span></div>
             <div className="stat"><b>5 reviews</b><span>for every request, from board director to Campus Activities staff.</span></div>
           </div>
@@ -126,7 +126,7 @@ export default function Home() {
           <div className="stack" style={{ gap: 18 }}>
             <span className="eyebrow">Sponsors</span>
             <h2 className="display-2">Sponsors for the costs USG won&apos;t cover.</h2>
-            <p className="lede">Prizes, performers and food above $35 a person go on a sponsor list with a price for each. Greenlight ranks companies that hire from your majors, links to their recruiters and to USC alumni who work there, and drafts the email you send. Sponsors pay the vendor directly or give in kind, which is what Campus Activities allows.</p>
+            <p className="lede">Prizes, performers and food above $35 a person go on a sponsor list with a price for each. Greenlight ranks companies that hire from your majors, links to their recruiters and to USC alumni who work there, and drafts the email you send. Sponsors give in kind (the goods, or paying the vendor for them), so no money passes through the club. The Student Handbook allows in-kind corporate sponsorship for clubs; check anything offered in return with Campus Activities first.</p>
             <div><Link href="/club/sponsors" className="link">Open sponsors<ArrowRight /></Link></div>
           </div>
           <div className="card card-pad stack-sm">

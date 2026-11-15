@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { Building2, Check, Copy, ExternalLink, HandCoins, Plus, Search, Sparkles, Trash2, Users } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, Building2, Check, Copy, ExternalLink, HandCoins, MessageSquareReply, Plus, Repeat, Search, Sparkles, Trash2, Users } from "lucide-react";
 import { buildPackages } from "@/lib/ai-shared";
 import { fmtDate, money, sponsorAsks, todayISO } from "@/lib/engine";
 import { needsFrom, rankSponsors } from "@/lib/sponsorMatch";
@@ -11,6 +11,8 @@ import { MAJORS, SCHOOL_MAJORS, SPONSORS, linkedInAlumni, linkedInRecruiters, un
 import { AiTag, Spinner, useToast } from "@/components/ui";
 import { Reveal } from "@/components/Motion";
 import { SponsorInbox } from "@/components/Inbox";
+import { followUpAllowed, outreachProblems } from "@/lib/outreachGuard";
+import { supabase } from "@/lib/session";
 
 const STAGES: { id: OutreachStatus; label: string }[] = [
   { id: "shortlist", label: "To contact" },
@@ -59,6 +61,7 @@ export default function Sponsors() {
       contactName: "", contactInfo: "", notes: "", committed: 0, followUp: "", updatedAt: today, email: null,
     });
     say(`${s.name} added to To contact`);
+    otherClubsTalking(s.id, club.id).then((n) => { if (n > 0) say(`Heads up: ${n} other USC club${n === 1 ? " is" : "s are"} already talking to ${s.name}. Coordinate before you email.`, "error"); });
   }
 
   const [selected, setSelected] = useState<string | null>(null);
@@ -88,7 +91,7 @@ export default function Sponsors() {
 
       <section className="grid cols-4 stats">
         <div className="card card-pad stack-xs"><span className="small muted">To raise</span><span className="big-num">{money(toRaise)}</span><span className="tiny faint">From {withAsks.length} request{withAsks.length === 1 ? "" : "s"}</span></div>
-        <div className="card card-pad stack-xs"><span className="small muted">Committed</span><span className="big-num" style={{ color: "var(--clear)" }}>{money(committed)}</span><div className="meter"><span style={{ width: `${toRaise ? Math.min(1, committed / toRaise) * 100 : 0}%`, background: "var(--clear)" }} /></div></div>
+        <div className="card card-pad stack-xs"><span className="small muted">Committed</span><span className="big-num" style={{ color: committed > 0 ? "var(--clear)" : undefined }}>{money(committed)}</span><div className="meter"><span style={{ width: `${toRaise ? Math.min(1, committed / toRaise) * 100 : 0}%`, background: "var(--clear)" }} /></div></div>
         <div className="card card-pad stack-xs"><span className="small muted">In conversation</span><span className="big-num">{talking}</span><span className="tiny faint">{mine.length} companies tracked</span></div>
         <div className="card card-pad stack-xs"><span className="small muted">Follow-ups due</span><span className="big-num" style={due ? { color: "var(--cardinal)" } : undefined}>{due}</span><span className="tiny faint">5 days after each email</span></div>
       </section>
@@ -160,14 +163,15 @@ export default function Sponsors() {
         )}
 
         <div className="grid cols-3 appear" key={majors.join() + needs.join() + tieOnly + q}>
-          {shown.map(({ sponsor: s, score, reasons }) => {
+          {shown.map(({ sponsor: s, score, reasons, parts }) => {
             const tracked = mine.some((o) => o.sponsorId === s.id && o.appId === (target?.a.id ?? null));
             return (
               <div key={s.id} className="card card-pad stack-sm" style={{ alignContent: "start" }}>
                 <div className="between" style={{ flexWrap: "nowrap", alignItems: "flex-start" }}>
                   <div className="row" style={{ gap: 12, flexWrap: "nowrap" }}><span className="icon-tile" style={{ width: 36, height: 36 }}><Building2 style={{ width: 18, height: 18 }} /></span><div className="stack-xs"><strong>{s.name}</strong><span className="tiny faint">{s.industry}</span></div></div>
-                  <span className="pill num" title="Match score from majors, what they can give, and USC ties">{score}</span>
+                  <span className="pill num" title={parts.map((p) => `+${p.points} ${p.why}`).join(", ") || "No match signals"}>{score}</span>
                 </div>
+                <span className="tiny faint">Score: {parts.length ? parts.map((p) => `+${p.points} ${p.why}`).join(" · ") : "no overlap with this event yet"}</span>
                 <div className="row" style={{ gap: 6 }}>{reasons.map((r) => <span key={r} className="pill" style={{ height: "auto", padding: "4px 8px", whiteSpace: "normal" }}>{r}</span>)}</div>
                 {s.tie && <a className="tiny wrap-any" style={{ color: "var(--gold-deep)", fontWeight: 600 }} href={s.tieSource ?? undefined} target="_blank" rel="noreferrer">{s.tie}<ExternalLink style={{ width: 11, height: 11, marginLeft: 3, verticalAlign: -1 }} /></a>}
                 <span className="tiny faint">{s.la}</span>
@@ -229,9 +233,14 @@ function OutreachCard({ o, pool, active, onOpen }: { o: Outreach; pool: Sponsor[
   );
 }
 
-function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[]; say: (m: string) => void; onClose: () => void }) {
+function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[]; say: (m: string, kind?: "ok" | "error") => void; onClose: () => void }) {
   const { apps, clubs } = useStore();
   const [busy, setBusy] = useState(false);
+  const [extra, setExtra] = useState<{ kind: "follow-up" | "reply"; subject: string; body: string } | null>(null);
+  const [theirs, setTheirs] = useState("");
+  const [note, setNote] = useState("");
+  const [others, setOthers] = useState(0);
+  useEffect(() => { otherClubsTalking(o.sponsorId, o.clubId).then(setOthers); }, [o.sponsorId, o.clubId]);
   const [offline, setOffline] = useState<boolean | null>(null);
   const s = pool.find((x) => x.id === o.sponsorId);
   const app = apps.find((a) => a.id === o.appId);
@@ -244,6 +253,22 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
   function setStatus(status: OutreachStatus) {
     set({ status, followUp: status === "emailed" ? plusDays(today, 5) : status === "replied" ? plusDays(today, 3) : "", committed: status === "committed" && !o.committed ? o.amount : o.committed });
     say(status === "emailed" ? "Follow-up set for 5 days from now" : `Moved to ${STAGES.find((x) => x.id === status)!.label}`);
+  }
+
+  const pkgFor = () => (app ? buildPackages(sponsorAsks(app), app.event.attendance).find((p) => p.title === o.packageTitle) : undefined) ?? { title: o.packageTitle, covers: o.packageTitle, amount: o.amount, offer: ["Logo on event materials", "Thank-you in the recap"] };
+  const eventFor = () => app?.event ?? { title: `${club?.name ?? "Club"} event`, type: "event", date: "", location: "USC", onCampus: true, attendance: 50, openToAll: true, ticketed: false, privateResidence: false, travel: false, international: false, food: false, description: "", board: "social" as const, boardReason: "" };
+  const checks = o.email ? outreachProblems(o.email, { sponsorName: s.name, eventTitle: eventFor().title, amounts: [o.amount, pkgFor().amount], hasTie: Boolean(s.tie) }) : [];
+
+  async function more(kind: "follow-up" | "reply") {
+    setBusy(true);
+    try {
+      const r = await fetch("/api/outreach-email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sponsor: s, pkg: pkgFor(), event: eventFor(), clubName: club?.name ?? "our club", contactName: o.contactName, firstSubject: o.email?.subject, ...(kind === "follow-up" ? { followUp: true } : { reply: { theirMessage: theirs, note } }) }) });
+      const j = await r.json();
+      if (!r.ok) return say(j.error ?? "Could not draft that", "error");
+      setExtra({ kind, ...j.data });
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function draft() {
@@ -278,6 +303,7 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
         <button className="btn btn-sm btn-ghost" onClick={onClose}>Close</button>
       </div>
       {due && <div className="pill pill-cardinal" style={{ justifySelf: "start" }}>Follow-up due today</div>}
+      {others > 0 && <p className="small field-warn" role="status"><AlertTriangle />{others} other USC club{others === 1 ? " is" : "s are"} already talking to {s.name} this month. One conversation per company works better: coordinate with them, or wait.</p>}
       <div className="grid cols-2" style={{ alignItems: "start", gap: 24 }}>
         <div className="stack-sm">
           <label className="field"><span className="lbl">Stage</span>
@@ -303,7 +329,30 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
             <div className="inset stack-xs" style={{ padding: 12 }}>
               <input className="input" style={{ fontWeight: 600, fontSize: 13 }} value={o.email.subject} onChange={(e) => set({ email: { ...o.email!, subject: e.target.value } })} aria-label="Subject" />
               <textarea className="textarea email" style={{ minHeight: 280, fontSize: 13.5 }} value={o.email.body} onChange={(e) => set({ email: { ...o.email!, body: e.target.value } })} aria-label="Email body" />
+              {checks.length > 0
+                ? <div className="small field-warn" role="status" style={{ display: "grid", gap: 2 }}><span><AlertTriangle />Check before you send:</span>{checks.map((c) => <span key={c}>· {c}</span>)}</div>
+                : <span className="tiny" style={{ color: "var(--clear)" }}>Passes the checks: names the company and event, no invented amounts or filler.</span>}
               <div className="row"><button className="btn btn-sm" onClick={copy}><Copy />Copy</button>{o.status === "shortlist" && <button className="btn btn-sm btn-primary" onClick={() => setStatus("emailed")}><Check />I sent it</button>}</div>
+            </div>
+          )}
+          {followUpAllowed(o.status, o.followUp, today) && (
+            <button className="btn btn-sm" onClick={() => more("follow-up")} disabled={busy}><Repeat />Draft a follow-up</button>
+          )}
+          {o.status === "replied" && (
+            <div className="inset stack-xs" style={{ padding: 12 }}>
+              <strong className="small">Answer their reply</strong>
+              <textarea className="textarea" style={{ minHeight: 80, fontSize: 13.5 }} value={theirs} onChange={(e) => setTheirs(e.target.value)} placeholder="Paste what they wrote" aria-label="Their message" />
+              <input className="input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Your answer in a few words, e.g. yes tues 3pm works, ask about their budget" aria-label="Your short answer" />
+              <span className="tiny faint">Greenlight writes the full reply from your note and never adds a date, amount or promise you did not give.</span>
+              <button className="btn btn-sm" style={{ justifySelf: "start" }} onClick={() => more("reply")} disabled={busy || !note.trim()}><MessageSquareReply />Write the reply</button>
+            </div>
+          )}
+          {extra && (
+            <div className="inset stack-xs" style={{ padding: 12 }}>
+              <span className="tiny faint">{extra.kind === "follow-up" ? "Follow-up" : "Reply"}, ready to copy into your inbox</span>
+              <input className="input" style={{ fontWeight: 600, fontSize: 13 }} value={extra.subject} onChange={(e) => setExtra({ ...extra, subject: e.target.value })} aria-label="Subject" />
+              <textarea className="textarea email" style={{ minHeight: 180, fontSize: 13.5 }} value={extra.body} onChange={(e) => setExtra({ ...extra, body: e.target.value })} aria-label="Email body" />
+              <div className="row"><button className="btn btn-sm" onClick={async () => { try { await navigator.clipboard.writeText(`Subject: ${extra.subject}\n\n${extra.body}`); say("Copied. Send it from your own inbox"); } catch { say("Select the text and copy it", "error"); } }}><Copy />Copy</button>{extra.kind === "follow-up" && <button className="btn btn-sm btn-primary" onClick={() => { set({ followUp: plusDays(today, 7) }); setExtra(null); say("Next check-in set for a week from now"); }}><Check />I sent it</button>}</div>
             </div>
           )}
           <SponsorInbox email={o.contactInfo} name={s.name} />
@@ -312,4 +361,21 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
       </div>
     </div>
   );
+}
+
+/** How many other clubs are in an active conversation with this company (count only, never which clubs). */
+async function otherClubsTalking(sponsorId: string, clubId: string): Promise<number> {
+  if (supabase) {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      try {
+        const r = await fetch(`/api/claims?sponsor=${encodeURIComponent(sponsorId)}`, { headers: { authorization: `Bearer ${data.session.access_token}` } });
+        return ((await r.json()) as { active: number }).active ?? 0;
+      } catch {
+        return 0;
+      }
+    }
+  }
+  // Demo mode: every club lives in this browser, so count locally.
+  return (store.get().outreach ?? []).filter((x) => x.sponsorId === sponsorId && x.clubId !== clubId && (x.status === "emailed" || x.status === "replied")).length;
 }

@@ -13,9 +13,12 @@ create table if not exists public.clubs (
   received_this_year numeric not null default 0,
   events_this_semester int not null default 0,
   audience text[] not null default '{}',
+  mission text not null default '',
   join_code text unique not null default upper(substr(md5(random()::text), 1, 6)),
   created_at timestamptz not null default now()
 );
+
+alter table public.clubs add column if not exists mission text not null default '';
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users on delete cascade,

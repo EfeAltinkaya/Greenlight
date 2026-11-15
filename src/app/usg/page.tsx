@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Inbox } from "lucide-react";
 import { BOARDS, type BoardId } from "@/data/rules";
-import { fmtDate, lookupDeadline, money, requestTotal, runChecks, score } from "@/lib/engine";
+import { fmtDate, lookupDeadline, money, requestTotal, runChecks, score, todayISO } from "@/lib/engine";
+import { fixDeadline } from "@/lib/decisionGuard";
 import { useStore } from "@/lib/store";
 import type { Status } from "@/lib/types";
 import { CountPills, StatusPill } from "@/components/ui";
@@ -25,7 +26,7 @@ export default function Queue() {
   const t = TABS.find((x) => x.id === tab)!;
   const rows = apps.filter((a) => t.match(a.status) && (board === "all" || a.event.board === board)).sort((a, b) => (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
   const open = apps.filter((a) => OPEN.includes(a.status));
-  const clean = open.filter((a) => { const c = clubs.find((x) => x.id === a.clubId); return c && score(runChecks(a, c)).fail === 0; });
+  const clean = open.filter((a) => { const c = clubs.find((x) => x.id === a.clubId); if (!c || a.status === "needs_info") return false; const sc = score(runChecks(a, c)); return sc.fail === 0 && sc.warn === 0; });
   const awarded = (b: BoardId) => apps.filter((a) => a.event.board === b && a.decision).reduce((s, a) => s + (a.decision?.amount ?? 0), 0);
   const pending = (b: BoardId) => open.filter((a) => a.event.board === b).reduce((s, a) => s + requestTotal(a), 0);
 
@@ -42,7 +43,7 @@ export default function Queue() {
       <section className="grid cols-4 stats">
         <div className="card card-pad stack-xs"><span className="small muted">Waiting for review</span><span className="big-num">{open.length}</span></div>
         <div className="card card-pad stack-xs"><span className="small muted">Requested, waiting</span><span className="big-num">{money(open.reduce((s, a) => s + requestTotal(a), 0))}</span></div>
-        <div className="card card-pad stack-xs"><span className="small muted">Ready to decide</span><span className="big-num" style={{ color: "var(--clear)" }}>{clean.length}</span><span className="tiny faint">No rule problems</span></div>
+        <div className="card card-pad stack-xs"><span className="small muted">Ready to decide</span><span className="big-num" style={{ color: "var(--clear)" }}>{clean.length}</span><span className="tiny faint">Nothing to fix or check</span></div>
         <div className="card card-pad stack-xs"><span className="small muted">Returned to clubs</span><span className="big-num">{apps.filter((a) => a.status === "needs_info").length}</span><span className="tiny faint">2 business days to fix</span></div>
       </section>
 
@@ -72,7 +73,7 @@ export default function Queue() {
           <div className="card empty"><Inbox /><strong>Nothing here</strong><span className="small">New submissions from clubs appear in this list.</span></div>
         ) : (
           <div className="card table-wrap">
-            <table className="table">
+            <table className="table stackable">
               <thead><tr><th>Club and event</th><th>Event date</th><th>Board</th><th className="r">Requested</th><th>Checks</th><th>On time</th><th>Status</th></tr></thead>
               <tbody>
                 {rows.map((a) => {
@@ -80,15 +81,16 @@ export default function Queue() {
                   const sc = score(runChecks(a, club));
                   const dl = lookupDeadline(a.event.date, a.event.travel, a.submittedAt ?? undefined);
                   const onTime = dl.kind === "ok" && !dl.passed;
+                  const due = fixDeadline(a, todayISO());
                   return (
                     <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/usg/app/${a.id}`); }}>
                       <td><Link href={`/usg/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{club.name}{a.sample ? " · Sample" : ""}</span></Link></td>
-                      <td className="small num" style={{ whiteSpace: "nowrap" }}>{fmtDate(a.event.date)}</td>
-                      <td className="small">{BOARDS[a.event.board].short}</td>
-                      <td className="r">{money(requestTotal(a))}</td>
-                      <td><CountPills fail={sc.fail} warn={sc.warn} /></td>
-                      <td>{onTime ? <span className="pill pill-clear">On time</span> : <span className="pill pill-fix">Late</span>}</td>
-                      <td><StatusPill s={a.status} /></td>
+                      <td data-label="Event date" className="small num" style={{ whiteSpace: "nowrap" }}>{fmtDate(a.event.date)}</td>
+                      <td data-label="Board" className="small">{BOARDS[a.event.board].short}</td>
+                      <td data-label="Requested" className="r">{money(requestTotal(a))}</td>
+                      <td data-label="Checks"><CountPills fail={sc.fail} warn={sc.warn} /></td>
+                      <td data-label="On time">{onTime ? <span className="pill pill-clear">On time</span> : <span className="pill pill-fix">Late</span>}</td>
+                      <td data-label="Status"><span className="row" style={{ gap: 6 }}><StatusPill s={a.status} />{due?.overdue && <span className="pill pill-fix">Overdue since {fmtDate(due.due, { month: "short", day: "numeric" })}</span>}</span></td>
                     </tr>
                   );
                 })}

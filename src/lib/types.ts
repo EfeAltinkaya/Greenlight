@@ -10,6 +10,8 @@ export type Club = {
   receivedThisYear: number;
   /** USG-funded events already this semester. */
   eventsThisSemester: number;
+  /** One line the club writes once; used to draft the mission answer. */
+  mission?: string;
 };
 
 export type EventInfo = {

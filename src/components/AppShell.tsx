@@ -70,10 +70,16 @@ export function AppShell({ role, children }: { role: Role; children: React.React
           ];
 
   const active = (i: Item) => (i.match ? i.match(path) : path.startsWith(i.href));
+  const here = groups.flatMap((g) => g.items).find(active);
+  // Each page gets its own tab title; one request or deal is titled by its own name.
+  const detail = path.split("/");
+  const detailTitle = detail[2] === "app" ? apps.find((a) => a.id === detail[3])?.event.title : detail[2] === "deals" && detail[3] ? (deals ?? []).find((d) => d.id === detail[3])?.sponsorName : undefined;
+  const pageTitle = `${detailTitle ? (role === "usg" ? "Review: " : "") + detailTitle : here?.label ?? "Greenlight"} · Greenlight`;
   const roleLabel = role === "club" ? club.name : role === "usg" ? "USG Funding Department" : session.user?.org || "Sponsor";
 
   return (
     <div className="shell">
+      <title>{pageTitle}</title>
       <div className={"scrim" + (open ? " open" : "")} onClick={() => setOpen(false)} />
       <aside className={"side" + (open ? " open" : "")} aria-label="Navigation">
         <div className="between">

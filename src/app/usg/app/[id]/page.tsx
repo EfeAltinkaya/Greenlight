@@ -2,25 +2,17 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, Check, CheckCheck, ChevronRight, FileCheck2, FileX2, Pencil, RotateCcw, Send, Sparkles, X } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, CheckCheck, ChevronRight, FileCheck2, FileX2, Pencil, RotateCcw, Send, Sparkles, X } from "lucide-react";
 import { BOARDS } from "@/data/rules";
 import { documentList, fmtDate, money, requestItems, requestTotal, runChecks } from "@/lib/engine";
 import { store, useStore } from "@/lib/store";
 import type { AiComment, Check as CheckT } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
 import { decisionSupport, type DecisionSupport } from "@/lib/decision";
+import { REASONS, awardError, decisionFacts, defaultOutcome, emailProblems, excludedLines, fixDeadline, suggestedAmount, type Outcome, type ReasonId } from "@/lib/decisionGuard";
+import { todayISO } from "@/lib/engine";
 import { AiTag, LEVEL, Spinner, StatusPill, useToast } from "@/components/ui";
 
-const REASONS = [
-  { id: "complete", label: "Complete and within the guidelines" },
-  { id: "partial-ineligible", label: "Some lines are not fundable under Section 5" },
-  { id: "over-4k", label: "Over $4,000: funded the core costs only (Section 3)" },
-  { id: "food-cap", label: "Food above $35 per person (Section 5)" },
-  { id: "late", label: "Submitted after the deadline (Section 1)" },
-  { id: "missing-docs", label: "Missing required documents (Section 2)" },
-  { id: "low-funds", label: "Low remaining funds due to high utilization (Section 6)" },
-  { id: "other-university", label: "Already funded by another University source (Section 6)" },
-];
 const OPEN = ["submitted", "in_review", "needs_info"];
 
 export default function Review() {
@@ -31,9 +23,9 @@ export default function Review() {
   const checks = useMemo(() => (app && club ? runChecks(app, club) : []), [app, club]);
   const [toast, say] = useToast();
   const [aiOffline, setAiOffline] = useState<boolean | null>(null);
-  const [outcome, setOutcome] = useState<"approved" | "partial" | "denied">("approved");
+  const [pickedOutcome, setOutcome] = useState<Outcome | null>(null);
   const [amount, setAmount] = useState<number | null>(null);
-  const [reason, setReason] = useState(REASONS[0].id);
+  const [pickedReason, setReason] = useState<ReasonId | null>(null);
   const [email, setEmail] = useState("");
   const [emailOffline, setEmailOffline] = useState<boolean | null>(null);
   const [drafting, setDrafting] = useState(false);
@@ -61,8 +53,19 @@ export default function Review() {
   if (!app || !club) return <div className="card empty"><strong>Application not found.</strong><Link href="/usg" className="link">Back to the queue <ArrowRight /></Link></div>;
 
   const total = requestTotal(app);
-  const fundable = requestItems(app).filter((i) => !checks.some((c) => c.itemId === i.id && c.level === "fail")).reduce((s, i) => s + i.total, 0);
-  const amt = amount ?? (outcome === "denied" ? 0 : outcome === "partial" ? Math.min(fundable, 4000) : total);
+  const due = fixDeadline(app, todayISO());
+  const excluded = excludedLines(app, checks);
+  const fixes = checks.filter((c) => c.level === "fail");
+  const outcome: Outcome = pickedOutcome ?? (due?.overdue ? "denied" : defaultOutcome(checks));
+  const reason: ReasonId = pickedReason ?? (due?.overdue ? "not-fixed" : excluded.length ? "partial-ineligible" : fixes.length ? "missing-docs" : "complete");
+  const fundable = total - excluded.reduce((s, x) => s + x.total, 0);
+  // Fund part on a request where every line passes: no suggestion, the reviewer types the amount.
+  const askAmount = outcome === "partial" && excluded.length === 0 && amount === null;
+  const amt = amount ?? (askAmount ? 0 : suggestedAmount(app, club, checks, outcome));
+  const amtError = askAmount ? null : awardError(outcome, amt, app, club, checks);
+  const blocked = Boolean(amtError) || askAmount;
+  const facts = (notes: string[]) => decisionFacts(app, club, checks, outcome, amt, reason, notes);
+  const emailIssues = email ? emailProblems(email, facts([])) : [];
   const decided = Boolean(app.decision);
   const ds = decisionSupport(app, club, apps, clubs);
   const docs = documentList(app);
@@ -82,7 +85,7 @@ export default function Review() {
         .map((c) => ({ c, ck: checks.find((x) => x.id === c.checkId) }))
         .filter(({ c, ck }) => c.action === "edited" || (ck && (ck.level === "fail" || ck.level === "warn")))
         .map(({ c, ck }) => (c.action === "edited" ? `${c.edited} (${ck?.section ?? "Guidelines"})` : `${ck!.title}. ${ck!.detail} (${ck!.section})`));
-      const r = await fetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club!.name, outcome, amount: amt, reasonLabel: REASONS.find((x) => x.id === reason)!.label, notes }) });
+      const r = await fetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(facts(notes)) });
       const j = await r.json();
       setEmail(j.data);
       setEmailOffline(Boolean(j.offline));
@@ -93,7 +96,7 @@ export default function Review() {
 
   function send() {
     const at = new Date().toISOString().slice(0, 10);
-    store.moveApp(app!.id, outcome, "usg", outcome === "denied" ? "Denied. Explanation emailed to the club." : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(amt)}. Explanation emailed to the club.`, { decision: { outcome, amount: amt, reasonCode: reason, email, sentAt: at } });
+    store.moveApp(app!.id, outcome, "usg", outcome === "denied" ? "Denied. Explanation emailed to the club." : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(amt)}. Explanation emailed to the club.`, { decision: { outcome, amount: outcome === "denied" ? 0 : amt, reasonCode: reason, email, sentAt: at } });
     if (outcome !== "denied") store.patchClub(club!.id, { receivedThisYear: club!.receivedThisYear + amt, eventsThisSemester: club!.eventsThisSemester + 1 });
     say("Decision sent. The club sees it now");
   }
@@ -120,6 +123,15 @@ export default function Review() {
           </div>
         </div>
       </div>
+
+      {due && (
+        <div className={"card card-pad row small"} style={{ gap: 10, flexWrap: "nowrap", borderLeft: "4px solid " + (due.overdue ? "var(--fix)" : "var(--check)") }} role="status">
+          <AlertTriangle style={{ width: 18, flex: "none", color: due.overdue ? "var(--fix)" : "var(--check)" }} />
+          <span>{due.overdue
+            ? <><strong>Overdue since {fmtDate(due.due, { month: "short", day: "numeric" })}.</strong> Returned {fmtDate(due.returned, { month: "short", day: "numeric" })} with 2 business days to fix, and nothing came back. The decision below starts on Deny for that reason.</>
+            : <>Returned {fmtDate(due.returned, { month: "short", day: "numeric" })}. The club has until {fmtDate(due.due, { weekday: "short", month: "short", day: "numeric" })} to send the missing items.</>}</span>
+        </div>
+      )}
 
       <div className="split split-wide">
         <div className="stack" style={{ gap: 24 }}>
@@ -154,19 +166,7 @@ export default function Review() {
         </div>
 
         <aside className="sticky stack" style={{ gap: 16 }}>
-          <div className="card card-pad stack-sm">
-            <div className="between">
-              <div className="row" style={{ gap: 8 }}><Sparkles style={{ width: 18, height: 18, color: "var(--cardinal)" }} /><h2>AI review</h2></div>
-              <span className="tiny faint">{handled} of {app.aiComments.length} handled</span>
-            </div>
-            <p className="small muted">Suggestions only. Nothing reaches the club until you send a decision.</p>
-            {aiOffline !== null && <AiTag offline={aiOffline} />}
-            {loading && <div className="row small muted"><Spinner />Reading the application</div>}
-            <div className="appear">{app.aiComments.map((c) => <Comment key={c.id} c={c} check={checks.find((x) => x.id === c.checkId)} locked={decided} onAct={act} />)}</div>
-            {!decided && app.aiComments.some((c) => c.action === "pending") && <div><button className="btn btn-sm" onClick={agreeAll}><CheckCheck />Agree with the rest</button></div>}
-          </div>
-
-          {!decided && <SupportCard ds={ds} onUse={(v) => { setOutcome(v >= total ? "approved" : "partial"); setAmount(v); setEmail(""); }} />}
+          {!decided && <SupportCard ds={ds} onUse={(v) => { setOutcome(v >= total && excluded.length === 0 ? "approved" : "partial"); setAmount(v); setEmail(""); }} />}
           {!decided ? (
             <div className="card card-pad stack">
               <h2>Decision</h2>
@@ -178,19 +178,24 @@ export default function Review() {
                 ))}
               </div>
               {outcome !== "denied" && (
-                <label className="field"><span className="lbl">Amount awarded</span><input id="amount" className="input num" style={{ textAlign: "left", fontSize: 18, fontWeight: 600 }} type="number" min={0} max={total} value={amt} onChange={(e) => setAmount(Number(e.target.value))} />
-                  {outcome === "partial" && <span className="tiny faint">Suggested: lines with no red flags, capped at $4,000 ({money(fundable)} fundable).</span>}
+                <label className="field"><span className="lbl">Amount awarded</span><input id="amount" className="input num" style={{ textAlign: "left", fontSize: 18, fontWeight: 600 }} type="number" min={0} max={total} value={askAmount ? "" : amt} placeholder="Amount to fund" aria-invalid={Boolean(amtError)} aria-describedby="amount-msg" onChange={(e) => { setAmount(Number(e.target.value)); setEmail(""); }} />
+                  {amtError
+                    ? <span id="amount-msg" className="small field-error" role="alert"><AlertTriangle />{amtError}</span>
+                    : <span id="amount-msg" className="tiny faint">{askAmount ? `Every line passes the rules. Enter the part of the ${money(total)} you will fund.` : outcome === "partial" ? `Suggested: every line that passes the rules (${money(fundable)}), within the club's yearly cap.` : `The full request, ${money(total)}.`}</span>}
                 </label>
               )}
               <label className="field"><span className="lbl">Reason</span>
-                <select id="reason" className="select" value={reason} onChange={(e) => setReason(e.target.value)}>{REASONS.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}</select>
+                <select id="reason" className="select" value={reason} onChange={(e) => { setReason(e.target.value as ReasonId); setEmail(""); }}>{REASONS.map((r) => <option key={r.id} value={r.id}>{r.label}{r.section ? ` (${r.section})` : ""}</option>)}</select>
               </label>
-              <button className="btn" onClick={draftEmail} disabled={drafting}>{drafting ? <><Spinner />Writing</> : <><Sparkles />Draft the email to the club</>}</button>
+              {outcome === "approved" && fixes.length > 0 && !amtError && <p className="small field-warn" role="status"><AlertTriangle />{fixes.length} rule {fixes.length === 1 ? "problem is" : "problems are"} still open. Approving in full ignores them.</p>}
+              {reason === "complete" && (excluded.length > 0 || outcome !== "approved") && <p className="small field-warn" role="status"><AlertTriangle />&ldquo;Complete and within the guidelines&rdquo; does not match this decision. Pick the reason that does.</p>}
+              <button className="btn" onClick={draftEmail} disabled={drafting || blocked}>{drafting ? <><Spinner />Writing</> : <><Sparkles />Draft the email to the club</>}</button>
               {email && (
                 <>
                   {emailOffline !== null && <AiTag offline={emailOffline} />}
                   <textarea id="decision-email" className="textarea email" style={{ minHeight: 260 }} value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Decision email" />
-                  <button className="btn btn-primary btn-lg" onClick={send}><Send />Send decision</button>
+                  {emailIssues.length > 0 && <div className="small field-error" role="alert" style={{ display: "grid", gap: 4 }}><span><AlertTriangle />The email doesn&apos;t match the decision:</span>{emailIssues.map((x) => <span key={x}>· {x}</span>)}</div>}
+                  <button className="btn btn-primary btn-lg" onClick={send} disabled={blocked || emailIssues.length > 0 || (reason === "complete" && (excluded.length > 0 || outcome !== "approved"))}><Send />Send decision</button>
                 </>
               )}
               {missing.length > 0 && app.status !== "needs_info" && (<><hr className="hr" /><button className="btn btn-ghost" style={{ color: "var(--fix)" }} onClick={returnIncomplete}><RotateCcw />Return as incomplete ({missing.length} missing)</button></>)}
@@ -203,6 +208,18 @@ export default function Review() {
               {nextApp ? <Link href={`/usg/app/${nextApp.id}`} className="btn btn-dark" style={{ justifySelf: "start" }}>Next in queue: {nextApp.event.title}<ArrowRight /></Link> : <Link href="/usg" className="btn" style={{ justifySelf: "start" }}>Queue is clear</Link>}
             </div>
           )}
+          <div className="card card-pad stack-sm">
+            <div className="between">
+              <div className="row" style={{ gap: 8 }}><Sparkles style={{ width: 18, height: 18, color: "var(--cardinal)" }} /><h2>AI review</h2></div>
+              <span className="tiny faint">{handled} of {app.aiComments.length} handled</span>
+            </div>
+            <p className="small muted">Suggestions only. Nothing reaches the club until you send a decision.</p>
+            {aiOffline !== null && <AiTag offline={aiOffline} />}
+            {loading && <div className="row small muted"><Spinner />Reading the application</div>}
+            <div className="appear">{app.aiComments.map((c) => <Comment key={c.id} c={c} check={checks.find((x) => x.id === c.checkId)} locked={decided} onAct={act} />)}</div>
+            {!decided && app.aiComments.some((c) => c.action === "pending") && <div><button className="btn btn-sm" onClick={agreeAll}><CheckCheck />Agree with the rest</button></div>}
+          </div>
+
         </aside>
       </div>
     </>

@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { announceNav } from "@/components/Motion";
 import { useState } from "react";
-import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles } from "lucide-react";
+import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles, AlertTriangle } from "lucide-react";
 import { newId, store, useCurrentClub } from "@/lib/store";
 import { todayISO } from "@/lib/engine";
 import type { Application, EventInfo } from "@/lib/types";
@@ -21,9 +21,11 @@ export default function NewRequest() {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [toast, say] = useToast();
+  const [err, setErr] = useState("");
 
   async function build() {
-    if (text.trim().length < 12) return say("Add a sentence or two about the event first");
+    if (text.trim().length < 12) { setErr("Add a sentence or two about the event first: what, when, where, how many people and what it costs."); return say("Add a sentence or two about the event first", "error"); }
+    setErr("");
     setBusy(true);
     try {
       const r = await fetch("/api/intake", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) });
@@ -43,7 +45,8 @@ export default function NewRequest() {
       announceNav();
       router.push(`/club/app/${app.id}`);
     } catch (e) {
-      say((e as Error).message);
+      setErr((e as Error).message);
+      say((e as Error).message, "error");
       setBusy(false);
     }
   }
@@ -66,11 +69,14 @@ export default function NewRequest() {
           style={{ minHeight: 150, fontSize: 17, lineHeight: 1.5, border: 0, padding: 0, boxShadow: "none", resize: "none" }}
           placeholder="Hackathon for 120 students in Ginsburg Hall on Feb 18. Catering $5,400, swag $600…"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => { setText(e.target.value); if (err) setErr(""); }}
+          aria-invalid={Boolean(err)}
+          aria-describedby="describe-msg"
           onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) build(); }}
           aria-label="Describe your event"
           autoFocus
         />
+        {err && <p id="describe-msg" className="small field-error" role="alert"><AlertTriangle />{err}</p>}
         <hr className="hr" />
         <div className="between">
           <div className="row" style={{ gap: 8 }}>
@@ -96,7 +102,7 @@ export default function NewRequest() {
           </div>
         ))}
       </section>
-      <p className="tiny faint row" style={{ gap: 6 }}><ReceiptText style={{ width: 14, height: 14 }} />Nothing is sent to USG until you press Submit. Traveler details and payments stay in EngageSC.</p>
+      <p className="tiny faint row" style={{ gap: 6 }}><ReceiptText style={{ width: 14, height: 14 }} />Nothing goes to USG reviewers until you press Submit on the last step. Traveler details and payments stay in EngageSC.</p>
     </>
   );
 }

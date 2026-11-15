@@ -167,7 +167,7 @@ export function BudgetTable({ items, checks, editable, onChange, onQuote }: Prop
                 </td>
                 <td style={{ minWidth: 220 }}>
                   <div className="stack-xs" style={{ gap: 6 }}>
-                    {editable ? <input className="input" value={i.item} onChange={(e) => set(i.id, { item: e.target.value })} aria-label="Item" /> : <strong>{i.item}</strong>}
+                    {editable ? <input id={`item-${i.id}`} className="input" value={i.item} onChange={(e) => set(i.id, { item: e.target.value })} aria-label="Item" /> : <strong>{i.item}</strong>}
                     {editable && !i.toSponsor ? (
                       <textarea className="textarea" style={{ minHeight: 0, fontSize: 13 }} rows={2} placeholder="Why the event needs this (goes on USG's sheet)" value={i.justification} onChange={(e) => set(i.id, { justification: e.target.value })} aria-label="Justification" />
                     ) : i.justification ? <span className="small muted">{i.justification}</span> : null}
@@ -197,7 +197,7 @@ export function BudgetTable({ items, checks, editable, onChange, onQuote }: Prop
                     )}
                   </div>
                 </td>
-                <td className="r">{editable ? <input className="input num" style={{ width: 70 }} type="number" min={0} value={i.quantity} onChange={(e) => set(i.id, { quantity: Number(e.target.value) })} aria-label="Quantity" /> : i.quantity}</td>
+                <td className="r">{editable ? <input className="input num" style={{ width: 70 }} type="number" min={0} value={i.quantity} onChange={(e) => set(i.id, { quantity: Number(e.target.value) })} aria-label={`Quantity for ${i.item}`} /> : i.quantity}</td>
                 <td className="r">{editable ? <input className="input num" style={{ width: 90 }} type="number" min={0} step="0.01" value={i.unitPrice} onChange={(e) => set(i.id, { unitPrice: Number(e.target.value) })} aria-label="Unit price" /> : money(i.unitPrice)}</td>
                 <td className="r">{editable ? <input className="input num" style={{ width: 104 }} type="number" min={0} step="0.01" value={i.total} onChange={(e) => set(i.id, { total: Number(e.target.value) })} aria-label="Total including tax" /> : <strong>{money(i.total)}</strong>}</td>
                 {editable && (

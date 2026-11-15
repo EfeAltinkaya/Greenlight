@@ -77,7 +77,7 @@ export default function ClubOverview() {
         <div className="card card-pad stack-sm">
           <div className="row" style={{ gap: 12 }}><span className="icon-tile dark"><CalendarClock /></span><span className="muted small">Next submission window</span></div>
           <div className="big-num" style={{ fontSize: 26 }}>{fmtDate(wed, { weekday: "long", month: "short", day: "numeric" })}</div>
-          <span className="tiny faint">Applications open Wednesdays, 8:00 AM to 11:59 PM</span>
+          <span className="tiny faint">Applications are due Wednesdays at 11:59 PM</span>
           <Link href="/club/deadlines" className="link small">Find the deadline for an event date <ArrowRight /></Link>
         </div>
       </section>
@@ -110,7 +110,7 @@ export default function ClubOverview() {
           </div>
         ) : (
           <div className="card table-wrap">
-            <table className="table">
+            <table className="table stackable">
               <thead><tr><th>Event</th><th>Date</th><th>Board</th><th className="r">Requested</th><th>Checks</th><th>Status</th></tr></thead>
               <tbody>
                 {mine.map((a) => {
@@ -118,11 +118,11 @@ export default function ClubOverview() {
                   return (
                     <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/club/app/${a.id}`); }}>
                       <td><Link href={`/club/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{a.event.location}{a.sample ? " · Sample" : ""}</span></Link></td>
-                      <td className="small num" style={{ whiteSpace: "nowrap" }}>{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
-                      <td className="small">{BOARDS[a.event.board].short}</td>
-                      <td className="r">{money(requestTotal(a))}</td>
-                      <td>{a.status === "draft" || a.status === "needs_info" ? <CountPills fail={s.fail} warn={s.warn} /> : <span className="tiny faint">Sent</span>}</td>
-                      <td><StatusPill s={a.status} /></td>
+                      <td data-label="Date" className="small num" style={{ whiteSpace: "nowrap" }}>{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
+                      <td data-label="Board" className="small">{BOARDS[a.event.board].short}</td>
+                      <td data-label="Requested" className="r">{money(requestTotal(a))}</td>
+                      <td data-label="Checks">{a.status === "draft" || a.status === "needs_info" ? <CountPills fail={s.fail} warn={s.warn} /> : <span className="tiny faint">Sent</span>}</td>
+                      <td data-label="Status"><StatusPill s={a.status} /></td>
                     </tr>
                   );
                 })}

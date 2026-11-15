@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useMemo, useState, useSyncExternalStore } from "react";
-import { ArrowRight, Check, ChevronRight, CircleCheck, Download, FileCheck2, FileUp, MoveRight, Send, Sparkles, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, ChevronRight, CircleCheck, Download, FileCheck2, FileUp, MoveRight, Send, Sparkles, X } from "lucide-react";
 import { BOARDS, RULES, type BoardId } from "@/data/rules";
-import { budgetCsv, documentList, fmtDate, lookupDeadline, money, requestItems, requestTotal, runChecks, score, sponsorAsks } from "@/lib/engine";
+import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, requestItems, requestTotal, runChecks, score, sponsorAsks, UEPA_RE } from "@/lib/engine";
 import { store, useStore } from "@/lib/store";
 import type { Application, Check as CheckT, EventInfo, LineItem } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
@@ -17,8 +17,8 @@ const DRAFT_STEPS: { id: Step; title: string; sub: string }[] = [
   { id: "event", title: "Event", sub: "Date, place, board" },
   { id: "budget", title: "Budget", sub: "USG's budget sheet" },
   { id: "documents", title: "Documents", sub: "Quotes, permits, UEPA" },
-  { id: "answers", title: "Form answers", sub: "Drafted for you" },
-  { id: "submit", title: "Review and submit", sub: "Send to USG" },
+  { id: "answers", title: "Form answers", sub: "Draft with AI, then edit" },
+  { id: "submit", title: "Review and submit", sub: "Send to USG's queue" },
 ];
 const DAY = 86_400_000;
 const subHash = (cb: () => void) => { window.addEventListener("hashchange", cb); return () => window.removeEventListener("hashchange", cb); };
@@ -36,7 +36,20 @@ export default function Workspace() {
   const hash = useSyncExternalStore(subHash, () => window.location.hash.slice(1), () => "") as Step | "";
   const [picked, setPicked] = useState<Step | null>(null);
   const step: Step = picked ?? (hash || (locked ? "status" : "event"));
-  const go = (s: Step) => { setPicked(s); history.replaceState(null, "", "#" + s); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const go = (s: Step, field?: string) => {
+    setPicked(s);
+    history.replaceState(null, "", "#" + s);
+    if (!field) return window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => { const el = document.getElementById(field); el?.scrollIntoView({ behavior: "smooth", block: "center" }); (el as HTMLInputElement | null)?.focus({ preventScroll: true }); }, 350);
+  };
+  const autoDrafted = useRef<string | null>(null);
+  // The first time the answers step opens with empty answers, draft them automatically.
+  useEffect(() => {
+    if (step === "answers" && app && !locked && !app.answers.description && autoDrafted.current !== app.id) {
+      autoDrafted.current = app.id;
+      draft(); // function declaration below, hoisted
+    }
+  }, [step, app, locked]);
 
   if (!app || !club) {
     return <div className="card empty"><strong>This request is not on this device.</strong><Link href="/club" className="link">Back to your requests <ArrowRight /></Link></div>;
@@ -107,9 +120,9 @@ export default function Workspace() {
   async function draft() {
     setDrafting(true);
     try {
-      const r = await fetch("/api/answers", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club!.name }) });
+      const r = await fetch("/api/answers", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club!.name, mission: club!.mission ?? "" }) });
       const j = await r.json();
-      patch({ answers: j.data });
+      patch({ answers: { ...j.data, otherSources: app!.answers.otherSources } });
       setAnswersOffline(Boolean(j.offline));
       say("Answers drafted. Read and edit them before you submit");
     } finally {
@@ -136,7 +149,7 @@ export default function Workspace() {
   const next = steps[idx + 1];
   const railChecks = step === "event" || step === "budget" || step === "documents" ? stepChecks(step) : checks.filter((c) => c.level === "fail" || c.level === "warn");
   const blockers = checks.filter((c) => c.level === "fail");
-  const answersReady = Boolean(app.answers.description.trim() && app.answers.missionFit.trim());
+  const answersReady = Boolean(app.answers.description.trim() && app.answers.missionFit.trim() && app.answers.otherSources.trim());
 
   return (
     <>
@@ -162,7 +175,7 @@ export default function Workspace() {
             <div className="stack-sm">
               <div className="dl-date">{dl.passed ? "Deadline passed" : "Submit by"} {fmtDate(dl.deadline, { weekday: "long", month: "long", day: "numeric" })}{dl.passed ? "" : ", 11:59 PM"}</div>
               <div className="dl-sub">
-                {dl.uses === "nine" ? "9-week deadline, because of travel or a vendor that is not on USG's Vendor List." : "6-week deadline for vendors on USG's list."}
+                {dl.uses === "nine" ? `9-week deadline, because ${nineWeekReason(app) || "of travel or an unlisted vendor"}.` : "6-week deadline for vendors on USG's list."}
                 {dl.cliff ? ` Holding it the week of ${fmtDate(dl.cliff.weekStart, { month: "short", day: "numeric" })} instead moves the deadline to ${fmtDate(dl.cliff.deadline, { month: "short", day: "numeric" })}, ${dl.cliff.gainDays} more days.` : ""}
               </div>
               {dl.cliff && <div><button className="btn btn-sm" onClick={moveWeek}><MoveRight />Move to the week of {fmtDate(dl.cliff.weekStart, { month: "short", day: "numeric" })}</button></div>}
@@ -189,12 +202,27 @@ export default function Workspace() {
         </nav>
 
         <Reveal k={step}>
+          <div className="steps-compact">
+            <button className="btn btn-sm btn-ghost" disabled={idx <= 0} onClick={() => go(steps[idx - 1].id)} aria-label="Previous step"><ArrowLeft /></button>
+            <span className="small"><strong>Step {idx + 1} of {steps.length}</strong> · {steps[idx]?.title}</span>
+            <button className="btn btn-sm btn-ghost" disabled={!next} onClick={() => next && go(next.id)} aria-label="Next step"><ArrowRight /></button>
+          </div>
+          {!locked && railChecks.some((c) => c.level === "fail" || c.level === "warn") && (
+            <details className="card card-pad mobile-only" open>
+              <summary className="small"><strong>{railChecks.filter((c) => c.level === "fail").length} to fix · {railChecks.filter((c) => c.level === "warn").length} to check</strong> on this step</summary>
+              <div className="appear" style={{ marginTop: 8 }}>{railChecks.filter((c) => c.level === "fail" || c.level === "warn").map((c) => <CheckItem key={c.id} c={c} onFix={fix} />)}</div>
+            </details>
+          )}
           {step === "event" && (
             <section className="card card-pad stack" style={{ gap: 18 }}>
               <div className="stack-xs"><h2>Event details</h2><p className="small muted">Read from your description. Change anything that is off; checks update as you type.</p></div>
               <div className="grid cols-2">
                 <label className="field"><span className="lbl">Event name</span><input id="ev-title" className="input" disabled={locked} value={app.event.title} onChange={(e) => setEvent({ title: e.target.value })} /></label>
-                <label className="field"><span className="lbl">Date</span><input id="ev-date" className="input" type="date" disabled={locked} value={app.event.date} onChange={(e) => setEvent({ date: e.target.value })} /></label>
+                <label className="field"><span className="lbl">Date</span><input id="ev-date" className="input" type="date" disabled={locked} value={app.event.date} aria-invalid={dl?.kind === "blackout"} aria-describedby="ev-date-msg" onChange={(e) => setEvent({ date: e.target.value })} />
+                  {dl?.kind === "blackout"
+                    ? <span id="ev-date-msg" className="small field-error" role="alert"><AlertTriangle />{app.event.date ? fmtDate(app.event.date, { weekday: "long" }) + ": " : ""}USG does not fund events from Dec 5 to Jan 12 or after May 1.</span>
+                    : <span id="ev-date-msg" className="tiny faint">{app.event.date ? fmtDate(app.event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "Pick the day of the event"}</span>}
+                </label>
                 <label className="field"><span className="lbl">Location</span><input id="ev-loc" className="input" disabled={locked} value={app.event.location} onChange={(e) => setEvent({ location: e.target.value })} /></label>
                 <label className="field"><span className="lbl">Expected attendance</span><input id="ev-att" className="input" type="number" min={1} disabled={locked} value={app.event.attendance} onChange={(e) => setEvent({ attendance: Number(e.target.value) })} /></label>
               </div>
@@ -204,6 +232,7 @@ export default function Workspace() {
                   {(Object.keys(BOARDS) as BoardId[]).map((b) => <option key={b} value={b}>{BOARDS[b].name}</option>)}
                 </select>
                 <span className="small muted">{app.event.boardReason}</span>
+                {BOARDS[app.event.board].formName !== BOARDS[app.event.board].name && <span className="tiny faint">Called &quot;{BOARDS[app.event.board].formName}&quot; on USG&apos;s application form.</span>}
               </label>
               <div className="grid cols-3" style={{ gap: 10 }}>
                 {([["onCampus", "On campus"], ["openToAll", "Open to all students"], ["food", "Food served"], ["travel", "Involves travel"], ["ticketed", "Sells tickets"], ["international", "International travel"]] as const).map(([k, label]) => (
@@ -231,8 +260,10 @@ export default function Workspace() {
               <div className="stack-xs"><h2>Documents</h2><p className="small muted">Built from USG&apos;s form for this event. Files stay on your device; Greenlight keeps the file name so your checklist is complete.</p></div>
               <label className="field" style={{ maxWidth: 280 }}>
                 <span className="lbl">UEPA number</span>
-                <input id="uepa" className="input code" placeholder="A12345" disabled={locked} value={app.uepa} onChange={(e) => patch({ uepa: e.target.value.trim().toUpperCase() })} />
-                <span className="tiny faint">Starts with A, then 5 or 6 digits. Required with food, university funds or 25+ people.</span>
+                <input id="uepa" className="input code" placeholder="A12345" disabled={locked} value={app.uepa} aria-invalid={Boolean(app.uepa) && !UEPA_RE.test(app.uepa)} aria-describedby="uepa-msg" onChange={(e) => patch({ uepa: e.target.value.trim().toUpperCase() })} />
+                {app.uepa && !UEPA_RE.test(app.uepa)
+                  ? <span id="uepa-msg" className="small field-error" role="alert"><AlertTriangle />Must start with A, then 5 or 6 digits (e.g. A12345).</span>
+                  : <span id="uepa-msg" className="tiny faint">Starts with A, then 5 or 6 digits. Required with food, university funds or 25+ people.</span>}
               </label>
               <hr className="hr" />
               <div className="stack-sm">
@@ -240,8 +271,8 @@ export default function Workspace() {
                   const done = Boolean(app.docs[d.key]);
                   const file = app.docFiles?.[d.key];
                   return (
-                    <div key={d.key} className="stack-xs">
-                      <label className={"drop" + (done ? " done" : "")} style={locked ? { pointerEvents: "none" } : undefined}>
+                    <div key={d.key} className="doc-row">
+                      <label id={`doc-${d.key}`} className={"drop" + (done ? " done" : "")} style={locked ? { pointerEvents: "none" } : undefined}>
                         {done ? <FileCheck2 /> : <FileUp />}
                         <span className="stack-xs" style={{ flex: 1 }}>
                           <span className="wrap-any" style={{ fontWeight: 600, fontSize: 14 }}>{d.label}</span>
@@ -254,7 +285,12 @@ export default function Workspace() {
                           </>
                         )}
                       </label>
-                      {!locked && !done && <button className="btn btn-ghost btn-sm" style={{ justifySelf: "start" }} onClick={() => patch({ docs: { ...app.docs, [d.key]: true } })}>I already have this</button>}
+                      {!locked && (
+                        <label className="have-it">
+                          <input type="checkbox" className="check-input" checked={done} onChange={(e) => patch({ docs: { ...app.docs, [d.key]: e.target.checked } })} />
+                          <span className="small">I have it</span>
+                        </label>
+                      )}
                     </div>
                   );
                 })}
@@ -269,12 +305,21 @@ export default function Workspace() {
                 {!locked && <button className="btn" onClick={draft} disabled={drafting}>{drafting ? <><Spinner />Writing</> : <><Sparkles />{app.answers.description ? "Redraft" : "Draft with AI"}</>}</button>}
               </div>
               {answersOffline !== null && <AiTag offline={answersOffline} />}
-              {([["description", "Description of event"], ["missionFit", "How does the event align with your mission, vision or goals?"], ["otherSources", "List of other funding sources"]] as const).map(([k, label]) => (
+              {!locked && (
+                <label className="field">
+                  <span className="lbl">Your club&apos;s mission, in one line</span>
+                  <input id="club-mission" className="input" value={club.mission ?? ""} placeholder="e.g. We help USC students build robots and get hired in hardware" onChange={(e) => store.patchClub(club.id, { mission: e.target.value })} />
+                  <span className="tiny faint">Saved for your club and used to draft the mission answer.</span>
+                </label>
+              )}
+              {drafting && <div className="row small muted"><Spinner />Writing your answers</div>}
+              {([["description", "Description of event"], ["missionFit", "How does the event align with your mission, vision or goals?"]] as const).map(([k, label]) => (
                 <label key={k} className="field">
                   <span className="lbl">{label}</span>
-                  <textarea id={"ans-" + k} className="textarea" style={{ minHeight: k === "otherSources" ? 64 : 120 }} disabled={locked} value={app.answers[k]} placeholder={k === "otherSources" ? "N/A" : "Draft with AI, then make it yours"} onChange={(e) => patch({ answers: { ...app.answers, [k]: e.target.value } })} />
+                  <textarea id={"ans-" + k} className="textarea" style={{ minHeight: 120 }} disabled={locked} value={app.answers[k]} placeholder="Draft with AI, then make it yours" onChange={(e) => patch({ answers: { ...app.answers, [k]: e.target.value } })} />
                 </label>
               ))}
+              <OtherSources value={app.answers.otherSources} locked={locked} onChange={(v) => patch({ answers: { ...app.answers, otherSources: v } })} />
             </section>
           )}
 
@@ -283,7 +328,7 @@ export default function Workspace() {
               <div className="stack-xs"><h2>Review and submit</h2><p className="small muted">This is what USG will see.</p></div>
               <dl className="kv">
                 <dt>Board</dt><dd>{BOARDS[app.event.board].name}</dd>
-                <dt>Requested</dt><dd><strong>{money(requestTotal(app))}</strong> <span className="faint">({money(RULES.annualCap.limit - club.receivedThisYear)} left this year)</span></dd>
+                <dt>Requested</dt><dd><strong>{money(requestTotal(app))}</strong> <span className="faint">· {money(RULES.annualCap.limit - club.receivedThisYear)} left now · {money(RULES.annualCap.limit - club.receivedThisYear - requestTotal(app))} after this request</span></dd>
                 <dt>Deadline</dt><dd>{dl?.kind === "ok" ? `${fmtDate(dl.deadline, { weekday: "long", month: "long", day: "numeric" })}${dl.passed ? " (passed)" : ""}` : "None for this date"}</dd>
                 <dt>Documents</dt><dd>{docs.filter((d) => app.docs[d.key]).length} of {docs.length} ready</dd>
                 <dt>For sponsors</dt><dd>{asks.length ? asks.map((a) => `${a.label} (${money(a.amount)})`).join(", ") : "Nothing"}</dd>
@@ -291,15 +336,15 @@ export default function Workspace() {
               {blockers.length > 0 && (
                 <div className="inset stack-sm" style={{ padding: 16 }}>
                   <strong className="small">Fix these first</strong>
-                  {blockers.map((c) => <button key={c.id} className="row small" style={{ border: 0, background: "none", padding: 0, cursor: "pointer", color: "var(--fix)", textAlign: "left", flexWrap: "nowrap" }} onClick={() => go(stepOf(c))}><X style={{ width: 14, height: 14, flex: "none" }} />{c.title}</button>)}
+                  {blockers.map((c) => <button key={c.id} className="row small" style={{ border: 0, background: "none", padding: 0, cursor: "pointer", color: "var(--fix)", textAlign: "left", flexWrap: "nowrap" }} onClick={() => go(stepOf(c), fieldFor(c))}><X style={{ width: 14, height: 14, flex: "none" }} />{c.title}<ArrowRight style={{ width: 14, height: 14, flex: "none" }} /></button>)}
                 </div>
               )}
-              {!answersReady && !blockers.length && <p className="small" style={{ color: "var(--check)" }}>Fill in the form answers before you submit.</p>}
+              {!answersReady && !blockers.length && <button className="small field-warn" style={{ border: 0, background: "none", padding: 0, cursor: "pointer", textAlign: "left" }} onClick={() => go("answers", !app.answers.otherSources.trim() ? "other-sources" : "ans-description")}><AlertTriangle />Finish the form answers, including other funding sources, before you submit.</button>}
               <div className="row">
                 <button className="btn btn-primary btn-lg" disabled={blockers.length > 0 || !answersReady} onClick={submit}><Send />Submit to USG</button>
                 <button className="btn btn-lg" onClick={downloadCsv}><Download />Budget sheet (CSV)</button>
               </div>
-              <p className="tiny faint">You submit; Greenlight never does. Traveler details and payments stay in EngageSC.</p>
+              <p className="tiny faint">Submit sends this to USG reviewers in Greenlight; nothing is sent before you press it. USG still needs the official copy in EngageSC: upload the budget sheet CSV there. Traveler details and payments stay in EngageSC.</p>
             </section>
           )}
 
@@ -321,8 +366,8 @@ export default function Workspace() {
               <ol className="small muted" style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 8 }}>
                 <li>A board director reviews it, then a graduate advisor and Campus Activities staff.</li>
                 <li>If something is missing you get 2 business days to send it.</li>
-                <li>USG pays your vendors directly. There are no reimbursements.</li>
-                <li>After the event: evaluation with photos and final invoices within 3 business days.</li>
+                <li>USG does not fund reimbursements (Section 5: &quot;Any reimbursements&quot;).</li>
+                <li>After the event: confirm post-event steps with USG.</li>
               </ol>
             </div>
           ) : (
@@ -368,5 +413,35 @@ function StatusView({ app, onSponsors }: { app: Application; onSponsors: () => v
         </ol>
       </div>
     </section>
+  );
+}
+
+/** Where on the page a rule problem can be fixed, so "Fix these first" can jump straight to it. */
+function fieldFor(c: CheckT): string | undefined {
+  if (c.itemId) return `item-${c.itemId}`;
+  if (c.ruleId === "uepa") return "uepa";
+  if (c.ruleId === "food-docs") return "doc-healthPermit";
+  if (c.ruleId === "late" || c.ruleId === "blackout") return "ev-date";
+  if (c.ruleId === "open-to-all") return "ev-openToAll";
+  if (c.ruleId === "ticket-sales") return "ev-ticketed";
+  if (c.ruleId === "international-travel") return "ev-international";
+  return undefined;
+}
+
+/** USG's "other funding sources" question. Never filled in by AI: getting other University money is a denial reason. */
+function OtherSources({ value, locked, onChange }: { value: string; locked: boolean; onChange: (v: string) => void }) {
+  const none = value === "None" || /^n\/?a\.?$/i.test(value.trim());
+  const [yes, setYes] = useState(Boolean(value) && !none);
+  return (
+    <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
+      <legend className="lbl">List of other funding sources</legend>
+      <span className="small muted">Are you getting money for this event from Viterbi, a department, an assembly, another USC office or sponsors?</span>
+      <div className="segmented" role="radiogroup" aria-label="Other funding" id="other-sources">
+        <button type="button" role="radio" aria-checked={none} disabled={locked} onClick={() => { setYes(false); onChange("None"); }}>No other money</button>
+        <button type="button" role="radio" aria-checked={yes} disabled={locked} onClick={() => { setYes(true); if (none) onChange(""); }}>Yes</button>
+      </div>
+      {yes && <textarea id="ans-otherSources" className="textarea" style={{ minHeight: 64 }} disabled={locked} value={none ? "" : value} placeholder="Who, how much, and what it covers" onChange={(e) => onChange(e.target.value)} />}
+      <span className="tiny faint">Greenlight never fills this in for you. Money from another University source can change USG&apos;s decision (Section 6).</span>
+    </fieldset>
   );
 }

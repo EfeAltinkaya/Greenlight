@@ -29,3 +29,6 @@ One app, two sides. Club officers describe an event in plain words; Greenlight f
 - Nov 14: Sponsors pay vendors directly, never the club (Campus Activities in-kind rule). (Efe)
 - Nov 14: Deadlines are a lookup of USG's own sheet, never computed. (Efe)
 - Nov 14: A food vendor not on USG's Vendor List triggers the 9-week deadline (guidelines Section 1 + FAQ). (Efe)
+- Nov 14: Decision emails are built in code (`decisionGuard.ts`); AI only polishes and any draft that contradicts the decision is discarded. Awards are capped in code at the request and the club's remaining $8,000. (Efe)
+- Nov 14: Sponsor emails pass `outreachGuard.ts` (Chancery-style validators: no filler, no invented amounts or dates, must name the company and event). Follow-ups only while a company is at Emailed. (Efe)
+- Nov 14: "Other funding sources" is never AI-filled; the club answers it. Post-event steps are not stated until USG confirms them. (Efe)

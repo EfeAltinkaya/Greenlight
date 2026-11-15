@@ -9,6 +9,8 @@ import { BOARDS, ITEM_CATEGORIES, INELIGIBLE, type BoardId } from "@/data/rules"
 import { SPONSORS, type Major, type Sponsor } from "@/data/sponsors";
 import { needsFrom, rankSponsors } from "./sponsorMatch";
 import type { Application, Check, EventInfo, LineItem, SponsorPackage, SponsorPick } from "./types";
+import { decisionEmailText, emailProblems, type DecisionFacts } from "./decisionGuard";
+import { outreachProblems, type EmailFacts } from "./outreachGuard";
 import { fmtDate, money } from "./engine";
 export { buildPackages } from "./ai-shared";
 
@@ -198,7 +200,7 @@ export async function readQuote(base64: string, mediaType: string): Promise<Out<
 
 const AnswersSchema = z.object({ description: z.string(), missionFit: z.string(), otherSources: z.string() });
 
-export async function draftAnswers(app: Application, clubName: string): Promise<Out<z.infer<typeof AnswersSchema>>> {
+export async function draftAnswers(app: Application, clubName: string, mission = ""): Promise<Out<z.infer<typeof AnswersSchema>>> {
   const items = app.items.filter((i) => !i.toSponsor);
   if (hasKey()) {
     try {
@@ -208,13 +210,14 @@ export async function draftAnswers(app: Application, clubName: string): Promise<
         `Draft three answers for USG's funding form for "${clubName}". Use only the facts below. 60 to 110 words each for the first two; plain, specific, no hype. Describe the event and its value to students; do not discuss funding rules, limits or per-person costs (the budget sheet covers money).
 1. description: "Description of event"
 2. missionFit: "How does the event align with your mission/vision/goals?"
-3. otherSources: "List of other funding sources" (mention any items the club will ask sponsors to cover in kind; otherwise "N/A").
+3. otherSources: always return an empty string. The club answers this one itself, because a wrong answer is a published denial reason.
+Club mission, in the club's own words: ${mission || "not given; describe the event's value to students without inventing a mission"}
 Event: ${JSON.stringify(app.event)}
 Budget lines sent to USG: ${items.map((i) => `${i.item} (${i.vendor}) ${money(i.total)}`).join("; ")}
 Items for sponsors: ${app.items.filter((i) => i.toSponsor).map((i) => i.item).join("; ") || "none"}`,
         2000,
       );
-      if (r) return { data: r, offline: false };
+      if (r) return { data: { ...r, otherSources: "" }, offline: false };
     } catch (e) {
       console.error("draftAnswers failed", e);
     }
@@ -224,8 +227,8 @@ Items for sponsors: ${app.items.filter((i) => i.toSponsor).map((i) => i.item).jo
     offline: true,
     data: {
       description: `${clubName} will host ${e.title} on ${e.date ? fmtDate(e.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "a date to be set"} at ${e.location || "a campus venue"} for about ${e.attendance} students. ${e.description}`.trim(),
-      missionFit: `${e.title} is free and open to all USC students and supports ${clubName}'s goal of giving students hands-on experience and connections in their field.`,
-      otherSources: app.items.some((i) => i.toSponsor) ? `In-kind sponsor support requested for: ${app.items.filter((i) => i.toSponsor).map((i) => i.item).join(", ")}.` : "N/A",
+      missionFit: mission ? `${clubName}'s mission is ${mission.replace(/\.$/, "")}. ${e.title} serves it directly: ${e.description || "it is free and open to all USC students"}` : `${e.title} is free and open to all USC students. [Add how it serves your club's mission.]`,
+      otherSources: "",
     },
   };
 }
@@ -257,28 +260,27 @@ Checks: ${JSON.stringify(relevant.map(({ id, level, title, detail }) => ({ id, l
 
 // ---------- 5. Decision email ----------
 
-export async function decisionEmail(app: Application, clubName: string, outcome: string, amount: number, reasonLabel: string, notes: string[]): Promise<Out<string>> {
-  const req = app.items.filter((i) => !i.toSponsor).reduce((s, i) => s + i.total, 0);
+export async function decisionEmail(f: DecisionFacts): Promise<Out<string>> {
+  // The email is built in code from the decision data. The model may only smooth the wording,
+  // and any draft that contradicts the data (amount, excluded lines, invented steps) is thrown away.
+  const base = decisionEmailText(f);
   if (hasKey()) {
     try {
       const r = await parse(
         MODELS.write,
         z.object({ email: z.string() }),
-        `Draft the email a USG funding director sends to ${clubName} about "${app.event.title}". Decision: ${outcome}, ${money(amount)} of ${money(req)} requested. Reason: ${reasonLabel}.
-Reviewer notes to explain (cite the guideline section named in each): ${notes.join(" | ") || "none"}.
-Only cite the reason and notes given here; do not bring in other rules or limits. Be clear, kind and specific: what is funded, what is not and why, and the next steps (USG pays vendors directly; post-event evaluation with photos and final invoices within 3 business days of the event). Sign as "USG Funding Department". Under 180 words.`,
+        `Polish this email from the USG Funding Department so it reads clearly and kindly. Keep every fact, dollar amount, line item and section reference exactly as written. Do not add rules, dates, deadlines, next steps or promises that are not in it. Do not say anything was or was not excluded beyond what it lists. No placeholders in square brackets. Under 180 words.
+
+${base}`,
         1500,
       );
-      if (r) return { data: r.email, offline: false };
+      if (r && emailProblems(r.email, f).length === 0) return { data: r.email, offline: false };
+      if (r) console.warn("decisionEmail: AI draft rejected", emailProblems(r.email, f));
     } catch (e) {
       console.error("decisionEmail failed", e);
     }
   }
-  const head = outcome === "denied" ? `Your application for ${app.event.title} was not approved.` : `Your application for ${app.event.title} was ${outcome === "partial" ? "partially approved" : "approved"} for ${money(amount)} of the ${money(req)} requested.`;
-  return {
-    offline: true,
-    data: `Hi ${clubName} team,\n\n${head}\n\nReason: ${reasonLabel}.\n${notes.map((n) => "- " + n).join("\n")}\n\nNext steps: USG pays your vendors directly. Submit the Post Event Evaluation with photos and your final invoices within 3 business days after the event.\n\nUSG Funding Department`,
-  };
+  return { offline: true, data: base };
 }
 
 // ---------- 6. Sponsor match and outreach emails ----------
@@ -295,8 +297,8 @@ type EmailInput = { sponsor: Sponsor; pkg: SponsorPackage; event: EventInfo; clu
 export function outreachTemplate({ sponsor, pkg, event, clubName, contactName }: EmailInput) {
   const when = event.date ? fmtDate(event.date, { month: "long", day: "numeric" }) : "an upcoming date";
   return {
-    subject: `${clubName}: ${pkg.covers} for ${event.title} (${event.attendance} USC students)`,
-    body: `Hi ${contactName || `${sponsor.name} team`},\n\nI'm the outreach lead for ${clubName} at USC. On ${when} we're hosting ${event.title} for about ${event.attendance} students.${sponsor.tie ? ` We're reaching out because ${sponsor.tie.replace(/\s*\(.*\)$/, "").replace(/^\w/, (c) => c.toLowerCase())}.` : ""}\n\nWould ${sponsor.name} cover ${pkg.covers.toLowerCase()} (about ${money(pkg.amount)})? Payment would go straight to the vendor, or the support can be in kind.\n\nIn return: ${pkg.offer.join("; ").toLowerCase()}.\n\nCould we set up a 15-minute call this week?\n\nThank you,\n[Your name]\n${clubName}`,
+    subject: `${event.title} at USC: ${pkg.covers}`,
+    body: `Hi ${contactName || `${sponsor.name} team`},\n\nI'm the outreach lead for ${clubName} at USC. On ${when} we're hosting ${event.title} for about ${event.attendance} students.${sponsor.tie ? ` We're writing to ${sponsor.name} because ${sponsor.tie.replace(/\s*\(.*\)$/, "").replace(/^\w/, (c) => c.toLowerCase())}.` : ""}\n\nWould ${sponsor.name} cover ${pkg.covers.toLowerCase()} (about ${money(pkg.amount)})? Payment would go straight to the vendor, or the support can be in kind.\n\nIn return: ${pkg.offer.join("; ").toLowerCase()}.\n\nCould we set up a 15-minute call this week?\n\nThank you,\n[Your name]\n${clubName}`,
   };
 }
 
@@ -316,12 +318,79 @@ Facts you may use and nothing else:
 One specific ask, one call to action (a 15-minute call), plain and warm, no hype. Sign as [Your name], ${clubName}.`,
         1200,
       );
-      if (r) return { data: r, offline: false };
+      // Chancery's rule: instructions ask, validators enforce. A draft that fails the checks is dropped.
+      if (r) {
+        const problems = outreachProblems(r, outreachFacts(input));
+        if (!problems.length) return { data: r, offline: false };
+        console.warn("outreachEmail: AI draft rejected", problems);
+      }
     } catch (e) {
       console.error("outreachEmail failed", e);
     }
   }
   return { data: outreachTemplate(input), offline: true };
+}
+
+export const outreachFacts = ({ sponsor, pkg, event }: EmailInput): EmailFacts => ({ sponsorName: sponsor.name, eventTitle: event.title, amounts: [pkg.amount], hasTie: Boolean(sponsor.tie) });
+
+/** One short nudge after silence. Only offered while the company is still at Emailed, so it never follows a reply. */
+export async function followUpEmail(input: EmailInput & { firstSubject: string }): Promise<Out<{ subject: string; body: string }>> {
+  const { sponsor, pkg, event, clubName, contactName, firstSubject } = input;
+  const when = event.date ? fmtDate(event.date, { month: "long", day: "numeric" }) : "our upcoming event";
+  const base = {
+    subject: firstSubject.toLowerCase().startsWith("re:") ? firstSubject : `Re: ${firstSubject}`,
+    body: `Hi ${contactName || `${sponsor.name} team`},
+
+A short follow-up on my note about ${event.title} on ${when}. We are still looking for a company to cover ${pkg.covers.toLowerCase()} (about ${money(pkg.amount)}), paid to the vendor or given in kind.
+
+If ${sponsor.name} is not the right fit this time, a one-line reply helps us plan. If someone else handles student events, I would be glad to write to them instead.
+
+Thank you,
+[Your name]
+${clubName}`,
+  };
+  if (!hasKey()) return { data: base, offline: true };
+  try {
+    const r = await parse(MODELS.write, EmailSchema, `Rewrite this follow-up so it reads naturally. Keep it under 90 words, keep every fact and amount, add nothing new, no exclamation marks, no filler such as "circle back" or "touch base". Keep the subject as given.
+
+Subject: ${base.subject}
+
+${base.body}`, 800);
+    if (r && !outreachProblems(r, { ...outreachFacts(input), maxWords: 110 }).length) return { data: r, offline: false };
+  } catch (e) {
+    console.error("followUpEmail failed", e);
+  }
+  return { data: base, offline: true };
+}
+
+/** Chancery's "minimal in, finished out": the officer's shorthand carries the intent; the model never adds a commitment they did not make. */
+export async function replyEmail(input: EmailInput & { theirMessage: string; note: string; firstSubject: string }): Promise<Out<{ subject: string; body: string }>> {
+  const { sponsor, clubName, contactName, theirMessage, note, firstSubject } = input;
+  const subject = firstSubject.toLowerCase().startsWith("re:") ? firstSubject : `Re: ${firstSubject}`;
+  const base = { subject, body: `Hi ${contactName || `${sponsor.name} team`},
+
+Thank you for getting back to me. ${note.trim().replace(/^\w/, (c) => c.toUpperCase())}${/[.?!]$/.test(note.trim()) ? "" : "."}
+
+Thank you,
+[Your name]
+${clubName}` };
+  if (!hasKey()) return { data: base, offline: true };
+  try {
+    const r = await parse(
+      MODELS.write,
+      EmailSchema,
+      `You turn a student club officer's shorthand into a finished email reply to a company contact.
+Their message:
+"""${theirMessage.slice(0, 3000)}"""
+The officer's instruction (substance and stance, not draft text): "${note}"
+Rules: answer everything they asked; match their length and register; never invent a commitment, date, time, number or fact the officer did not give (if timing is unstated, say "shortly"); no throat-clearing such as "Thanks for reaching out"; no filler; 40 to 110 words; sign as [Your name], ${clubName}. Subject: "${subject}".`,
+      900,
+    );
+    if (r && !outreachProblems(r, { ...outreachFacts(input), eventTitle: "", given: `${note} ${theirMessage}`, maxWords: 140 }).length) return { data: r, offline: false };
+  } catch (e) {
+    console.error("replyEmail failed", e);
+  }
+  return { data: base, offline: true };
 }
 
 export async function sponsorMatch(app: Application, clubName: string, packages: SponsorPackage[], majors: Major[], extra: Sponsor[] = []): Promise<Out<{ picks: SponsorPick[]; email: { to: string; subject: string; body: string } | null }>> {
@@ -368,7 +437,7 @@ export const INELIGIBLE_LABELS = INELIGIBLE;
 export async function recapEmail({ sponsor, pkg, event, clubName }: EmailInput): Promise<Out<{ subject: string; body: string }>> {
   const fallback = {
     subject: `Thank you from ${clubName}`,
-    body: `Hi ${sponsor.name} team,\n\nThank you for covering ${pkg.covers.toLowerCase()} for ${event.title}. About ${event.attendance || "our"} students came, and your support made that part of the event possible.\n\nAs agreed, we included: ${pkg.offer.join("; ").toLowerCase()}. Photos are attached.\n\nWe would love to work with you again next semester.\n\nThank you,\n[Your name]\n${clubName}`,
+    body: `Hi ${sponsor.name} team,\n\nThank you for covering ${pkg.covers.toLowerCase()} for ${event.title}. About ${event.attendance || "our"} students came, and your support made that part of the event possible.\n\nAs agreed, we included: ${pkg.offer.join("; ").toLowerCase()}. Photos are attached.\n\nWe hope to work with you again next semester.\n\nThank you,\n[Your name]\n${clubName}`,
   };
   if (!hasKey()) return { data: fallback, offline: true };
   try {

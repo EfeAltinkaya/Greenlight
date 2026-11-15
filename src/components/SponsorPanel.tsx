@@ -59,7 +59,7 @@ export function SponsorPanel({ app, club, asks }: { app: Application; club: Club
         <div className="between">
           <div className="stack-xs">
             <h2>Sponsors</h2>
-            <p className="small muted">Sponsors pay the vendor directly or give in kind, so the money never passes through the club. Campus Activities approves in-kind donations.</p>
+            <p className="small muted">Sponsors give in kind (the goods, or paying the vendor for them), so no money passes through the club. Confirm with Campus Activities that a direct vendor payment counts as in kind, and that anything you offer in return (a talk, a recruiting table) is not a sponsorship activation, which the Student Handbook does not allow for clubs.</p>
           </div>
           <div className="stack-xs" style={{ textAlign: "right" }}><span className="tiny faint">To cover</span><span className="big-num" style={{ fontSize: 26 }}>{money(total)}</span></div>
         </div>

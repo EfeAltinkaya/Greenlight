@@ -38,7 +38,7 @@ export const BOARDS: Record<BoardId, { name: string; formName: string; short: st
   arts: {
     name: "Performing and Visual Arts Fund",
     formName: "Performing, Visual Arts, & Cultural Fund",
-    short: "Arts & Cultural",
+    short: "Performing & Visual Arts",
     quote:
       "shall provide funding for events geared towards the arts programmed by recognized student organizations to celebrate, highlight, or foster a sense of community",
     fy26Budget: 100000,
