@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles, AlertTriangle } from "lucide-react";
 import { authFetch } from "@/lib/apiClient";
 import { newId, store, useCurrentClub } from "@/lib/store";
-import { runChecks, todayISO } from "@/lib/engine";
+import { fmtDate, lookupDeadline, runChecks, todayISO } from "@/lib/engine";
+import { makeRequestId } from "@/lib/requestId";
 import type { Application, EventInfo } from "@/lib/types";
 import type { Intake } from "@/lib/ai";
 import { stepOf, Spinner, useToast } from "@/components/ui";
@@ -26,9 +27,12 @@ export default function NewRequest() {
     if (session.enabled && session.ready && !session.user) router.replace("/login?mode=signup&next=/club/new");
   }, [session.enabled, session.ready, session.user]); // eslint-disable-line react-hooks/exhaustive-deps
   const [text, setText] = useState("");
+  const [previewDate, setPreviewDate] = useState("");
   const [busy, setBusy] = useState(false);
   const [toast, say] = useToast();
   const [err, setErr] = useState("");
+  const previewSix = previewDate ? lookupDeadline(previewDate, false) : null;
+  const previewNine = previewDate ? lookupDeadline(previewDate, true) : null;
 
   async function build() {
     if (text.trim().length < 12) { setErr("Add a sentence or two about the event first: what, when, where, how many people and what it costs."); return say("Add a sentence or two about the event first", "error"); }
@@ -40,13 +44,14 @@ export default function NewRequest() {
       if (!r.ok || !j.data) throw new Error(j.error ?? "Could not read that description. Try adding the date and costs.");
       const d = j.data;
       const event: EventInfo = { ...d.event, board: d.board, boardReason: d.boardReason };
+      const id = newId();
       let app: Application = {
-        id: newId(), clubId: club.id, sample: false, event,
+        id, requestId: makeRequestId(id), clubId: club.id, sample: false, event,
         items: d.items.map((i) => ({ ...i, id: newId(), link: "", orderBy: "", toSponsor: false })),
         answers: { description: "", missionFit: "", otherSources: "" }, docs: {}, docFiles: {}, docPaths: {}, uepa: "",
         status: "draft", createdAt: todayISO(), submittedAt: null,
         history: [{ at: todayISO(), status: "draft", note: j.offline ? "Started with the offline reader" : "Started from your description" }],
-        aiComments: [], decision: null, sponsorPlan: null, audit: [],
+        aiComments: [], decision: null, sponsorPlan: null, audit: [], messages: [],
       };
 
       // Auto-draft form answers so submit is not a surprise later.
@@ -87,6 +92,25 @@ export default function NewRequest() {
       </div>
 
       <section className="card card-pad stack" style={{ gap: 18 }}>
+        <label className="field">
+          <span className="lbl">When is the event? (check your USG deadline before you write)</span>
+          <input id="preview-date" className="input" type="date" value={previewDate} onChange={(e) => setPreviewDate(e.target.value)} aria-describedby="deadline-preview" />
+        </label>
+        {previewDate && (
+          <div id="deadline-preview" className="inset stack-xs" style={{ padding: 12 }}>
+            {previewSix?.kind === "ok" ? (
+              <p className="small"><strong>For this date your USG deadline is {fmtDate(previewSix.deadline, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</strong> (6-week, listed vendors){previewSix.passed ? " · already passed" : ""}.</p>
+            ) : previewSix?.kind === "blackout" ? (
+              <p className="small field-warn"><AlertTriangle />{previewSix.reason}</p>
+            ) : (
+              <p className="small muted">{previewSix?.reason ?? "No 6-week deadline for this week."}</p>
+            )}
+            {previewNine?.kind === "ok" && (
+              <p className="tiny faint">If you use travel or a vendor not on USG&apos;s list, the 9-week deadline is {fmtDate(previewNine.deadline, { weekday: "long", month: "long", day: "numeric" })}{previewNine.passed ? " (passed)" : ""}.</p>
+            )}
+            <p className="tiny faint">Blackout: Dec 5, 2026 to Jan 12, 2027, and events after May 1, 2027 are not funded. Applications are due Wednesdays at 11:59 PM.</p>
+          </div>
+        )}
         <textarea
           id="describe"
           className="textarea"

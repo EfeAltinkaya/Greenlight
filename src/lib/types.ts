@@ -65,7 +65,9 @@ export type Check = {
   quote: string;
   section: string;
   itemId?: string;
-  fix?: { label: string; action: "cap-food" | "to-sponsor" | "remove" | "confirm-vendor" };
+  fix?: { label: string; action: "cap-food" | "to-sponsor" | "remove" | "confirm-vendor" | "swap-single-use" };
+  /** True when this check is a Greenlight heuristic, not a quoted USG rule. */
+  heuristic?: boolean;
 };
 
 export type Status = "draft" | "submitted" | "in_review" | "needs_info" | "approved" | "partial" | "denied" | "post_event_due" | "closed";
@@ -87,6 +89,10 @@ export type Decision = {
   sentAt: string;
   /** Whether the drafted letter was emailed (or only saved in-app). */
   emailed?: boolean;
+  /** Minor-fix path: fund once the club completes these conditions. */
+  conditions?: string[];
+  /** True when the award is waiting on conditions (Approve once fixed). */
+  pendingFixes?: boolean;
 };
 
 export type AuditEntry = {
@@ -101,10 +107,28 @@ export type PostEventEval = {
   invoices: boolean;
   notes: string;
   submittedAt?: string;
+  /** Actual attendance the club reports after the event. */
+  actualAttendance?: number;
+  /** Final invoice amount/file per funded line item id. */
+  lineInvoices?: Record<string, { amount: number; fileName: string }>;
+  /** Report event title (must match the approved application). */
+  reportTitle?: string;
+};
+
+/** One message in the club/USG thread on a request. */
+export type AppMessage = {
+  id: string;
+  at: string;
+  by: "club" | "usg";
+  text: string;
+  /** Always the GL-26-XXXX tag for this request. */
+  requestId: string;
 };
 
 export type Application = {
   id: string;
+  /** Public id shown everywhere and in email subjects: GL-26-XXXX. */
+  requestId?: string;
   clubId: string;
   sample: boolean;
   event: EventInfo;
@@ -124,11 +148,15 @@ export type Application = {
   decision: Decision | null;
   sponsorPlan: SponsorPlan | null;
   altRequests?: AltRequest[];
+  /** Per-event log of every funding source and which budget lines it covers. */
+  fundingStack?: FundingStackEntry[];
   /** Immutable-ish trail of reviewer/club actions that matter for fairness. */
   audit?: AuditEntry[];
   postEvent?: PostEventEval;
   /** What a USG reviewer asked the club to fix instead of denying the request. */
   fixRequest?: { at: string; items: { text: string; checkId?: string }[]; note: string };
+  /** Club and USG message thread for this request. */
+  messages?: AppMessage[];
 };
 
 export type SponsorPackage = { title: string; covers: string; amount: number; offer: string[] };
@@ -193,6 +221,14 @@ export type Deal = {
   invoice: { fileName: string; amount: number; vendor: string; uploadedAt: string } | null;
   recap: string;
   history: { at: string; stage: DealStage; note: string; by: "club" | "sponsor" | "system" }[];
+};
+
+export type FundingStackEntry = {
+  id: string;
+  source: string;
+  status: "planning" | "applied" | "awarded" | "declined";
+  amount: number;
+  lineIds: string[];
 };
 
 /** A request to another USC funding source after USG denies or partly funds. */

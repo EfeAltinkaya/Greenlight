@@ -98,7 +98,7 @@ export default function Sponsors() {
         <div>
           <span className="eyebrow">Cover the gap · {club.name}</span>
           <h1>Sponsors</h1>
-          <p className="lede">USG won&apos;t pay some lines — pick a path. Find companies, browse inbound offers, or advance deals. Sponsors pay vendors directly, never the club.</p>
+          <p className="lede">USG won&apos;t pay some lines. Pick a path. Find companies, browse inbound offers, or advance deals. Sponsors pay vendors directly, never the club.</p>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export default function Sponsors() {
       )}
       {tab === "deals" && (
         <section className="card card-pad stack-sm">
-          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><Handshake /></span><div className="stack-xs"><h2>Deals</h2><p className="small muted">Agreements in progress — from request through vendor payment and post-event recap.</p></div></div>
+          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><Handshake /></span><div className="stack-xs"><h2>Deals</h2><p className="small muted">Agreements in progress, from request through vendor payment and post-event recap.</p></div></div>
           <Link href="/club/deals" className="btn btn-primary" style={{ justifySelf: "start" }}>Open deals <ExternalLink /></Link>
         </section>
       )}

@@ -58,7 +58,7 @@ export default function ClubOverview() {
     } else if (a.status === "post_event_due") push(a.id + "-pe", continueHref(a, club.id), a.event.title, "Post-event evaluation and final invoices are due within 3 business days.", "gold", "Your turn");
     else if (a.status === "denied" || a.status === "partial") {
       const gap = Math.max(0, requestTotal(a) - (a.decision && a.decision.outcome !== "denied" ? a.decision.amount : 0));
-      if (gap > 0) push(a.id + "-fund", `/club/funding?app=${a.id}`, a.event.title, `${money(gap)} still needed — other USC sources and sponsors can cover the gap.`, "gold", "Cover the gap");
+      if (gap > 0) push(a.id + "-fund", `/club/funding?app=${a.id}`, a.event.title, `${money(gap)} still needed: other USC sources and sponsors can cover the gap.`, "gold", "Cover the gap");
     } else if (owner === "usg") push(a.id + "-wait", continueHref(a, club.id), a.event.title, APP_FLOW[a.status].label + ".", "check", "Waiting on USG");
   }
 

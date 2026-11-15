@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { ArrowLeftRight, FileUp, HandCoins, Trash2, Undo2 } from "lucide-react";
 import { ITEM_CATEGORIES, INELIGIBLE } from "@/data/rules";
-import { cateringSuggestions, matchVendor, money } from "@/lib/engine";
+import { cateringSuggestions, deadlineSwitchHint, fmtDate, listedVendorsOfType, matchVendor, money } from "@/lib/engine";
 import type { Check, CheckLevel, LineItem } from "@/lib/types";
 import { LEVEL, Spinner } from "./ui";
 
@@ -21,13 +21,16 @@ type Props = {
   editable?: boolean;
   onChange?: (items: LineItem[]) => void;
   onQuote?: (id: string, file: File) => Promise<void>;
+  /** Event date so a vendor switch can show the 9-week vs 6-week deadline change. */
+  eventDate?: string;
 };
 
-export function BudgetTable({ items, checks, editable, onChange, onQuote }: Props) {
+export function BudgetTable({ items, checks, editable, onChange, onQuote, eventDate }: Props) {
   const [busy, setBusy] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const target = useRef<string | null>(null);
   const caterers = cateringSuggestions(8);
+  const switchHint = eventDate ? deadlineSwitchHint(eventDate) : null;
 
   const set = (id: string, patch: Partial<LineItem>) =>
     onChange?.(
@@ -92,11 +95,17 @@ export function BudgetTable({ items, checks, editable, onChange, onQuote }: Prop
                   </label>
                 </div>
                 {vm?.kind === "not_listed" && (
-                  <div className="row inset" style={{ padding: "10px 12px", gap: 10 }}>
-                    <span className="small" style={{ color: "var(--fix)", fontWeight: 600 }}>{i.vendor || "This vendor"} is not on USG&apos;s Vendor List.</span>
-                    <select className="select" style={{ width: "auto", padding: "5px 10px", fontSize: 13 }} value="" onChange={(e) => e.target.value && swapVendor(i, e.target.value)} aria-label="Switch to a listed caterer">
-                      <option value="">Switch to a listed caterer…</option>
-                      {caterers.map((v) => <option key={v.name} value={short(v.name)}>{short(v.name)}{v.cuisine ? ` · ${v.cuisine}` : ""}</option>)}
+                  <div className="inset stack-sm" style={{ padding: "10px 12px", gap: 8 }}>
+                    <span className="small" style={{ color: "var(--fail)", fontWeight: 600 }}>{i.vendor || "This vendor"} is not on USG&apos;s Vendor List.</span>
+                    {switchHint && (
+                      <span className="tiny">
+                        Switching to a listed vendor moves the deadline from {fmtDate(switchHint.from)}{switchHint.fromPassed ? " (passed)" : ""} to {fmtDate(switchHint.to)}{switchHint.toPassed ? " (passed)" : ""}
+                        {switchHint.gainDays > 0 ? ` (${switchHint.gainDays} more days).` : "."}
+                      </span>
+                    )}
+                    <select className="select" style={{ width: "auto", padding: "5px 10px", fontSize: 13 }} value="" onChange={(e) => e.target.value && swapVendor(i, e.target.value)} aria-label="Find a listed vendor of the same type">
+                      <option value="">Find a listed vendor of the same type</option>
+                      {listedVendorsOfType(i.vendor || i.item, 8).map((v) => <option key={v.name} value={short(v.name)}>{short(v.name)}{v.cuisine ? ` · ${v.cuisine}` : ""}</option>)}
                     </select>
                   </div>
                 )}
@@ -189,9 +198,9 @@ export function BudgetTable({ items, checks, editable, onChange, onQuote }: Prop
                     {editable && vm?.kind === "not_listed" && (
                       <label className="stack-xs">
                         <span className="tiny" style={{ color: "var(--fix)", fontWeight: 600 }}>Not on USG&apos;s Vendor List</span>
-                        <select className="select" style={{ padding: "4px 8px", fontSize: 12.5 }} value="" onChange={(e) => e.target.value && swapVendor(i, e.target.value)} aria-label="Switch to a listed caterer">
-                          <option value="">Switch to a listed caterer…</option>
-                          {caterers.map((v) => <option key={v.name} value={short(v.name)}>{short(v.name)}{v.cuisine ? ` · ${v.cuisine}` : ""}</option>)}
+                        <select className="select" style={{ padding: "4px 8px", fontSize: 12.5 }} value="" onChange={(e) => e.target.value && swapVendor(i, e.target.value)} aria-label="Find a listed vendor of the same type">
+                          <option value="">Find a listed vendor of the same type</option>
+                          {listedVendorsOfType(i.vendor || i.item, 8).map((v) => <option key={v.name} value={short(v.name)}>{short(v.name)}{v.cuisine ? ` · ${v.cuisine}` : ""}</option>)}
                         </select>
                       </label>
                     )}

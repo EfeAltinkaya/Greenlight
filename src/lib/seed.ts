@@ -28,6 +28,13 @@ const li = (p: Partial<LineItem> & Pick<LineItem, "item" | "total" | "category">
 });
 
 const base = (o: Partial<Application> & Pick<Application, "id" | "clubId" | "event" | "items">): Application => ({
+  requestId: ({
+    "s-robotics": "GL-26-R001",
+    "s-dance": "GL-26-D002",
+    "s-shore": "GL-26-S003",
+    "s-fintech": "GL-26-F004",
+    "s-chess": "GL-26-C005",
+  } as Record<string, string>)[o.id] ?? `GL-26-${o.id.slice(-4).toUpperCase()}`,
   sample: true,
   answers: { description: o.event.description, missionFit: "It is free and open to all USC students and is one of our main events this semester, which is how we reach new members.", otherSources: "N/A" },
   docs: { budget: true, quotes: true, esr: true },

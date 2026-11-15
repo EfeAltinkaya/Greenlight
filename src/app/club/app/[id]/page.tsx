@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { AlertTriangle, ArrowLeft, ArrowRight, Check, ChevronRight, CircleCheck, Download, FileCheck2, FileUp, MoveRight, Send, Sparkles, X } from "lucide-react";
 import { BOARDS, RULES, type BoardId } from "@/data/rules";
-import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, checkKey, requestItems, requestTotal, runChecks, score, sponsorAsks, UEPA_RE } from "@/lib/engine";
+import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, checkKey, requestItems, requestTotal, runChecks, score, sponsorAsks, todayISO, UEPA_RE } from "@/lib/engine";
 import { authFetch } from "@/lib/apiClient";
 import { putDoc } from "@/lib/docStore";
 import { store, useStore } from "@/lib/store";
@@ -13,6 +13,12 @@ import { BudgetTable } from "@/components/BudgetTable";
 import { Reveal } from "@/components/Motion";
 import { SponsorPanel } from "@/components/SponsorPanel";
 import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, type StepId } from "@/components/ui";
+import { VerdictPill } from "@/components/VerdictPill";
+import { MessageThread } from "@/components/MessageThread";
+import { postEventAsChecks, postEventDueDate } from "@/lib/postEventCheck";
+import { requestIdOf } from "@/lib/requestId";
+import { greenlightVerdict } from "@/lib/verdict";
+import { APP_FLOW } from "@/lib/workflow";
 
 type Step = StepId | "status" | "sponsors";
 const DRAFT_STEPS: { id: Step; title: string; sub: string }[] = [
@@ -25,12 +31,36 @@ const DRAFT_STEPS: { id: Step; title: string; sub: string }[] = [
 const DAY = 86_400_000;
 const subHash = (cb: () => void) => { window.addEventListener("hashchange", cb); return () => window.removeEventListener("hashchange", cb); };
 
+function nextWednesday(today: string) {
+  let d = today;
+  for (let i = 0; i < 8; i++) {
+    const wd = new Date(d + "T12:00:00").toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", weekday: "short" });
+    if (wd === "Wed") return d;
+    d = new Date(Date.parse(d + "T12:00:00Z") + DAY).toISOString().slice(0, 10);
+  }
+  return d;
+}
+
+function daysInStage(app: Application, today: string) {
+  const last = [...app.history].reverse().find((h) => h.status === app.status);
+  const anchor =
+    last?.at ??
+    (app.status === "draft" ? app.createdAt : app.submittedAt ?? app.createdAt);
+  return Math.max(0, Math.floor((Date.parse(today + "T12:00:00Z") - Date.parse(anchor + "T12:00:00Z")) / DAY));
+}
+
+function holderLabel(owner: (typeof APP_FLOW)[keyof typeof APP_FLOW]["owner"]) {
+  if (owner === "usg") return "USG";
+  if (owner === "club") return "Club";
+  return "System";
+}
+
 export default function Workspace() {
   const { id } = useParams<{ id: string }>();
   const { apps, clubs } = useStore();
   const app = apps.find((a) => a.id === id);
   const club = clubs.find((c) => c.id === app?.clubId);
-  const checks = useMemo(() => (app && club ? runChecks(app, club) : []), [app, club]);
+  const checks = useMemo(() => (app && club ? runChecks(app, club, undefined, apps.filter((x) => x.clubId === app.clubId)) : []), [app, club]);
   const [toast, say] = useToast();
   const [drafting, setDrafting] = useState(false);
   const [answersOffline, setAnswersOffline] = useState<boolean | null>(null);
@@ -168,6 +198,8 @@ export default function Workspace() {
   const railChecks = step === "event" || step === "budget" || step === "documents" ? stepChecks(step) : checks.filter((c) => c.level === "fail" || c.level === "warn");
   const blockers = checks.filter((c) => c.level === "fail");
   const answersReady = Boolean(app.answers.description.trim() && app.answers.missionFit.trim() && app.answers.otherSources.trim());
+  const verdict = greenlightVerdict(checks);
+  const rid = requestIdOf(app);
 
   return (
     <>
@@ -176,10 +208,16 @@ export default function Workspace() {
         <nav className="crumbs" aria-label="Breadcrumb"><Link href="/club">Requests</Link><ChevronRight /><span>{app.event.title}</span>{app.sample && <span className="sample-tag">Sample</span>}</nav>
         <div className="page-head">
           <div>
+            <span className="eyebrow">{rid}</span>
             <h1>{app.event.title}</h1>
             <span className="muted">{club.name} · {app.event.date ? fmtDate(app.event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "No date yet"} · {app.event.location || "No location yet"}</span>
           </div>
-          <div className="row"><StatusPill s={app.status} />{!locked && <CountPills fail={s.fail} warn={s.warn} />}</div>
+          <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
+            <Link href={`/club/help?board=${app.event.board}&app=${app.id}&q=reviewers`} className="chip-btn" style={{ textDecoration: "none" }}>
+              Who reviews this
+            </Link>
+            <VerdictPill id={verdict.id} /><StatusPill s={app.status} />{!locked && <CountPills fail={s.fail} warn={s.warn} />}
+          </div>
         </div>
       </div>
 
@@ -219,7 +257,7 @@ export default function Workspace() {
             })}
           </ol>
           {app.fixRequest.note && <p className="small muted">Note from USG: {app.fixRequest.note}</p>}
-          <span className="tiny faint">Fix each one, then press Submit on the last step to send it back. Sent {fmtDate(app.fixRequest.at, { month: "short", day: "numeric" })}; USG gives 2 business days.</span>
+          <span className="tiny faint">Fix each one, then press Submit on the last step to send it back. Sent {fmtDate(app.fixRequest.at, { month: "short", day: "numeric" })}. Greenlight shows a 2-business-day window; the FAQ says 3.</span>
         </section>
       )}
 
@@ -285,7 +323,7 @@ export default function Workspace() {
           {step === "budget" && (
             <section className="stack">
               <div className="stack-xs"><h2>Budget</h2><p className="small muted">The same columns as USG&apos;s budget sheet. Anything USG won&apos;t fund can go to your sponsor list instead of being deleted.</p></div>
-              <BudgetTable items={app.items} checks={checks} editable={!locked} onChange={setItems} onQuote={attachQuote} />
+              <BudgetTable eventDate={app.event.date} items={app.items} checks={checks} editable={!locked} onChange={setItems} onQuote={attachQuote} />
               {!locked && (
                 <div><button className="btn btn-sm" onClick={() => setItems([...app.items, { id: "n" + Date.now(), item: "New item", vendor: "", link: "", justification: "", quantity: 1, unitPrice: 0, total: 0, orderBy: "", category: "supplies", estimate: true, toSponsor: false }])}>Add a line</button></div>
               )}
@@ -363,7 +401,32 @@ export default function Workspace() {
           {step === "submit" && (
             <section className="card card-pad stack" style={{ gap: 20 }}>
               <div className="stack-xs"><h2>Review and submit</h2><p className="small muted">This is what USG will see.</p></div>
+              <div className="inset stack-sm" style={{ padding: 16, borderLeft: `4px solid ${verdict.id === "matches" ? "var(--clear)" : verdict.id === "will_not_fund" ? "var(--fail)" : "var(--gold)"}` }}>
+                <div className="between" style={{ alignItems: "flex-start" }}>
+                  <div className="stack-xs">
+                    <span className="eyebrow">Greenlight Check</span>
+                    <strong style={{ fontSize: 18 }}>{verdict.clubLabel}</strong>
+                    <span className="tiny faint">{rid} · from the rules engine, not AI</span>
+                  </div>
+                  <VerdictPill id={verdict.id} />
+                </div>
+                {verdict.drivers.length > 0 && (
+                  <ul style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 4 }}>
+                    {verdict.drivers.map((c) => (
+                      <li key={c.id}>
+                        <button type="button" className="row small" style={{ border: 0, background: "none", padding: 0, cursor: "pointer", color: c.level === "fail" ? "var(--fail)" : "var(--check)", textAlign: "left", flexWrap: "nowrap" }} onClick={() => go(stepOf(c), fieldFor(c))}>
+                          {c.level === "fail" ? <X style={{ width: 14, height: 14, flex: "none" }} /> : <AlertTriangle style={{ width: 14, height: 14, flex: "none" }} />}
+                          {c.title}
+                          <ArrowRight style={{ width: 14, height: 14, flex: "none" }} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Link href={`/club/app/${app.id}/check`} className="btn btn-sm" style={{ justifySelf: "start" }}>Open Greenlight Check (copy or print)</Link>
+              </div>
               <dl className="kv">
+                <dt>Request ID</dt><dd className="code">{rid}</dd>
                 <dt>Board</dt><dd>{BOARDS[app.event.board].name}</dd>
                 <dt>Requested</dt><dd><strong>{money(requestTotal(app))}</strong> <span className="faint">· {money(RULES.annualCap.limit - club.receivedThisYear)} left now · {money(RULES.annualCap.limit - club.receivedThisYear - requestTotal(app))} after this request</span></dd>
                 <dt>Deadline</dt><dd>{dl?.kind === "ok" ? `${fmtDate(dl.deadline, { weekday: "long", month: "long", day: "numeric" })}${dl.passed ? " (passed)" : ""}` : "None for this date"}</dd>
@@ -431,6 +494,10 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
   const d = app.decision;
   const pe = app.postEvent ?? { photos: false, invoices: false, notes: "" };
   const canClose = pe.photos && pe.invoices;
+  const flow = APP_FLOW[app.status];
+  const today = todayISO();
+  const wed = nextWednesday(today);
+  const stageDays = daysInStage(app, today);
 
   function closeOut() {
     if (!canClose) return say("Confirm photos and final invoices first");
@@ -445,8 +512,33 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
     <section className="stack">
       {d && (
         <div className="card card-pad stack-sm" style={{ borderTop: `4px solid ${d.outcome === "denied" ? "var(--fail)" : "var(--gold)"}` }}>
-          <span className="eyebrow">{d.outcome === "denied" ? "Decision" : "Funded"}</span>
-          <h2 style={{ fontSize: 28 }}>{d.outcome === "denied" ? "USG denied this request" : `USG awarded ${money(d.amount)}`}</h2>
+          <span className="eyebrow">{d.outcome === "denied" ? "Decision" : d.pendingFixes ? "Approved, pending these fixes" : "Funded"}</span>
+          <h2 style={{ fontSize: 28 }}>
+            {d.outcome === "denied"
+              ? "USG denied this request"
+              : d.pendingFixes
+                ? `Approved, pending these fixes · ${money(d.amount)}`
+                : `USG awarded ${money(d.amount)}`}
+          </h2>
+          {d.pendingFixes && (d.conditions?.length ?? 0) > 0 && (
+            <div className="inset stack-sm" style={{ padding: 12 }}>
+              <strong className="small">Complete these so USG can release the award</strong>
+              <ol className="small" style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 6 }}>
+                {d.conditions!.map((c, i) => <li key={i}>{c}</li>)}
+              </ol>
+              <button
+                className="btn btn-sm"
+                style={{ justifySelf: "start" }}
+                onClick={() => {
+                  store.addMessage(app.id, "club", `We completed the approve-once-fixed conditions: ${d.conditions!.join("; ")}`);
+                  store.audit(app.id, { by: "club", action: "conditions_done", detail: d.conditions!.join("; ") });
+                  say("Told USG the fixes are done. They will clear the pending flag.");
+                }}
+              >
+                Tell USG the fixes are done
+              </button>
+            </div>
+          )}
           <div className="email small muted">{d.email}</div>
           {d.emailed === false && <p className="tiny faint">Saved in Greenlight (email delivery was not configured for this send).</p>}
           <div className="row">
@@ -462,29 +554,69 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
           </div>
         </div>
       )}
+      <MessageThread app={app} by="club" />
 
-      {app.status === "post_event_due" && (
+      {app.status === "post_event_due" && (() => {
+        const peIssues = postEventAsChecks(app);
+        const due = postEventDueDate(app);
+        const funded = requestItems(app);
+        const patchPe = (patch: Partial<typeof pe>) => store.patchApp(app.id, { postEvent: { ...pe, reportTitle: pe.reportTitle ?? app.event.title, ...patch } });
+        return (
         <div className="card card-pad stack" style={{ borderTop: "4px solid var(--gold)" }}>
           <div className="stack-xs">
-            <span className="eyebrow">Close-out</span>
+            <span className="eyebrow">Close-out · Section 9</span>
             <h2>Post-event evaluation</h2>
-            <p className="small muted">Due within 3 business days of the event. USG needs photos of members attending and final invoices.</p>
+            <p className="small muted">Due within 3 business days of the event{due ? ` (by ${fmtDate(due)})` : ""}. Prefills from the approved application. File the evaluation form on EngageSC; Greenlight tracks photos and invoices here.</p>
           </div>
-          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
-            <input className="check-input" type="checkbox" checked={pe.photos} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, photos: e.target.checked } })} />
-            <span className="small" style={{ fontWeight: 550 }}>Photos of members attending are ready</span>
-          </label>
-          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
-            <input className="check-input" type="checkbox" checked={pe.invoices} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, invoices: e.target.checked } })} />
-            <span className="small" style={{ fontWeight: 550 }}>Final vendor invoices are ready</span>
+          <dl className="kv">
+            <dt>Event</dt><dd>{app.event.title}</dd>
+            <dt>Board</dt><dd>{BOARDS[app.event.board].name}</dd>
+            <dt>Expected attendance</dt><dd>{app.event.attendance}</dd>
+            <dt>Funded items</dt><dd>{funded.map((i) => `${i.item} (${money(i.total)})`).join(", ") || "None"}</dd>
+          </dl>
+          <label className="field">
+            <span className="lbl">Report event title (must match the approved application)</span>
+            <input className="input" value={pe.reportTitle ?? app.event.title} onChange={(e) => patchPe({ reportTitle: e.target.value })} />
           </label>
           <label className="field">
-            <span className="lbl">Notes for USG (optional)</span>
-            <textarea className="textarea" style={{ minHeight: 80 }} value={pe.notes} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, notes: e.target.value } })} placeholder="Attendance, anything that changed, invoice timing…" />
+            <span className="lbl">Actual attendance <span className="faint">(pending confirmation with USG)</span></span>
+            <input className="input num" type="number" min={0} value={pe.actualAttendance ?? ""} onChange={(e) => patchPe({ actualAttendance: Number(e.target.value) })} />
           </label>
-          <button className="btn btn-primary btn-lg" disabled={!canClose} onClick={closeOut} style={{ justifySelf: "start" }}><Send />Submit evaluation and close</button>
+          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
+            <input className="check-input" type="checkbox" checked={pe.photos} onChange={(e) => patchPe({ photos: e.target.checked })} />
+            <span className="small" style={{ fontWeight: 550 }}>Photos with members in attendance are ready</span>
+          </label>
+          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
+            <input className="check-input" type="checkbox" checked={pe.invoices} onChange={(e) => patchPe({ invoices: e.target.checked })} />
+            <span className="small" style={{ fontWeight: 550 }}>Final vendor invoices are ready</span>
+          </label>
+          <div className="stack-sm">
+            <strong className="small">Final invoice per funded line</strong>
+            {funded.map((i) => {
+              const inv = pe.lineInvoices?.[i.id];
+              return (
+                <div key={i.id} className="row" style={{ gap: 8, flexWrap: "nowrap" }}>
+                  <span className="small" style={{ flex: 1 }}>{i.item} · approved {money(i.total)}</span>
+                  <input className="input num" style={{ width: 100 }} type="number" min={0} step="0.01" placeholder="Amount" value={inv?.amount ?? ""} onChange={(e) => patchPe({ lineInvoices: { ...(pe.lineInvoices ?? {}), [i.id]: { amount: Number(e.target.value), fileName: inv?.fileName || "invoice.pdf" } } })} />
+                  <input className="input" style={{ width: 140 }} placeholder="File name" value={inv?.fileName ?? ""} onChange={(e) => patchPe({ lineInvoices: { ...(pe.lineInvoices ?? {}), [i.id]: { amount: inv?.amount ?? i.total, fileName: e.target.value } } })} />
+                </div>
+              );
+            })}
+          </div>
+          <label className="field">
+            <span className="lbl">Notes for USG (optional)</span>
+            <textarea className="textarea" style={{ minHeight: 80 }} value={pe.notes} onChange={(e) => patchPe({ notes: e.target.value })} placeholder="Anything that changed, invoice timing" />
+          </label>
+          {peIssues.length > 0 && (
+            <div className="inset stack-sm" style={{ padding: 12 }}>
+              <strong className="small">Consistency check</strong>
+              {peIssues.map((c) => <CheckItem key={c.id} c={c} compact />)}
+            </div>
+          )}
+          <button className="btn btn-primary btn-lg" disabled={!canClose || peIssues.some((c) => c.level === "fail")} onClick={closeOut} style={{ justifySelf: "start" }}><Send />Submit evaluation and close</button>
         </div>
-      )}
+        );
+      })()}
 
       {app.status === "closed" && (
         <div className="card card-pad stack-sm">
@@ -493,6 +625,28 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
           <p className="small muted">{app.postEvent?.submittedAt ? `Submitted ${fmtDate(app.postEvent.submittedAt)}.` : "This request is closed."}{app.postEvent?.notes ? ` ${app.postEvent.notes}` : ""}</p>
         </div>
       )}
+
+      <div className="card card-pad stack-sm">
+        <div className="stack-xs">
+          <span className="eyebrow">Current stage</span>
+          <h2 style={{ fontSize: 24, margin: 0 }}>{flow.label}</h2>
+        </div>
+        <dl className="grid cols-2 small" style={{ gap: "12px 20px", margin: 0 }}>
+          <div className="stack-xs">
+            <dt className="muted" style={{ margin: 0 }}>Who holds it</dt>
+            <dd style={{ margin: 0, fontWeight: 600 }}>{holderLabel(flow.owner)}</dd>
+          </div>
+          <div className="stack-xs">
+            <dt className="muted" style={{ margin: 0 }}>Time in this stage</dt>
+            <dd style={{ margin: 0, fontWeight: 600 }}>{stageDays} day{stageDays === 1 ? "" : "s"}</dd>
+          </div>
+          <div className="stack-xs" style={{ gridColumn: "1 / -1" }}>
+            <dt className="muted" style={{ margin: 0 }}>Next Wednesday submission window</dt>
+            <dd style={{ margin: 0, fontWeight: 600 }}>{fmtDate(wed, { weekday: "long", month: "short", day: "numeric" })} · 11:59 PM PT</dd>
+          </div>
+        </dl>
+        <p className="small muted" style={{ margin: 0 }}>USG does not publish a review time. Reviews can take hours or weeks.</p>
+      </div>
 
       <div className="card card-pad stack-sm">
         <h2>Timeline</h2>

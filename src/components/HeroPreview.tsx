@@ -38,7 +38,7 @@ export function HeroPreview() {
             <div className="stack-xs"><div className="dl-date" style={{ fontSize: 18 }}>{fixed ? "Submit by Wednesday, Nov 18" : "9-week deadline passed Nov 11"}</div><div className="dl-sub small">{fixed ? "6-week deadline, from USG's deadline sheet." : "Because Chipotle is not on USG's Vendor List."}</div></div>
           </div>
           <div className="card-flat" style={{ overflow: "hidden" }}>
-            {[["Catered lunch", fixed ? "Panda Catering" : "Chipotle", fixed ? "$4,200" : "$5,400"], ["Swag", "Amazon", "$600"], ["Gift cards for winners", "—", "$600"]].map(([a, b, c], i) => (
+            {[["Catered lunch", fixed ? "Panda Catering" : "Chipotle", fixed ? "$4,200" : "$5,400"], ["Swag", "Amazon", "$600"], ["Gift cards for winners", "-", "$600"]].map(([a, b, c], i) => (
               <div key={a} className="between small" style={{ padding: "11px 14px", borderTop: i ? "1px solid var(--line-2)" : 0, color: fixed && i > 0 ? "var(--ink-3)" : undefined }}>
                 <span className="row" style={{ gap: 10, flexWrap: "nowrap" }}><span className={"dot " + (fixed ? (i ? "off" : "pass") : i === 1 ? "warn" : "fail")} />{a}</span>
                 <span className="row" style={{ gap: 16, flexWrap: "nowrap" }}><span className="faint">{b}</span><strong className="num" style={{ width: 56, textAlign: "right" }}>{c}</strong></span>

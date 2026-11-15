@@ -161,6 +161,70 @@ export const RULES = {
     section: "Section 6",
     quote: "RSO receiving funding from another University income source",
   },
+  durableFaq: {
+    id: "durable-likely",
+    section: "FAQ",
+    quote:
+      "Items designed to last roughly three years or more are ineligible. Glass plates are ineligible; paper plates are eligible. Items critical to a program may be approved at the board's discretion.",
+  },
+  quoteNeeded: {
+    id: "missing-quote",
+    section: "Section 2",
+    quote: "The full budget proposal for the event, including quotes for each individual expense",
+  },
+  postEvent: {
+    id: "post-event",
+    section: "Section 9",
+    quote: "evaluation form on the USG EngageSC page, photos with members in attendance, final invoices",
+  },
+} as const;
+
+/**
+ * Post-event report fields. Only Section 9 items are marked confirmed by USG;
+ * everything else stays pending confirmation and is never enforced as required.
+ */
+export const POST_EVENT_FIELDS = [
+  { id: "evaluation", label: "Evaluation form on the USG EngageSC page", confirmedByUsg: true },
+  { id: "photos", label: "Photos with members in attendance", confirmedByUsg: true },
+  { id: "invoices", label: "Final invoices", confirmedByUsg: true },
+  { id: "actualAttendance", label: "Actual attendance", confirmedByUsg: false },
+] as const;
+
+/**
+ * Greenlight heuristics (not USG rules). Shown in the UI as "Greenlight check, not a USG rule".
+ * Ratios and keyword lists are product guidance to catch common mistakes before USG sees the request.
+ */
+export const HEURISTICS = {
+  qtyPerAttendee: {
+    id: "qty-per-attendee",
+    section: "Greenlight check, not a USG rule",
+    quote: "Quantity looks high for the expected attendance. Confirm the numbers before you submit.",
+    /** Max quantity per expected attendee by category. */
+    ratios: {
+      food: 3,
+      promo_merch: 1.5,
+      tshirt: 1.5,
+      supplies: 2,
+      printing: 2,
+      other: 2,
+    } as Record<string, number>,
+  },
+  duplicateItem: {
+    id: "duplicate-item",
+    section: "Greenlight check, not a USG rule",
+    quote: "The same item and vendor appear more than once. Merge the lines or explain why both are needed.",
+  },
+  durableKeywords: {
+    id: "durable-likely",
+    section: "Greenlight check, not a USG rule",
+    quote: "This line looks like a durable good. Confirm it is single-use, move it to sponsors, or ask your board about a program-critical exception.",
+    /** Keywords that suggest a durable purchase when the category is still fundable. */
+    words: [
+      "laptop", "ipad", "tablet", "camera", "speaker", "microphone", "mic", "projector", "monitor",
+      "uniform", "jersey", "glass", "ceramic", "plate", "mug", "tool", "drill", "furniture", "chair",
+      "table", "equipment", "tripod", "banner stand", "reusable", "electronics", "printer", "headset",
+    ],
+  },
 } as const;
 
 // Items USG never funds (Section 5, "The following are not eligible for funding").

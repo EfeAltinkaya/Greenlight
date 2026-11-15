@@ -55,7 +55,7 @@ export default function Deadlines() {
                 const fmt = (x: string | null) => (x ? <span className={x < today ? "faint" : ""} style={x < today ? { textDecoration: "line-through" } : undefined}>{fmtDate(x, { weekday: "short", month: "short", day: "numeric" })}</span> : <span className="faint">No funding</span>);
                 return (
                   <tr key={d.weekStart} className={mine ? "hl click" : "click"} onClick={() => setDate(d.weekStart)}>
-                    <td className="num" style={{ whiteSpace: "nowrap", fontWeight: mine ? 600 : 400 }}>{d.weekStart === "2026-12-07" ? "Dec 5 – Jan 12 (no funding)" : `${short(d.weekStart)} – ${short(d.weekEnd)}`}{d.weekStart === "2027-01-11" ? <span className="tiny faint"> · events from Jan 13</span> : null}</td>
+                    <td className="num" style={{ whiteSpace: "nowrap", fontWeight: mine ? 600 : 400 }}>{d.weekStart === "2026-12-07" ? "Dec 5 to Jan 12 (no funding)" : `${short(d.weekStart)} to ${short(d.weekEnd)}`}{d.weekStart === "2027-01-11" ? <span className="tiny faint"> · events from Jan 13</span> : null}</td>
                     <td data-label="Approved vendors (6 wk)" className="num">{fmt(d.six)}</td>
                     <td data-label="Travel or new vendor (9 wk)" className="num">{fmt(d.nine)}</td>
                   </tr>

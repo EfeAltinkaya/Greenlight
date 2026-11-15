@@ -21,13 +21,13 @@ npm run build   # must pass before pushing
 
 ## Demo script
 
-1. Landing page → **Start a request** → pick **Hackathon with catering** → **Build my application**. The request opens as steps: Event, Budget, Documents, Form answers, Review and submit.
-2. Rule check flags: Chipotle is not on USG's Vendor List (so the 9-week deadline applies, and it passed Nov 11), food at $45 per person (limit $35), gift cards are never fundable, missing health permit and UEPA.
-3. Click **Cap food at $4,200**, move gift cards and swag to sponsors, pick **Switch to a listed caterer** under the vendor (any caterer on USG's list). The deadline becomes **Wed, Nov 18**, and the card notes that moving the event one week later gains 56 days.
+1. Landing page → **Start a request** → pick **Hackathon with catering** → **Build my application**. The request opens as steps: Event, Budget, Documents, Form answers, Review and submit. Optional: pick the event date on New request first to see the USG deadline before you write.
+2. On **Review and submit**, the **Greenlight Check** verdict should read **Matches after N fixes** (the engine count: Chipotle not on the Vendor List so the 9-week deadline passed Nov 11, food at $45 per person, gift cards never fundable, missing health permit and UEPA, plus any warn-level heuristics). Open **Greenlight Check (copy or print)** for the EngageSC paste page (`/club/app/[id]/check`).
+3. Click **Cap food at $4,200**, move gift cards and swag to sponsors, use **Find a listed vendor of the same type** under the catering line (any caterer on USG's list). The deadline becomes **Wed, Nov 18**, and the card notes the 9-to-6-week switch.
 4. On the catering line, click **Attach quote** and pick `demo/panda-catering-quote.pdf` (a made-up sample quote). Greenlight reads it and confirms the $4,201.20 total matches the $4,200 line.
-5. Enter UEPA `A31842`, tick the documents, **Draft with AI**, **Submit to USG**.
-6. **USG reviewer** → the Hackathon is in the queue, pre-checked. Agree or disagree with each AI comment, pick the outcome, **Draft the email**, **Send decision**.
-7. Back to **Club officer** → the award is shown; **Find sponsors** ranks companies for the $2,400 USG did not cover and drafts the pitch.
+5. Enter UEPA `A31842`, tick the documents (or **I have it**), **Draft with AI**, return to Review and submit: the verdict should now be **Matches the guidelines**. **Submit to USG**.
+6. **USG reviewer** → the Hackathon is in the queue under Greenlight Check **Matches** (or filter by verdict). Agree or disagree with each AI comment. For a dirty sample, try **Send back to fix** or **Approve once fixed** with a condition. Otherwise pick the outcome, **Draft the email**, **Send decision**.
+7. Back to **Club officer** → the award is shown; **Find sponsors** / Cover the gap ranks companies for what USG did not cover. Open **/club/help** for who reviews the board. After an approved event date passes, use the **Post-event** step for photos and invoices.
 
 "Reset demo data" on the USG queue restores the sample applications.
 

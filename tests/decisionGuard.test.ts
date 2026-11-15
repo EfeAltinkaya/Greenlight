@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { runChecks } from "../src/lib/engine";
-import { addBusinessDays, awardError, decisionEmailText, decisionFacts, defaultOutcome, emailProblems, fixDeadline, suggestedAmount } from "../src/lib/decisionGuard";
+import { addBusinessDays, awardError, awardErrorWithConditions, decisionEmailText, decisionFacts, defaultOutcome, emailProblems, fixDeadline, suggestedAmount } from "../src/lib/decisionGuard";
 import type { Application, Club } from "../src/lib/types";
 
 const club: Club = { id: "c1", name: "Test Club", school: "Viterbi", startupEligible: false, receivedThisYear: 3500, eventsThisSemester: 1 };
@@ -62,4 +62,15 @@ test("non-food purchases need a named vendor the club confirmed is USG-approved"
   assert.deepEqual(fails([print]), ["Confirm Kinko Print Shop is an approved USG vendor"]);
   assert.deepEqual(fails([{ ...print, vendor: "" }]), ["Flyers: add the vendor"]);
   assert.deepEqual(fails([{ ...print, vendorConfirmed: true }]), []);
+});
+
+test("approve once fixed allows a full award when conditions are listed", () => {
+  const a = app();
+  const c = runChecks(a, club);
+  assert.ok(awardError("approved", 1100, a, club, c));
+  assert.equal(awardErrorWithConditions("approved", 900, a, club, c, ["Switch caterer to a listed vendor"]), null);
+  const f = decisionFacts(a, club, c, "approved", 900, "missing-docs", [], ["Switch caterer to a listed vendor"]);
+  const email = decisionEmailText(f);
+  assert.match(email, /Approved once these fixes are done/);
+  assert.match(email, /Switch caterer to a listed vendor/);
 });

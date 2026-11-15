@@ -1,7 +1,7 @@
 // Run: npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { lookupDeadline, matchVendor, needsNineWeeks, runChecks, sponsorAsks, budgetCsv, documentList } from "../src/lib/engine";
+import { deadlineSwitchHint, lookupDeadline, matchVendor, needsNineWeeks, runChecks, sponsorAsks, budgetCsv, documentList } from "../src/lib/engine";
 import type { Application, Club } from "../src/lib/types";
 
 const club: Club = { id: "c1", name: "Test Club", school: "Viterbi", startupEligible: false, receivedThisYear: 2000, eventsThisSemester: 1 };
@@ -152,4 +152,80 @@ test("checks: foodWhy and otherSources pass when filled; hotel compare passes wi
   assert.equal(c.find((x) => x.ruleId === "food-why")?.level, "pass");
   assert.equal(c.find((x) => x.ruleId === "other-university-funding")?.level, "pass");
   assert.equal(c.find((x) => x.ruleId === "hotel-compare")?.level, "pass");
+});
+
+test("checks: durable keyword warns with FAQ quote and sponsor fix", () => {
+  const a = app({
+    items: [
+      { id: "i1", item: "Bluetooth speakers for the room", vendor: "Amazon", link: "https://amazon.com/x", justification: "Reusable AV equipment", quantity: 2, unitPrice: 80, total: 160, orderBy: "", category: "supplies", estimate: false, toSponsor: false, vendorConfirmed: true },
+    ],
+  });
+  const c = runChecks(a, club, "2026-11-14");
+  const d = c.find((x) => x.ruleId === "durable-likely");
+  assert.equal(d?.level, "warn");
+  assert.equal(d?.heuristic, true);
+  assert.match(d!.quote, /three years/i);
+  assert.equal(d?.fix?.action, "to-sponsor");
+});
+
+test("checks: qty-per-attendee warns when quantity exceeds heuristic ratio", () => {
+  const a = app({
+    docs: { quotes: true, healthPermit: true },
+    uepa: "A12345",
+    items: [
+      { id: "i1", item: "Swag pens", vendor: "Campus Custom Tees", link: "https://example.com", justification: "Giveaways", quantity: 400, unitPrice: 2, total: 800, orderBy: "", category: "promo_merch", estimate: false, toSponsor: false, vendorConfirmed: true },
+    ],
+  });
+  // 400 / 120 > 1.5
+  const c = runChecks(a, club, "2026-11-14");
+  const q = c.find((x) => x.ruleId === "qty-per-attendee");
+  assert.equal(q?.level, "warn");
+  assert.equal(q?.heuristic, true);
+  assert.match(q!.section, /Greenlight check/);
+});
+
+test("checks: duplicate item+vendor warns within a request and against a peer", () => {
+  const a = app({
+    docs: { quotes: true, healthPermit: true },
+    uepa: "A12345",
+    items: [
+      { id: "i1", item: "Catered lunch", vendor: "Panda Catering", link: "https://example.com", justification: "Lunch", quantity: 60, unitPrice: 35, total: 2100, orderBy: "", category: "food", estimate: false, toSponsor: false },
+      { id: "i2", item: "Catered lunch", vendor: "Panda Catering", link: "https://example.com", justification: "More lunch", quantity: 60, unitPrice: 35, total: 2100, orderBy: "", category: "food", estimate: false, toSponsor: false },
+    ],
+  });
+  const c = runChecks(a, club, "2026-11-14");
+  assert.ok(c.some((x) => x.ruleId === "duplicate-item" && x.level === "warn"));
+
+  const peer = app({ id: "a2", status: "submitted", submittedAt: "2026-11-10", items: [
+    { id: "p1", item: "Catered lunch", vendor: "Panda Catering", link: "https://example.com", justification: "", quantity: 40, unitPrice: 35, total: 1400, orderBy: "", category: "food", estimate: false, toSponsor: false },
+  ]});
+  const single = app({
+    docs: { quotes: true, healthPermit: true },
+    uepa: "A12345",
+    items: [
+      { id: "i1", item: "Catered lunch", vendor: "Panda Catering", link: "https://example.com", justification: "Lunch", quantity: 60, unitPrice: 35, total: 2100, orderBy: "", category: "food", estimate: false, toSponsor: false },
+    ],
+  });
+  const c2 = runChecks(single, club, "2026-11-14", [peer]);
+  assert.ok(c2.some((x) => x.ruleId === "duplicate-item" && /also on/i.test(x.title)));
+});
+
+test("checks: missing quote warns when a line has no quote, link or cart docs", () => {
+  const a = app({
+    docs: {},
+    uepa: "A12345",
+    items: [
+      { id: "i1", item: "Catered lunch", vendor: "Panda Catering", link: "", justification: "Lunch", quantity: 100, unitPrice: 30, total: 3000, orderBy: "", category: "food", estimate: false, toSponsor: false },
+    ],
+  });
+  const c = runChecks(a, club, "2026-11-14");
+  assert.equal(c.find((x) => x.ruleId === "missing-quote")?.level, "warn");
+});
+
+test("deadlineSwitchHint: listed vendor opens the later 6-week deadline", () => {
+  const h = deadlineSwitchHint("2027-02-18", "2026-11-14");
+  assert.ok(h);
+  assert.equal(h!.from, "2026-11-11");
+  assert.equal(h!.to, "2026-11-18");
+  assert.equal(h!.gainDays, 7);
 });
