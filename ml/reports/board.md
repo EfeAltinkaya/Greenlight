@@ -10,9 +10,9 @@ Greenlight Models are small classifiers we trained on USC club-funding data, on 
 - **Accuracy:** 0.950
 - **Macro F1:** 0.948
 - **5-fold CV macro F1 (train):** 0.938 ± 0.038 (5 folds)
-- **Majority baseline:** acc 0.250, macro F1 0.100 (label `0`)
+- **Majority baseline:** acc 0.250, macro F1 0.100 (label `arts`)
 - **Decision:** Shipped: macro F1 0.948 beats majority 0.100
-- **Elapsed:** 3.12s
+- **Elapsed:** 2.99s
 
 ## Per-label precision / recall
 

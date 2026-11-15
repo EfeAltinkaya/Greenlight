@@ -18,6 +18,7 @@ type HeadMeta = {
   does?: string;
   neverDoes?: string;
   reportWrong?: string;
+  honestFraming?: string;
 };
 
 const TASK_COPY: Record<string, { does: string; never: string; limits: string }> = {
