@@ -1,13 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { announceNav } from "@/components/Motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles, AlertTriangle } from "lucide-react";
 import { newId, store, useCurrentClub } from "@/lib/store";
 import { todayISO } from "@/lib/engine";
 import type { Application, EventInfo } from "@/lib/types";
 import type { Intake } from "@/lib/ai";
 import { Spinner, useToast } from "@/components/ui";
+import { useSession } from "@/lib/session";
 
 const EXAMPLES = [
   { label: "Hackathon with catering", text: "Hackathon for 120 students in Ginsburg Hall on Feb 18. Catering from Chipotle $5,400, Amazon swag $600, $600 in gift cards for winners." },
@@ -17,7 +18,12 @@ const EXAMPLES = [
 
 export default function NewRequest() {
   const club = useCurrentClub();
+  const session = useSession();
   const router = useRouter();
+  // With accounts switched on, a new request needs an account: sign up first, then come straight back here.
+  useEffect(() => {
+    if (session.enabled && session.ready && !session.user) router.replace("/login?mode=signup&next=/club/new");
+  }, [session.enabled, session.ready, session.user]); // eslint-disable-line react-hooks/exhaustive-deps
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [toast, say] = useToast();

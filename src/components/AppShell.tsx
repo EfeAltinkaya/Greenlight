@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BarChart3, Bell, BookOpen, CalendarClock, CircleHelp, FilePlus2, Handshake, Inbox, Landmark, LayoutGrid, LogOut, Megaphone, Menu, ReceiptText, RotateCcw, Store, Wallet, X } from "lucide-react";
@@ -103,6 +104,7 @@ export function AppShell({ role, children }: { role: Role; children: React.React
               <div className="side-label">{g.title}</div>
               {g.items.map((i) => (
                 <Link key={i.href} href={i.href} className="side-link" data-tour={i.tour} aria-current={active(i) ? "page" : undefined}>
+                  {active(i) && <motion.span layoutId="side-active" className="side-active" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
                   <i.Icon />
                   {i.label}
                   {i.count ? <span className="count">{i.count}</span> : null}

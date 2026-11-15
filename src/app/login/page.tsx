@@ -1,26 +1,45 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Eye, EyeOff, MailCheck } from "lucide-react";
 import { refreshProfile, supabase, useSession } from "@/lib/session";
 import { Mark, Spinner } from "@/components/ui";
 
-type Mode = "signin" | "signup";
+type Mode = "signin" | "signup" | "forgot";
 type Role = "club" | "usg" | "sponsor";
 const SCHOOLS = ["Viterbi", "Marshall", "Dornsife", "Price", "Annenberg", "Cinematic Arts", "Thornton", "Kaufman", "Roski", "Other"];
+const home = (r: string | null) => (r === "usg" ? "/usg" : r === "sponsor" ? "/sponsor" : "/club");
+/** Only same-site paths that belong to the role may be used as "next", so a link can't send people elsewhere. */
+const safeNext = (next: string | null, role: string | null) => {
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return home(role);
+  return next.startsWith(home(role)) ? next : home(role);
+};
 
-export default function Login() {
+export default function LoginPage() {
+  return <Suspense><Login /></Suspense>;
+}
+
+function Login() {
   const router = useRouter();
   const session = useSession();
-  const [mode, setMode] = useState<Mode>("signin");
+  const q = useSearchParams();
+  const [mode, setMode] = useState<Mode>(() => { const m = q.get("mode"); return m === "signup" || m === "forgot" ? m : "signin"; });
+  const next = q.get("next");
   const [role, setRole] = useState<Role>("club");
   const [clubMode, setClubMode] = useState<"create" | "join">("create");
   const [f, setF] = useState({ email: "", password: "", name: "", club: "", school: "Viterbi", code: "", org: "", invite: "" });
+  const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [info, setInfo] = useState("");
-  const home = (r: string | null) => (r === "usg" ? "/usg" : r === "sponsor" ? "/sponsor" : "/club");
+  const [info, setInfo] = useState(() => (q.get("updated") ? "Password updated. Sign in with your new password." : ""));
+
+  // Already signed in: go straight on.
+  useEffect(() => {
+    if (session.user?.role) router.replace(safeNext(next, session.user.role));
+  }, [session.user, next, router]);
+
+  const switchTo = (m: Mode) => { setMode(m); setErr(""); setInfo(""); };
 
   async function finishSignup() {
     const { data, error } = await supabase!.rpc("complete_signup", {
@@ -36,9 +55,16 @@ export default function Login() {
     if (!supabase) return;
     setErr(""); setInfo(""); setBusy(true);
     try {
+      if (mode === "forgot") {
+        if (!f.email.includes("@")) throw new Error("Enter the email you signed up with.");
+        const { error } = await supabase.auth.resetPasswordForEmail(f.email, { redirectTo: `${location.origin}/login/reset` });
+        if (error) throw new Error(error.message);
+        setInfo(`If ${f.email} has an account, a reset link is on its way. Open it on this device.`);
+        return;
+      }
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email: f.email, password: f.password });
-        if (error) throw new Error(error.message === "Invalid login credentials" ? "That email and password do not match an account." : error.message);
+        if (error) throw new Error(error.message === "Invalid login credentials" ? "That email and password don't match an account. Check both, or reset your password." : error.message);
         // First sign-in after confirming the email: finish the sign-up with the details saved earlier.
         const { data: prof } = await supabase.from("profiles").select("role").maybeSingle();
         if (!prof) {
@@ -50,7 +76,7 @@ export default function Login() {
         }
         await refreshProfile();
         const { data: p2 } = await supabase.from("profiles").select("role").maybeSingle();
-        router.push(home((p2?.role as string) ?? null));
+        router.push(safeNext(next, (p2?.role as string) ?? null));
         return;
       }
       if (!f.name.trim()) throw new Error("Add your name.");
@@ -61,13 +87,13 @@ export default function Login() {
       const { data, error } = await supabase.auth.signUp({ email: f.email, password: f.password, options: { emailRedirectTo: `${location.origin}/login` } });
       if (error) throw new Error(error.message);
       if (!data.session) {
-        setInfo("Check your email to confirm your account, then sign in here. Your details are saved once you sign in.");
         localStorage.setItem("greenlight:pending-signup", JSON.stringify({ role, clubMode, ...f, password: "" }));
+        setInfo("Check your email to confirm your account, then sign in here.");
         setMode("signin");
         return;
       }
       const r = await finishSignup();
-      router.push(home(r.role));
+      router.push(safeNext(next, r.role));
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -75,28 +101,46 @@ export default function Login() {
     }
   }
 
+  const heading = mode === "signin" ? "Sign in" : mode === "signup" ? "Create your account" : "Reset your password";
+  const sub =
+    mode === "forgot"
+      ? "Enter your email and we'll send a link to choose a new password."
+      : next === "/club/new"
+        ? "Sign in or create an account to start your request. It's saved to your club, so your e-board can work on it too."
+        : mode === "signin"
+          ? "Welcome back. Your club's requests and sponsors are where you left them."
+          : "One account per person. Officers of the same club share everything through a join code.";
+
   return (
-    <div className="site" style={{ display: "grid", placeItems: "center", padding: "48px 16px" }}>
-      <div className="stack" style={{ width: "100%", maxWidth: 460 }}>
-        <Link href="/" style={{ justifySelf: "center" }}><Mark size="lg" /></Link>
-        <div className="card card-pad stack">
+    <div className="site auth-page">
+      <header className="auth-top">
+        <Link href="/" aria-label="Greenlight home"><Mark /></Link>
+        <Link href="/" className="link small"><ArrowLeft />Back to the home page</Link>
+      </header>
+      <main className="auth-main">
+        <div className="card auth-card stack">
           {!supabase ? (
             <>
-              <h1 style={{ fontSize: 26 }}>Accounts are not switched on here</h1>
+              <h1 className="auth-h">Accounts are not switched on here</h1>
               <p className="muted">This copy of Greenlight runs in demo mode: everything saves in this browser and you can switch between club, USG and sponsor views.</p>
-              <div className="row"><Link className="btn btn-primary" href="/club">Open the demo<ArrowRight /></Link></div>
+              <div className="row"><Link className="btn btn-primary" href="/club">Explore the tool<ArrowRight /></Link></div>
             </>
           ) : (
-            <form className="stack" onSubmit={submit}>
-              <div className="segmented" role="group" aria-label="Sign in or create account">
-                <button type="button" aria-pressed={mode === "signin"} onClick={() => setMode("signin")}>Sign in</button>
-                <button type="button" aria-pressed={mode === "signup"} onClick={() => setMode("signup")}>Create account</button>
+            <form className="stack" onSubmit={submit} noValidate>
+              {mode !== "forgot" && (
+                <div className="segmented auth-tabs" role="tablist" aria-label="Sign in or create account">
+                  <button type="button" role="tab" aria-selected={mode === "signin"} aria-pressed={mode === "signin"} onClick={() => switchTo("signin")}>Sign in</button>
+                  <button type="button" role="tab" aria-selected={mode === "signup"} aria-pressed={mode === "signup"} onClick={() => switchTo("signup")}>Create account</button>
+                </div>
+              )}
+              <div className="stack-xs">
+                <h1 className="auth-h">{heading}</h1>
+                <p className="muted">{sub}</p>
               </div>
-              <h1 style={{ fontSize: 26 }}>{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
 
               {mode === "signup" && (
                 <>
-                  <div className="stack-xs"><span className="small" style={{ fontWeight: 600 }}>I am</span>
+                  <div className="stack-xs"><span className="lbl">I am</span>
                     <div className="segmented" role="group" aria-label="Account type">
                       <button type="button" aria-pressed={role === "club"} onClick={() => setRole("club")}>A club officer</button>
                       <button type="button" aria-pressed={role === "usg"} onClick={() => setRole("usg")}>A USG reviewer</button>
@@ -125,17 +169,30 @@ export default function Login() {
                 </>
               )}
 
-              <label className="field"><span className="lbl">Email</span><input className="input" type="email" name="email" autoComplete={mode === "signin" ? "username" : "email"} required value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></label>
-              <label className="field"><span className="lbl">Password</span><input className="input" type="password" name="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} required minLength={8} value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></label>
-              {err && <p className="small" style={{ color: "var(--fix)" }} role="alert">{err}</p>}
-              {info && <p className="small" style={{ color: "var(--clear)" }} role="status">{info}</p>}
-              <button className="btn btn-primary btn-lg" type="submit" disabled={busy}>{busy ? <><Spinner />Working</> : mode === "signin" ? "Sign in" : "Create account"}</button>
-              <p className="tiny faint">Your browser can save the password. You stay signed in on this device until you sign out.</p>
+              <label className="field"><span className="lbl">Email</span><input className="input" type="email" name="email" autoComplete={mode === "signup" ? "email" : "username"} required value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></label>
+              {mode !== "forgot" && (
+                <div className="field">
+                  <div className="between"><label className="lbl" htmlFor="password">Password</label>{mode === "signin" && <button type="button" className="link small" onClick={() => switchTo("forgot")}>Forgot password?</button>}</div>
+                  <div className="pw">
+                    <input id="password" className="input" type={show ? "text" : "password"} name="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} required minLength={8} value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
+                    <button type="button" className="pw-toggle" onClick={() => setShow(!show)} aria-label={show ? "Hide password" : "Show password"}>{show ? <EyeOff /> : <Eye />}</button>
+                  </div>
+                  {mode === "signup" && <span className="tiny faint">At least 8 characters.</span>}
+                </div>
+              )}
+              {err && <p className="small field-error" role="alert"><AlertTriangle />{err}</p>}
+              {info && <p className="small row" style={{ color: "var(--clear)", gap: 6, flexWrap: "nowrap" }} role="status"><MailCheck style={{ width: 16, flex: "none" }} />{info}</p>}
+              <button className="btn btn-primary btn-lg" type="submit" disabled={busy}>
+                {busy ? <><Spinner />Working</> : mode === "signin" ? <>Sign in<ArrowRight /></> : mode === "signup" ? <>Create account<ArrowRight /></> : "Send reset link"}
+              </button>
+              {mode === "forgot"
+                ? <button type="button" className="link small" style={{ justifySelf: "start" }} onClick={() => switchTo("signin")}><ArrowLeft />Back to sign in</button>
+                : <p className="tiny faint">Your browser can save the password. You stay signed in on this device until you sign out.</p>}
             </form>
           )}
         </div>
-        <p className="tiny faint" style={{ textAlign: "center" }}><Link href="/club" className="link">Look around in demo mode instead</Link></p>
-      </div>
+        <p className="small faint" style={{ textAlign: "center" }}>Just looking? <Link href="/club" className="link">Explore the tool without an account</Link></p>
+      </main>
     </div>
   );
 }

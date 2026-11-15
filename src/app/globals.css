@@ -364,9 +364,12 @@ a.card:active, button.card:active { transform: translateY(0) scale(.99); }
 .side .side-link { color: rgba(255,240,236,.82); position: relative; }
 .side .side-link svg { color: rgba(255,240,236,.6); }
 .side .side-link:hover { background: rgba(255,255,255,.08); color: #fff; }
-.side .side-link[aria-current="page"] { background: rgba(255,255,255,.12); color: #fff; }
+.side .side-link[aria-current="page"] { background: transparent; color: #fff; }
 .side .side-link[aria-current="page"] svg { color: var(--gold); }
-.side .side-link[aria-current="page"]::before { content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 4px; border-radius: 0 4px 4px 0; background: var(--gold); }
+/* The active highlight is one element that slides between tabs (motion layoutId). */
+.side .side-active { position: absolute; inset: 0; border-radius: 10px; background: rgba(255,255,255,.12); z-index: 0; }
+.side .side-active::before { content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 4px; border-radius: 0 4px 4px 0; background: var(--gold); }
+.side .side-link > :not(.side-active) { position: relative; z-index: 1; }
 .side .side-link .count { color: var(--gold); }
 .side .role-switch { background: rgba(0,0,0,.22); }
 .side .role-switch a { color: rgba(255,240,236,.75); }
@@ -447,3 +450,36 @@ h3 { font-weight: 700; letter-spacing: -0.01em; }
 
 /* Outreach board: columns side by side on desktop, stacked on phones. */
 @media (max-width: 720px) { .pipeline { grid-template-columns: minmax(0, 1fr); overflow-x: visible; } }
+
+/* Landing top bar: bigger, darker text so the main actions are easy to find. */
+.site-nav-in { height: 72px; gap: 36px; }
+.site-nav-links { font-size: 16px; font-weight: 600; color: var(--ink); gap: 30px; }
+.site-nav-links a { padding: 6px 2px; border-bottom: 2px solid transparent; transition: border-color .15s, color .15s; }
+.site-nav-links a:hover { border-bottom-color: var(--cardinal); }
+.nav-actions { margin-left: auto; gap: 10px; flex-wrap: nowrap; }
+.nav-btn { height: 42px; padding: 0 18px; font-size: 15px; font-weight: 650; }
+@media (max-width: 760px) { .nav-actions .btn-ghost { display: none; } .nav-btn { height: 38px; padding: 0 14px; font-size: 14px; } }
+
+/* Typed hero headline: the invisible full sentence holds the space, the live text types over it. */
+.typed { display: grid; }
+.typed > span { grid-area: 1 / 1; }
+.typed-ghost { visibility: hidden; }
+.typed .caret { display: inline-block; width: .06em; height: .9em; margin-left: .04em; background: var(--cardinal); vertical-align: -.08em; animation: caret 1s steps(1) infinite; }
+.typed .caret.done { animation: caret 1s steps(1) 3 forwards; }
+@keyframes caret { 50% { opacity: 0; } 100% { opacity: 0; } }
+
+/* Sign in, create account, forgot password */
+.auth-page { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; }
+.auth-top { max-width: 1120px; width: 100%; margin: 0 auto; padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+.auth-top .link svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
+.auth-main { display: grid; align-content: center; justify-items: center; gap: 18px; padding: 24px 16px 64px; }
+.auth-card { width: 100%; max-width: 480px; padding: 32px; }
+.auth-h { font-size: 30px; letter-spacing: -0.03em; }
+.auth-tabs { width: 100%; }
+.auth-tabs button { flex: 1; height: 40px; font-size: 15px; }
+.pw { position: relative; display: block; }
+.pw .input { padding-right: 44px; width: 100%; }
+.pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 6px; cursor: pointer; color: var(--ink-3); display: grid; }
+.pw-toggle svg { width: 18px; height: 18px; }
+button.link { border: 0; background: none; padding: 0; cursor: pointer; }
+@media (max-width: 480px) { .auth-card { padding: 22px 18px; } }
