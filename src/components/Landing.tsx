@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowRight, LogIn } from "lucide-react";
+import { ArrowRight, LogIn, LogOut } from "lucide-react";
 import { useSession } from "@/lib/session";
 
 const EASE = [0.2, 0.8, 0.2, 1] as const;
@@ -57,7 +57,12 @@ export function ScrollIn({ children, delay = 0, className, id, style }: { childr
 export function NavActions() {
   const s = useSession();
   if (s.user) {
-    return <Link href={deskFor(s.user.role)} className="btn btn-primary nav-btn">Go to your desk<ArrowRight /></Link>;
+    return (
+      <>
+        <button className="btn btn-ghost nav-btn" onClick={() => s.signOut()}><LogOut />Sign out</button>
+        <Link href={deskFor(s.user.role)} className="btn btn-primary nav-btn">Go to your desk<ArrowRight /></Link>
+      </>
+    );
   }
   return (
     <>

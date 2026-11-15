@@ -2,16 +2,18 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BarChart3, Bell, BookOpen, CalendarClock, CircleHelp, FilePlus2, Handshake, Inbox, Landmark, LayoutGrid, LogOut, Menu, ReceiptText, RotateCcw, Store, Wallet, X } from "lucide-react";
 import { store, useCurrentClub, useStore } from "@/lib/store";
-import { useSession } from "@/lib/session";
+import { switchRole, useSession } from "@/lib/session";
 import { Mark, useAiStatus } from "./ui";
 import { Tour } from "./Tour";
 
 export type Role = "club" | "usg" | "sponsor";
 type Item = { href: string; label: string; Icon: typeof Inbox; match?: (p: string) => boolean; count?: number; tour?: string };
 type Group = { title: string; items: Item[] };
+
+const ROLE_NAME = { club: "club officer", usg: "USG reviewer", sponsor: "sponsor" } as const;
 
 export function AppShell({ role, children }: { role: Role; children: React.ReactNode }) {
   const path = usePathname();
@@ -69,6 +71,18 @@ export function AppShell({ role, children }: { role: Role; children: React.React
             ] },
           ];
 
+  // One account can hold several roles. Opening another side switches the active role on the server,
+  // so the database permissions always match the side you are looking at.
+  const multiRole = (session.user?.roles.length ?? 0) > 1;
+  const canSwitch = Boolean(session.user && session.user.role !== role && session.user.roles.includes(role));
+  const [switchErr, setSwitchErr] = useState("");
+  const switching = canSwitch && !switchErr;
+  useEffect(() => {
+    if (!canSwitch) return;
+    let off = false;
+    switchRole(role).catch((e) => { if (!off) setSwitchErr((e as Error).message); });
+    return () => { off = true; };
+  }, [canSwitch, role]);
   const active = (i: Item) => (i.match ? i.match(path) : path.startsWith(i.href));
   const here = groups.flatMap((g) => g.items).find(active);
   // Each page gets its own tab title; one request or deal is titled by its own name.
@@ -88,9 +102,12 @@ export function AppShell({ role, children }: { role: Role; children: React.React
         </div>
         <div className="side-who">
           <span className="tiny faint">{session.user ? session.user.email : "Demo mode"}</span>
-          <strong className="small">{roleLabel}</strong>
+          <div className="between" style={{ flexWrap: "nowrap", gap: 8 }}>
+            <strong className="small">{roleLabel}</strong>
+            {session.user && <button className="side-signout" onClick={() => session.signOut()}><LogOut />Sign out</button>}
+          </div>
         </div>
-        {!session.user && (
+        {(!session.user || multiRole) && (
           <div className="role-switch three" aria-label="View as">
             <Link href="/club" aria-current={role === "club" ? "page" : undefined}>Club</Link>
             <Link href="/usg" aria-current={role === "usg" ? "page" : undefined}>USG</Link>
@@ -128,9 +145,14 @@ export function AppShell({ role, children }: { role: Role; children: React.React
       <div style={{ minWidth: 0 }}>
         <div className="mobile-bar">
           <Link href="/"><Mark /></Link>
-          <button className="btn btn-sm" onClick={() => setOpen(true)} aria-label="Open menu"><Menu />Menu</button>
+          <div className="row" style={{ gap: 6 }}>
+            {session.user && <button className="btn btn-sm btn-ghost" onClick={() => session.signOut()} aria-label="Sign out"><LogOut /></button>}
+            <button className="btn btn-sm" onClick={() => setOpen(true)} aria-label="Open menu"><Menu />Menu</button>
+          </div>
         </div>
-        <main className="main"><div className="main-in">{session.user && session.user.role && session.user.role !== role ? (
+        <main className="main"><div className="main-in">{switching ? (
+          <div className="card empty"><span className="spinner" aria-hidden="true" /><strong>Switching to {ROLE_NAME[role]}</strong><span className="muted">Loading what a {ROLE_NAME[role]} can see.</span></div>
+        ) : session.user && session.user.role && session.user.role !== role ? (
           <div className="card empty"><strong>This side is for {role === "usg" ? "USG reviewers" : role === "sponsor" ? "sponsors" : "club officers"}.</strong><span className="muted">You are signed in as a {session.user.role === "usg" ? "USG reviewer" : session.user.role === "sponsor" ? "sponsor" : "club officer"}.</span><Link className="btn btn-primary" href={session.user.role === "usg" ? "/usg" : session.user.role === "sponsor" ? "/sponsor" : "/club"}>Go to your desk</Link></div>
         ) : children}</div></main>
       </div>

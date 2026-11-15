@@ -65,6 +65,20 @@ create or replace function public.my_role() returns text language sql stable sec
 create or replace function public.my_club() returns text language sql stable security definer set search_path = public as $$ select club_id from profiles where id = auth.uid() $$;
 create or replace function public.my_org() returns text language sql stable security definer set search_path = public as $$ select org from profiles where id = auth.uid() $$;
 
+-- One person can hold several roles (for example a club officer who also reviews for USG, or the demo owner).
+-- roles lists what they may use; role is the one active now, and every permission above follows it.
+alter table public.profiles add column if not exists roles text[] not null default '{}';
+update public.profiles set roles = array[role] where roles = '{}';
+
+create or replace function public.switch_role(p_role text) returns text language plpgsql security definer set search_path = public as $$
+begin
+  update profiles set role = p_role where id = auth.uid() and p_role = any(roles);
+  if not found then raise exception 'This account does not have the % role', p_role; end if;
+  return p_role;
+end $$;
+revoke all on function public.switch_role(text) from public;
+grant execute on function public.switch_role(text) to authenticated;
+
 -- Sign-up finishes here: creates or joins a club, or registers a sponsor or reviewer.
 create or replace function public.complete_signup(p_role text, p_name text, p_club_name text, p_school text, p_join_code text, p_org text, p_invite text)
 returns json language plpgsql security definer set search_path = public as $$
@@ -86,6 +100,7 @@ begin
   insert into profiles (id, email, name, role, club_id, org)
   values (auth.uid(), (select email from auth.users where id = auth.uid()), p_name, p_role, v_club, case when p_role = 'sponsor' then p_org else null end)
   on conflict (id) do update set name = excluded.name, role = excluded.role, club_id = excluded.club_id, org = excluded.org;
+  update profiles set roles = array(select distinct unnest(roles || array[p_role])) where id = auth.uid();
   select join_code into v_code from clubs where id = v_club;
   return json_build_object('role', p_role, 'club_id', v_club, 'join_code', v_code);
 end $$;

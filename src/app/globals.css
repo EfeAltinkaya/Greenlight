@@ -497,3 +497,8 @@ button.link { border: 0; background: none; padding: 0; cursor: pointer; }
 .learned-line { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-weight: 600; }
 .learned-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 25%, transparent); }
 .learn-note { margin: -4px 0 6px; max-width: 70ch; }
+
+/* Sign out sits next to the account name at the top of the sidebar. */
+.side-signout { display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(255,255,255,.22); background: transparent; color: rgba(255,240,236,.9); border-radius: 8px; padding: 4px 9px; font: 600 12px/1 var(--font-body, inherit); cursor: pointer; white-space: nowrap; }
+.side-signout svg { width: 13px; height: 13px; }
+.side-signout:hover { background: rgba(255,255,255,.1); color: #fff; }
