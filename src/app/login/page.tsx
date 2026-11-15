@@ -191,7 +191,7 @@ function Login() {
             </form>
           )}
         </div>
-        <p className="small faint" style={{ textAlign: "center" }}>Just looking? <Link href="/club" className="link">Explore the tool without an account</Link></p>
+        <p className="small faint" style={{ textAlign: "center" }}>Exploring first? <Link href="/club" className="link">Explore the tool without an account</Link></p>
       </main>
     </div>
   );

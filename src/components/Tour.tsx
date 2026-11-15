@@ -12,7 +12,7 @@ const STEPS: Record<"club" | "usg" | "sponsor", Step[]> = {
     { target: "deadlines", title: "Deadlines", body: "Pick a date and see the exact Wednesday you must submit by, from USG's own deadline sheet." },
     { target: "funding", title: "Other funding", body: "If USG says no or funds part, apply to Viterbi, Marshall, GSG, IgniteSC and other USC sources from here." },
     { target: "sponsors", title: "3. Sponsors", body: "One hub for covering the gap: find companies, outreach, inbound offers, and deals. Sponsors pay vendors directly." },
-    { target: "money", title: "4. Money tracker", body: "Every dollar for every event: what USG awarded, what sponsors committed, what is paid and which invoices are due." },
+    { target: "money", title: "4. Ledger", body: "Every dollar for every event: what USG awarded, what sponsors committed, what is paid and which invoices are due." },
     { target: "updates", title: "Updates", body: "When USG or a sponsor acts, it shows up here and in your email automatically." },
   ],
   usg: [

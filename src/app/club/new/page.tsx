@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { announceNav } from "@/components/Motion";
 import { useState, useEffect } from "react";
-import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles, AlertTriangle } from "lucide-react";
+import { ArrowRight, ReceiptText, AlertTriangle } from "lucide-react";
 import { authFetch } from "@/lib/apiClient";
 import { newId, store, useCurrentClub } from "@/lib/store";
 import { fmtDate, lookupDeadline, runChecks, todayISO } from "@/lib/engine";
@@ -85,9 +85,9 @@ export default function NewRequest() {
       {toast}
       <div className="page-head">
         <div>
-          <span className="eyebrow">New request · {club.name}</span>
-          <h1>Tell us about the event.</h1>
-          <p className="lede">Write it the way you would text your e-board: what, when, where, how many people, and what it costs. Greenlight turns it into USG&apos;s application.</p>
+          <span className="eyebrow">Plan an event · {club.name}</span>
+          <h1>Describe the event.</h1>
+          <p className="lede">Write it the way you would text your e-board: what, when, where, how many people, and what it costs. Greenlight builds the budget, the timeline and the USG application.</p>
         </div>
       </div>
 
@@ -135,20 +135,6 @@ export default function NewRequest() {
             {busy ? <><Spinner />Building your application</> : <>Build my application<ArrowRight /></>}
           </button>
         </div>
-      </section>
-
-      <section className="grid cols-3">
-        {[
-          { Icon: Sparkles, t: "Reads your description", d: "Date, place, attendance and every cost become USG's budget sheet, with the right funding board." },
-          { Icon: ListChecks, t: "Checks every line", d: "Each cost is checked against the 2026-27 guidelines, with the rule quoted and a one-click fix." },
-          { Icon: CalendarSearch, t: "Finds your deadline", d: "The exact Wednesday you must submit by, from USG's own deadline sheet." },
-        ].map(({ Icon, t, d }) => (
-          <div key={t} className="stack-sm" style={{ padding: "4px 4px" }}>
-            <span className="icon-tile"><Icon /></span>
-            <h3>{t}</h3>
-            <p className="small muted">{d}</p>
-          </div>
-        ))}
       </section>
       <p className="tiny faint row" style={{ gap: 6 }}><ReceiptText style={{ width: 14, height: 14 }} />Nothing goes to USG reviewers until you press Submit on the last step. Traveler details and payments stay in EngageSC.</p>
     </>

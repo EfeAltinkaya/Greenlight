@@ -21,8 +21,8 @@ export function Updates({ role }: { role: "club" | "usg" | "sponsor" }) {
       <div className="page-head">
         <div>
           <span className="eyebrow">Updates</span>
-          <h1>What changed</h1>
-          <p className="lede">Every step the other side takes lands here{session.user ? ` and in ${session.user.email}` : ""}. You never have to check EngageSC or an inbox to know where things stand.</p>
+          <h1>Updates</h1>
+          <p className="lede">Decisions, questions and replies from USG and sponsors, newest first. USG may also email you directly; forward those to Greenlight to keep them here{session.user ? ` (${session.user.email})` : ""}.</p>
         </div>
       </div>
       {mine.length === 0 ? (

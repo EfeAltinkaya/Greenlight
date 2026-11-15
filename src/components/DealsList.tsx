@@ -6,7 +6,7 @@ import { useCurrentClub, useStore } from "@/lib/store";
 import { useSession } from "@/lib/session";
 import { DEAL_FLOW, DEAL_STEPS } from "@/lib/workflow";
 
-export function DealsList({ as }: { as: "club" | "sponsor" }) {
+export function DealsList({ as, embedded }: { as: "club" | "sponsor"; embedded?: boolean }) {
   const { deals, clubs, apps } = useStore();
   const club = useCurrentClub();
   const session = useSession();
@@ -15,14 +15,16 @@ export function DealsList({ as }: { as: "club" | "sponsor" }) {
   const base = as === "club" ? "/club/deals" : "/sponsor/deals";
   return (
     <>
+      {!embedded && (
       <div className="page-head">
         <div>
           <span className="eyebrow">Sponsors</span>
           <h1>{as === "club" ? "Deals" : "Club requests"}</h1>
           <p className="lede">{as === "club" ? "Every sponsorship you are working on, from first request to the thank-you recap." : "Clubs that asked for your support. Each one shows whose turn it is."}</p>
         </div>
-        {as === "club" && <Link href="/club/offers" className="btn btn-primary">Browse sponsor offers</Link>}
+        {as === "club" && <Link href="/club/sponsors?tab=offers" className="btn btn-primary">Browse sponsor offers</Link>}
       </div>
+      )}
       {list.length === 0 ? (
         <div className="card empty"><Handshake /><strong>No deals yet</strong><span className="small">{as === "club" ? "Request details on a sponsor offer to start one." : "When a club requests details on one of your offers, it appears here."}</span></div>
       ) : (

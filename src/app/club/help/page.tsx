@@ -186,8 +186,8 @@ export default function ClubHelp() {
       {toast}
       <div className="page-head">
         <div>
-          <span className="eyebrow">Help</span>
-          <h1>Who to contact</h1>
+          <span className="eyebrow">Ask a person</span>
+          <h1>Ask a person</h1>
           <p className="lede">
             Fall 2026 Funding Department roster as of {ROSTER_AS_OF}. Pick a question and your board; Greenlight drafts a short email with your request ID when you attach an application.
           </p>

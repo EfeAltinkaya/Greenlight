@@ -83,24 +83,16 @@ export function AppShell({ role, children }: { role: Role; children: React.React
   const groups: Group[] =
     role === "club"
       ? [
-          { title: "Start", items: [
-            { href: "/club", label: "Home", Icon: LayoutGrid, match: (p) => p === "/club", tour: "home" },
-            { href: "/club/updates", label: "Updates", Icon: Bell, count: unread, tour: "updates" },
-          ] },
-          { title: "USG funding", items: [
-            { href: "/club/new", label: "New request", Icon: FilePlus2, tour: "new" },
-            { href: "/club/requests", label: "My requests", Icon: Inbox, match: (p) => p.startsWith("/club/requests") || p.startsWith("/club/app"), tour: "requests" },
+          { title: "Journey", items: [
+            { href: "/club", label: "Today", Icon: LayoutGrid, match: (p) => p === "/club", tour: "home" },
+            { href: "/club/new", label: "Plan an event", Icon: FilePlus2, tour: "new" },
+            { href: "/club/requests", label: "Requests", Icon: Inbox, match: (p) => p.startsWith("/club/requests") || p.startsWith("/club/app"), tour: "requests" },
             { href: "/club/deadlines", label: "Deadlines", Icon: CalendarClock, tour: "deadlines" },
-            { href: "/club/funding", label: "Other funding", Icon: Landmark, tour: "funding" },
-          ] },
-          { title: "Cover the gap", items: [
+            { href: "/club/funding", label: "Other USC money", Icon: Landmark, tour: "funding" },
             { href: "/club/sponsors", label: "Sponsors", Icon: Handshake, count: myDeals, match: (p) => p.startsWith("/club/sponsors") || p.startsWith("/club/offers") || p.startsWith("/club/deals"), tour: "sponsors" },
-          ] },
-          { title: "Money", items: [
-            { href: "/club/money", label: "Money tracker", Icon: Wallet, tour: "money" },
-          ] },
-          { title: "Help", items: [
-            { href: "/club/help", label: "Who to contact", Icon: CircleHelp, tour: "help" },
+            { href: "/club/money", label: "Ledger", Icon: Wallet, tour: "money" },
+            { href: "/club/updates", label: "Updates", Icon: Bell, count: unread, tour: "updates" },
+            { href: "/club/help", label: "Ask a person", Icon: CircleHelp, tour: "help" },
             { href: "/club/rules", label: "USG rules", Icon: BookOpen },
           ] },
         ]

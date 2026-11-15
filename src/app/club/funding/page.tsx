@@ -57,7 +57,7 @@ export default function OtherFunding() {
       <div className="page-head">
         <div>
           <span className="eyebrow">USG funding</span>
-          <h1>Other funding</h1>
+          <h1>Other USC money</h1>
           <p className="lede">If USG says no or funds only part, stack other USC sources and sponsors for the gap. Only sources {club.name} qualifies for are listed first.</p>
         </div>
       </div>

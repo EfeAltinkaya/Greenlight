@@ -164,9 +164,9 @@ export default function Money() {
     <>
       <div className="page-head">
         <div>
-          <span className="eyebrow">Money</span>
-          <h1>Money tracker</h1>
-          <p className="lede">For each event: the full budget, what USG awarded, what sponsors committed and paid, and what is still missing. Log every funding source in the stack below. USG and sponsors pay vendors directly, so this tracks the money without the club holding it.</p>
+          <span className="eyebrow">Ledger</span>
+          <h1>Ledger</h1>
+          <p className="lede">Every dollar for every event: what it costs, who is covering each line, what has been paid and what is still open. USG and sponsors pay vendors directly, so the club never holds the money; this is the record.</p>
         </div>
       </div>
 
