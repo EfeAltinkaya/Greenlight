@@ -106,14 +106,17 @@ def keyword_predict(texts: list[str], labels: list[str]) -> list[str]:
     return preds
 
 
-def majority_baseline(y_train: np.ndarray, y_test: np.ndarray) -> tuple[float, float, str]:
+def majority_baseline(
+    y_train: np.ndarray, y_test: np.ndarray, label_names: list[str]
+) -> tuple[float, float, str]:
     values, counts = np.unique(y_train, return_counts=True)
-    maj = values[counts.argmax()]
+    maj = int(values[counts.argmax()])
     preds = np.full_like(y_test, maj)
+    name = label_names[maj] if 0 <= maj < len(label_names) else str(maj)
     return (
         float(accuracy_score(y_test, preds)),
         float(f1_score(y_test, preds, average="macro", zero_division=0)),
-        str(maj),
+        name,
     )
 
 
@@ -232,7 +235,6 @@ def train_task(task: str) -> dict:
     y_test_labels = df.loc[test_mask, "label"].astype(str).tolist()
 
     clf = LogisticRegression(
-        multi_class="multinomial",
         class_weight="balanced",
         max_iter=2000,
         solver="lbfgs",
@@ -255,7 +257,7 @@ def train_task(task: str) -> dict:
     )
     cm = confusion_matrix(y_test, y_pred_idx, labels=list(range(len(labels))))
 
-    maj_acc, maj_f1, maj_label = majority_baseline(y_train, y_test)
+    maj_acc, maj_f1, maj_label = majority_baseline(y_train, y_test, labels)
 
     kw_acc = kw_f1 = None
     if task == "items":
