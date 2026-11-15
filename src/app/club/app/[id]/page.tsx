@@ -33,7 +33,7 @@ export default function Workspace() {
   const { apps, clubs } = useStore();
   const app = apps.find((a) => a.id === id);
   const club = clubs.find((c) => c.id === app?.clubId);
-  const checks = useMemo(() => (app && club ? runChecks(app, club) : []), [app, club]);
+  const checks = useMemo(() => (app && club ? runChecks(app, club, undefined, apps.filter((x) => x.clubId === app.clubId)) : []), [app, club]);
   const [toast, say] = useToast();
   const [drafting, setDrafting] = useState(false);
   const [answersOffline, setAnswersOffline] = useState<boolean | null>(null);
@@ -291,7 +291,7 @@ export default function Workspace() {
           {step === "budget" && (
             <section className="stack">
               <div className="stack-xs"><h2>Budget</h2><p className="small muted">The same columns as USG&apos;s budget sheet. Anything USG won&apos;t fund can go to your sponsor list instead of being deleted.</p></div>
-              <BudgetTable items={app.items} checks={checks} editable={!locked} onChange={setItems} onQuote={attachQuote} />
+              <BudgetTable eventDate={app.event.date} items={app.items} checks={checks} editable={!locked} onChange={setItems} onQuote={attachQuote} />
               {!locked && (
                 <div><button className="btn btn-sm" onClick={() => setItems([...app.items, { id: "n" + Date.now(), item: "New item", vendor: "", link: "", justification: "", quantity: 1, unitPrice: 0, total: 0, orderBy: "", category: "supplies", estimate: true, toSponsor: false }])}>Add a line</button></div>
               )}

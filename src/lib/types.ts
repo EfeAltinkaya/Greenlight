@@ -65,7 +65,9 @@ export type Check = {
   quote: string;
   section: string;
   itemId?: string;
-  fix?: { label: string; action: "cap-food" | "to-sponsor" | "remove" | "confirm-vendor" };
+  fix?: { label: string; action: "cap-food" | "to-sponsor" | "remove" | "confirm-vendor" | "swap-single-use" };
+  /** True when this check is a Greenlight heuristic, not a quoted USG rule. */
+  heuristic?: boolean;
 };
 
 export type Status = "draft" | "submitted" | "in_review" | "needs_info" | "approved" | "partial" | "denied" | "post_event_due" | "closed";

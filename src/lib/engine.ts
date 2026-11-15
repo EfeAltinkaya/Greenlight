@@ -1,6 +1,6 @@
 // The rules engine: plain code, no AI. Every pass/warn/fail in the product comes from here,
 // so numbers are exact and every result points at a quoted USG rule.
-import { BOARDS, INELIGIBLE, RULES } from "@/data/rules";
+import { BOARDS, HEURISTICS, INELIGIBLE, RULES } from "@/data/rules";
 import { DEADLINES, type DeadlineRow } from "@/data/deadlines";
 import vendorData from "@/data/vendors.json";
 import type { Application, Check, Club, LineItem } from "./types";
@@ -111,6 +111,43 @@ export function cateringSuggestions(n = 3): Vendor[] {
   return vendorData.vendors.filter((v) => v.active && (v.kinds as string[]).includes("Catering") && v.registration !== "unknown").slice(0, n);
 }
 
+/** Listed food vendors that look like the same kind of service (catering vs restaurant cuisine). */
+export function listedVendorsOfType(hint = "", n = 8): Vendor[] {
+  const q = hint.toLowerCase();
+  const active = vendorData.vendors.filter((v) => v.active && v.registration !== "unknown");
+  const scored = active
+    .map((v) => {
+      const blob = `${v.category} ${(v.kinds as string[]).join(" ")} ${v.cuisine ?? ""}`.toLowerCase();
+      const catering = (v.kinds as string[]).includes("Catering") ? 1 : 0;
+      const overlap = q ? (q.split(/\s+/).filter((w) => w.length > 2 && blob.includes(w)).length) : catering;
+      return { v, score: overlap + catering };
+    })
+    .sort((a, b) => b.score - a.score);
+  const out = scored.map((s) => s.v);
+  const uniq: Vendor[] = [];
+  for (const v of out) {
+    if (uniq.some((u) => u.name === v.name)) continue;
+    uniq.push(v);
+    if (uniq.length >= n) break;
+  }
+  return uniq.length ? uniq : cateringSuggestions(n);
+}
+
+/** How switching from an unlisted food vendor to a listed one changes the USG deadline. */
+export function deadlineSwitchHint(eventDate: string, today = todayISO()) {
+  const nine = lookupDeadline(eventDate, true, today);
+  const six = lookupDeadline(eventDate, false, today);
+  if (nine.kind !== "ok" || six.kind !== "ok") return null;
+  if (nine.deadline === six.deadline) return null;
+  return {
+    from: nine.deadline,
+    to: six.deadline,
+    fromPassed: nine.passed,
+    toPassed: six.passed,
+    gainDays: Math.round((parse(six.deadline) - parse(nine.deadline)) / DAY),
+  };
+}
+
 // ---------- The checks ----------
 
 const lineTotal = (i: LineItem) => i.total;
@@ -139,7 +176,7 @@ export function nineWeekReason(app: Application) {
   return [app.event.travel ? "the event involves travel" : "", vendors.length ? `${vendors.join(" and ")} ${vendors.length === 1 ? "is" : "are"} not on USG's Vendor List` : ""].filter(Boolean).join(", and ");
 }
 
-export function runChecks(app: Application, club: Club, today = todayISO()): Check[] {
+export function runChecks(app: Application, club: Club, today = todayISO(), peers: Application[] = []): Check[] {
   n = 0;
   const out: Check[] = [];
   const e = app.event;
@@ -227,9 +264,97 @@ export function runChecks(app: Application, club: Club, today = todayISO()): Che
         out.push(mk({ ruleId: RULES.vendorList.id, level: "pass", itemId: i.id, title: `${i.vendor}: you confirmed it's an approved vendor`, detail: "Confirmed by your club.", quote: RULES.vendorList.quote, section: RULES.vendorList.section }));
     }
     if (i.estimate)
-      out.push(mk({ ruleId: "quote-needed", level: "warn", itemId: i.id, title: `${i.item}: price is an estimate`, detail: "Replace it with a real quote before you submit.", quote: "The full budget proposal for the event, including quotes for each individual expense", section: "Section 2" }));
+      out.push(mk({ ruleId: "quote-needed", level: "warn", itemId: i.id, title: `${i.item}: price is an estimate`, detail: "Replace it with a real quote before you submit.", quote: RULES.quoteNeeded.quote, section: RULES.quoteNeeded.section }));
     if (i.quote && !i.quote.matches)
-      out.push(mk({ ruleId: "quote-mismatch", level: "fail", itemId: i.id, title: `${i.item}: quote does not match the budget`, detail: i.quote.note, quote: "The full budget proposal for the event, including quotes for each individual expense", section: "Section 2" }));
+      out.push(mk({ ruleId: "quote-mismatch", level: "fail", itemId: i.id, title: `${i.item}: quote does not match the budget`, detail: i.quote.note, quote: RULES.quoteNeeded.quote, section: RULES.quoteNeeded.section }));
+    // Missing quote / cart / wishlist link (Section 2) when the line is still on the USG request.
+    if (!i.estimate && !i.quote && !i.link.trim()) {
+      const amazon = /amazon/i.test(i.vendor);
+      const hasCartOrWish = (amazon && (app.docs.wishlist || app.docs.cart)) || app.docs.quotes;
+      if (!hasCartOrWish)
+        out.push(mk({
+          ruleId: RULES.quoteNeeded.id,
+          level: "warn",
+          itemId: i.id,
+          title: `${i.item}: add a quote, cart screenshot or Wish List link`,
+          detail: amazon
+            ? "For Amazon, attach a public Wish List link or a cart screenshot with prices and fees."
+            : "Attach a quote PDF for this vendor, or paste the vendor payment link on the budget line.",
+          quote: RULES.quoteNeeded.quote,
+          section: RULES.quoteNeeded.section,
+        }));
+    }
+    // Durable-goods heuristic: keyword scan on fundable categories (warn only; board may allow program-critical items).
+    if (!INELIGIBLE[i.category]) {
+      const blob = `${i.item} ${i.justification}`.toLowerCase();
+      const hit = HEURISTICS.durableKeywords.words.find((w) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(blob));
+      if (hit) {
+        out.push(mk({
+          ruleId: RULES.durableFaq.id,
+          level: "warn",
+          itemId: i.id,
+          title: `${i.item}: looks like a durable good ("${hit}")`,
+          detail: "Move it to sponsors, swap for a single-use option, or ask your board whether it is critical to the program.",
+          quote: RULES.durableFaq.quote,
+          section: HEURISTICS.durableKeywords.section,
+          fix: { label: "Move to sponsor list", action: "to-sponsor" },
+          heuristic: true,
+        }));
+      }
+    }
+    // Qty-per-attendee heuristic
+    const ratio = HEURISTICS.qtyPerAttendee.ratios[i.category];
+    if (ratio && e.attendance > 0 && i.quantity / e.attendance > ratio + 1e-9) {
+      out.push(mk({
+        ruleId: HEURISTICS.qtyPerAttendee.id,
+        level: "warn",
+        itemId: i.id,
+        title: `${i.item}: ${i.quantity} for ${e.attendance} people looks high`,
+        detail: `Greenlight's heuristic for ${i.category.replace(/_/g, " ")} is about ${ratio} per attendee. Confirm the quantity is right.`,
+        quote: HEURISTICS.qtyPerAttendee.quote,
+        section: HEURISTICS.qtyPerAttendee.section,
+        heuristic: true,
+      }));
+    }
+  }
+
+  // Duplicate item+vendor within this request
+  const seen = new Map<string, string>();
+  for (const i of items) {
+    const key = `${i.item.trim().toLowerCase()}|${i.vendor.trim().toLowerCase()}`;
+    if (!i.item.trim() || !i.vendor.trim()) continue;
+    const first = seen.get(key);
+    if (first) {
+      out.push(mk({
+        ruleId: HEURISTICS.duplicateItem.id,
+        level: "warn",
+        itemId: i.id,
+        title: `${i.item} from ${i.vendor} appears more than once`,
+        detail: "Merge the lines, or keep both and explain why in the justification.",
+        quote: HEURISTICS.duplicateItem.quote,
+        section: HEURISTICS.duplicateItem.section,
+        heuristic: true,
+      }));
+    } else seen.set(key, i.id);
+  }
+  // Duplicate against another open request from the same club
+  const openPeer = peers.filter((p) => p.id !== app.id && p.clubId === app.clubId && !["draft", "denied", "closed"].includes(p.status));
+  for (const i of items) {
+    const key = `${i.item.trim().toLowerCase()}|${i.vendor.trim().toLowerCase()}`;
+    if (!i.item.trim() || !i.vendor.trim()) continue;
+    const other = openPeer.find((p) => requestItems(p).some((x) => `${x.item.trim().toLowerCase()}|${x.vendor.trim().toLowerCase()}` === key));
+    if (other) {
+      out.push(mk({
+        ruleId: HEURISTICS.duplicateItem.id,
+        level: "warn",
+        itemId: i.id,
+        title: `${i.item} from ${i.vendor} is also on "${other.event.title}"`,
+        detail: "Another open request from your club has the same item and vendor. Confirm you are not double-asking USG.",
+        quote: HEURISTICS.duplicateItem.quote,
+        section: HEURISTICS.duplicateItem.section,
+        heuristic: true,
+      }));
+    }
   }
 
   if (food.length) {

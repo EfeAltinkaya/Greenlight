@@ -37,6 +37,9 @@ export function CheckItem({ c, onFix, compact }: { c: CheckT; onFix?: (c: CheckT
         <div className="check-title">{c.title}</div>
         {!compact && c.detail && <div className="check-detail">{c.detail}</div>}
         {!compact && <div className="quote"><b>{c.section}.</b> &ldquo;{c.quote}&rdquo;</div>}
+        {(c.heuristic || c.section.startsWith("Greenlight")) && (
+          <span className="tiny faint">Greenlight check, not a USG rule</span>
+        )}
         {c.fix && onFix && (
           <div><button className="btn btn-sm" onClick={() => onFix(c)}>{c.fix.label}</button></div>
         )}
@@ -105,7 +108,7 @@ export type StepId = "event" | "budget" | "documents" | "answers" | "submit";
 export function stepOf(c: CheckT): StepId {
   if (["food-docs", "uepa", "hotel-compare"].includes(c.ruleId)) return "documents";
   if (["food-why", "other-university-funding"].includes(c.ruleId)) return "answers";
-  if (c.itemId || ["over-4k", "venue-cap", "quote-needed", "quote-mismatch", "annual-cap", "semester-cap"].includes(c.ruleId) || c.ruleId.startsWith("ineligible")) return "budget";
+  if (c.itemId || ["over-4k", "venue-cap", "quote-needed", "quote-mismatch", "missing-quote", "annual-cap", "semester-cap", "durable-likely", "qty-per-attendee", "duplicate-item"].includes(c.ruleId) || c.ruleId.startsWith("ineligible")) return "budget";
   return "event";
 }
 
