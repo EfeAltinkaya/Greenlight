@@ -10,7 +10,7 @@ import type { AiComment, Check as CheckT } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
 import { decisionSupport, type DecisionSupport } from "@/lib/decision";
 import { REASONS, awardError, decisionFacts, defaultOutcome, emailProblems, excludedLines, fixDeadline, suggestedAmount, type Outcome, type ReasonId } from "@/lib/decisionGuard";
-import { todayISO } from "@/lib/engine";
+import { checkKey, todayISO } from "@/lib/engine";
 import { AiTag, LEVEL, Spinner, StatusPill, useToast } from "@/components/ui";
 
 const OPEN = ["submitted", "in_review", "needs_info"];
@@ -66,6 +66,7 @@ export default function Review() {
   const blocked = Boolean(amtError) || askAmount;
   const facts = (notes: string[]) => decisionFacts(app, club, checks, outcome, amt, reason, notes);
   const emailIssues = email ? emailProblems(email, facts([])) : [];
+  const fastLane = OPEN.includes(app.status) && app.status !== "needs_info" && checks.every((c) => c.level !== "fail" && c.level !== "warn") && !awardError("approved", total, app, club, checks);
   const decided = Boolean(app.decision);
   const ds = decisionSupport(app, club, apps, clubs);
   const docs = documentList(app);
@@ -77,7 +78,7 @@ export default function Review() {
   const act = (cid: string, action: AiComment["action"], edited?: string) => store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.id === cid ? { ...c, action, edited: edited ?? c.edited } : c)) }));
   const agreeAll = () => store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.action === "pending" ? { ...c, action: "agree" } : c)) }));
 
-  async function draftEmail() {
+  async function draftEmail(over?: { outcome: Outcome; amount: number; reason: ReasonId }) {
     setDrafting(true);
     try {
       const notes = app!.aiComments
@@ -85,7 +86,7 @@ export default function Review() {
         .map((c) => ({ c, ck: checks.find((x) => x.id === c.checkId) }))
         .filter(({ c, ck }) => c.action === "edited" || (ck && (ck.level === "fail" || ck.level === "warn")))
         .map(({ c, ck }) => (c.action === "edited" ? `${c.edited} (${ck?.section ?? "Guidelines"})` : `${ck!.title}. ${ck!.detail} (${ck!.section})`));
-      const r = await fetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(facts(notes)) });
+      const r = await fetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(over ? decisionFacts(app!, club!, checks, over.outcome, over.amount, over.reason, notes) : facts(notes)) });
       const j = await r.json();
       setEmail(j.data);
       setEmailOffline(Boolean(j.offline));
@@ -101,9 +102,10 @@ export default function Review() {
     say("Decision sent. The club sees it now");
   }
 
-  function returnIncomplete() {
-    store.moveApp(app!.id, "needs_info", "usg", `Returned as incomplete: ${missing.map((m) => m.label.split(" (")[0]).join("; ")}. 2 business days to fix.`);
-    say("Returned to the club. The 2-business-day clock started");
+  function sendBack(items: { text: string; checkId?: string }[], note: string) {
+    const list = items.map((x, i) => `${i + 1}. ${x.text}`).join("; ") + ".";
+    store.moveApp(app!.id, "needs_info", "usg", `Sent back to fix: ${list}${note ? ` Note: ${note}` : ""} 2 business days to fix.`, { fixRequest: { at: todayISO(), items, note } });
+    say("Sent back to the club with the fix list. The 2-business-day clock started");
   }
 
   return (
@@ -170,6 +172,13 @@ export default function Review() {
           {!decided ? (
             <div className="card card-pad stack">
               <h2>Decision</h2>
+              {fastLane && !email && (
+                <div className="inset stack-xs" style={{ padding: 12, borderLeft: "4px solid var(--clear)" }}>
+                  <strong className="small">Fast lane: every rule passes</strong>
+                  <span className="tiny faint">Nothing to fix or check, so the full {money(total)} is within the guidelines and the club&apos;s cap. You still read the email and press Send.</span>
+                  <button className="btn btn-primary" style={{ justifySelf: "start" }} disabled={drafting} onClick={() => { setOutcome("approved"); setAmount(null); setReason("complete"); void draftEmail({ outcome: "approved", amount: total, reason: "complete" }); }}>{drafting ? <><Spinner />Writing</> : <><CheckCheck />Fund in full and draft the email</>}</button>
+                </div>
+              )}
               <div className="segmented" role="radiogroup" aria-label="Outcome">
                 {(["approved", "partial", "denied"] as const).map((o) => (
                   <button key={o} role="radio" aria-checked={outcome === o} onClick={() => { setOutcome(o); setAmount(null); setEmail(""); }}>
@@ -189,7 +198,7 @@ export default function Review() {
               </label>
               {outcome === "approved" && fixes.length > 0 && !amtError && <p className="small field-warn" role="status"><AlertTriangle />{fixes.length} rule {fixes.length === 1 ? "problem is" : "problems are"} still open. Approving in full ignores them.</p>}
               {reason === "complete" && (excluded.length > 0 || outcome !== "approved") && <p className="small field-warn" role="status"><AlertTriangle />&ldquo;Complete and within the guidelines&rdquo; does not match this decision. Pick the reason that does.</p>}
-              <button className="btn" onClick={draftEmail} disabled={drafting || blocked}>{drafting ? <><Spinner />Writing</> : <><Sparkles />Draft the email to the club</>}</button>
+              <button className="btn" onClick={() => draftEmail()} disabled={drafting || blocked}>{drafting ? <><Spinner />Writing</> : <><Sparkles />Draft the email to the club</>}</button>
               {email && (
                 <>
                   {emailOffline !== null && <AiTag offline={emailOffline} />}
@@ -198,7 +207,7 @@ export default function Review() {
                   <button className="btn btn-primary btn-lg" onClick={send} disabled={blocked || emailIssues.length > 0 || (reason === "complete" && (excluded.length > 0 || outcome !== "approved"))}><Send />Send decision</button>
                 </>
               )}
-              {missing.length > 0 && app.status !== "needs_info" && (<><hr className="hr" /><button className="btn btn-ghost" style={{ color: "var(--fix)" }} onClick={returnIncomplete}><RotateCcw />Return as incomplete ({missing.length} missing)</button></>)}
+              {app.status !== "needs_info" && (fixes.length > 0 || missing.length > 0) && <><hr className="hr" /><SendBack checks={fixes} missing={missing.map((m) => m.label.split(" (")[0])} onSend={sendBack} /></>}
             </div>
           ) : (
             <div className="card card-pad stack-sm" style={{ borderTop: "4px solid var(--gold)" }}>
@@ -281,6 +290,41 @@ function SupportCard({ ds, onUse }: { ds: DecisionSupport; onUse: (v: number) =>
         </div>
       )}
       <p className="tiny faint">Calculated in code from the 2026-27 rules and past decisions in Greenlight. A suggestion; you decide.</p>
+    </div>
+  );
+}
+
+/**
+ * USG's real practice (from a Funding Department officer): when one thing is wrong, they don't deny the
+ * application; they email the club to fix it. This turns that email into a numbered list the club sees
+ * on its request, with each item linked to the field to fix.
+ */
+function SendBack({ checks, missing, onSend }: { checks: CheckT[]; missing: string[]; onSend: (items: { text: string; checkId?: string }[], note: string) => void }) {
+  const options = [
+    ...checks.map((c) => ({ key: c.id, text: c.title, checkId: checkKey(c) })),
+    ...missing.map((m) => ({ key: "doc-" + m, text: `Attach: ${m}`, checkId: undefined })),
+  ];
+  const [picked, setPicked] = useState<Set<string>>(() => new Set(options.map((o) => o.key)));
+  const [note, setNote] = useState("");
+  const [open, setOpen] = useState(false);
+  const chosen = options.filter((o) => picked.has(o.key));
+  if (!open)
+    return <button className="btn btn-ghost" style={{ color: "var(--fix)", justifySelf: "start" }} onClick={() => setOpen(true)}><RotateCcw />Send back to fix instead ({options.length})</button>;
+  return (
+    <div className="stack-sm">
+      <strong className="small">Send back to fix</strong>
+      <span className="tiny faint">The club gets this list by email and on its request, fixes each item, and resubmits. Nothing is denied.</span>
+      {options.map((o) => (
+        <label key={o.key} className="row small" style={{ gap: 8, flexWrap: "nowrap", alignItems: "flex-start", cursor: "pointer" }}>
+          <input type="checkbox" className="check-input" checked={picked.has(o.key)} onChange={(e) => { const n = new Set(picked); if (e.target.checked) n.add(o.key); else n.delete(o.key); setPicked(n); }} />
+          <span>{o.text}</span>
+        </label>
+      ))}
+      <textarea className="textarea" style={{ minHeight: 60 }} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional note to the club" aria-label="Note to the club" />
+      <div className="row">
+        <button className="btn btn-primary" disabled={!chosen.length} onClick={() => onSend(chosen.map(({ text, checkId }) => ({ text, checkId })), note.trim())}><Send />Send {chosen.length} {chosen.length === 1 ? "fix" : "fixes"} to the club</button>
+        <button className="btn btn-ghost" onClick={() => setOpen(false)}>Cancel</button>
+      </div>
     </div>
   );
 }

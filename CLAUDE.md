@@ -32,3 +32,4 @@ One app, two sides. Club officers describe an event in plain words; Greenlight f
 - Nov 14: Decision emails are built in code (`decisionGuard.ts`); AI only polishes and any draft that contradicts the decision is discarded. Awards are capped in code at the request and the club's remaining $8,000. (Efe)
 - Nov 14: Sponsor emails pass `outreachGuard.ts` (Chancery-style validators: no filler, no invented amounts or dates, must name the company and event). Follow-ups only while a company is at Emailed. (Efe)
 - Nov 14: "Other funding sources" is never AI-filled; the club answers it. Post-event steps are not stated until USG confirms them. (Efe)
+- Nov 14: A USG Funding officer interview (notes in `docs/usg-officer-call.md`; she is not to be quoted or named) drove: vendor confirmation on every non-food purchase, reviewer "Send back to fix" (fix list instead of denial), a fast lane for clean applications, and an amber $4,000-per-semester check. (Efe)

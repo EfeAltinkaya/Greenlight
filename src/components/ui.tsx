@@ -104,7 +104,7 @@ export function overall(checks: CheckT[]): "fail" | "warn" | "pass" {
 export type StepId = "event" | "budget" | "documents" | "answers" | "submit";
 export function stepOf(c: CheckT): StepId {
   if (["food-docs", "uepa"].includes(c.ruleId)) return "documents";
-  if (c.itemId || ["over-4k", "venue-cap", "quote-needed", "quote-mismatch"].includes(c.ruleId) || c.ruleId.startsWith("ineligible")) return "budget";
+  if (c.itemId || ["over-4k", "venue-cap", "quote-needed", "quote-mismatch", "annual-cap", "semester-cap"].includes(c.ruleId) || c.ruleId.startsWith("ineligible")) return "budget";
   return "event";
 }
 

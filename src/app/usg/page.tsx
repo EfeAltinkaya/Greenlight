@@ -24,9 +24,14 @@ export default function Queue() {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("open");
   const [board, setBoard] = useState<BoardId | "all">("all");
   const t = TABS.find((x) => x.id === tab)!;
-  const rows = apps.filter((a) => t.match(a.status) && (board === "all" || a.event.board === board)).sort((a, b) => (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
   const open = apps.filter((a) => OPEN.includes(a.status));
+  // Fast lane: open applications with nothing to fix or check go to the top, ready for a one-click decision.
   const clean = open.filter((a) => { const c = clubs.find((x) => x.id === a.clubId); if (!c || a.status === "needs_info") return false; const sc = score(runChecks(a, c)); return sc.fail === 0 && sc.warn === 0; });
+  const isClean = (id: string) => clean.some((a) => a.id === id);
+  const [fast, setFast] = useState(false);
+  const rows = apps
+    .filter((a) => t.match(a.status) && (board === "all" || a.event.board === board) && (!fast || isClean(a.id)))
+    .sort((a, b) => Number(isClean(b.id)) - Number(isClean(a.id)) || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
   const awarded = (b: BoardId) => apps.filter((a) => a.event.board === b && a.decision).reduce((s, a) => s + (a.decision?.amount ?? 0), 0);
   const pending = (b: BoardId) => open.filter((a) => a.event.board === b).reduce((s, a) => s + requestTotal(a), 0);
 
@@ -43,7 +48,7 @@ export default function Queue() {
       <section className="grid cols-4 stats">
         <div className="card card-pad stack-xs"><span className="small muted">Waiting for review</span><span className="big-num">{open.length}</span></div>
         <div className="card card-pad stack-xs"><span className="small muted">Requested, waiting</span><span className="big-num">{money(open.reduce((s, a) => s + requestTotal(a), 0))}</span></div>
-        <div className="card card-pad stack-xs"><span className="small muted">Ready to decide</span><span className="big-num" style={{ color: "var(--clear)" }}>{clean.length}</span><span className="tiny faint">Nothing to fix or check</span></div>
+        <button className="card card-pad stack-xs" style={{ textAlign: "left", border: 0, cursor: "pointer", outline: fast ? "2px solid var(--clear)" : undefined }} aria-pressed={fast} onClick={() => setFast(!fast)}><span className="small muted">Fast lane</span><span className="big-num" style={{ color: clean.length ? "var(--clear)" : undefined }}>{clean.length}</span><span className="tiny faint">{fast ? "Showing only these · Show all" : "Every rule passes. Show only these"}</span></button>
         <div className="card card-pad stack-xs"><span className="small muted">Returned to clubs</span><span className="big-num">{apps.filter((a) => a.status === "needs_info").length}</span><span className="tiny faint">2 business days to fix</span></div>
       </section>
 
@@ -84,7 +89,7 @@ export default function Queue() {
                   const due = fixDeadline(a, todayISO());
                   return (
                     <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/usg/app/${a.id}`); }}>
-                      <td><Link href={`/usg/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{club.name}{a.sample ? " · Sample" : ""}</span></Link></td>
+                      <td><Link href={`/usg/app/${a.id}`} className="stack-xs"><strong>{a.event.title}{isClean(a.id) && <span className="pill pill-clear" style={{ marginLeft: 8, verticalAlign: 2 }}>Fast lane</span>}</strong><span className="tiny faint">{club.name}{a.sample ? " · Sample" : ""}</span></Link></td>
                       <td data-label="Event date" className="small num" style={{ whiteSpace: "nowrap" }}>{fmtDate(a.event.date)}</td>
                       <td data-label="Board" className="small">{BOARDS[a.event.board].short}</td>
                       <td data-label="Requested" className="r">{money(requestTotal(a))}</td>

@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { AlertTriangle, ArrowLeft, ArrowRight, Check, ChevronRight, CircleCheck, Download, FileCheck2, FileUp, MoveRight, Send, Sparkles, X } from "lucide-react";
 import { BOARDS, RULES, type BoardId } from "@/data/rules";
-import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, requestItems, requestTotal, runChecks, score, sponsorAsks, UEPA_RE } from "@/lib/engine";
+import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, checkKey, requestItems, requestTotal, runChecks, score, sponsorAsks, UEPA_RE } from "@/lib/engine";
 import { store, useStore } from "@/lib/store";
 import type { Application, Check as CheckT, EventInfo, LineItem } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
@@ -80,6 +80,10 @@ export default function Workspace() {
     if (c.fix.action === "to-sponsor" && c.itemId) {
       setItems(app!.items.map((i) => (i.id === c.itemId ? { ...i, toSponsor: true } : i)));
       say("Moved to your sponsor list");
+    }
+    if (c.fix.action === "confirm-vendor" && c.itemId) {
+      setItems(app!.items.map((i) => (i.id === c.itemId ? { ...i, vendorConfirmed: true } : i)));
+      say("Vendor confirmed");
     }
     if (c.fix.action === "cap-food") {
       const food = requestItems(app!).filter((i) => i.category === "food");
@@ -184,6 +188,25 @@ export default function Workspace() {
         ) : (
           <section className="deadline late"><div className="dl-days" style={{ fontSize: 34 }}>No</div><div className="stack-xs"><div className="dl-date">USG cannot fund this date</div><div className="dl-sub">{dl.reason}</div></div></section>
         )
+      )}
+
+      {app.status === "needs_info" && app.fixRequest && (
+        <section className="card card-pad stack-sm fix-request" aria-label="Fixes USG asked for">
+          <h2>USG asked for {app.fixRequest.items.length} {app.fixRequest.items.length === 1 ? "fix" : "fixes"} before they can fund this</h2>
+          <ol className="small" style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 6 }}>
+            {app.fixRequest.items.map((x, i) => {
+              const c = checks.find((k) => checkKey(k) === x.checkId && k.level !== "pass" && k.level !== "info");
+              const done = x.checkId ? !c : false;
+              return (
+                <li key={i} style={{ textDecoration: done ? "line-through" : undefined, color: done ? "var(--clear)" : undefined }}>
+                  {c && !done ? <button className="link" onClick={() => go(stepOf(c), fieldFor(c))}>{x.text}<ArrowRight /></button> : x.text}{done ? " (fixed)" : ""}
+                </li>
+              );
+            })}
+          </ol>
+          {app.fixRequest.note && <p className="small muted">Note from USG: {app.fixRequest.note}</p>}
+          <span className="tiny faint">Fix each one, then press Submit on the last step to send it back. Sent {fmtDate(app.fixRequest.at, { month: "short", day: "numeric" })}; USG gives 2 business days.</span>
+        </section>
       )}
 
       <div className="split split-left">
@@ -364,7 +387,8 @@ export default function Workspace() {
             <div className="card card-pad stack-sm">
               <h3>What happens next</h3>
               <ol className="small muted" style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 8 }}>
-                <li>A board director reviews it, then a graduate advisor and Campus Activities staff.</li>
+                <li>The fund&apos;s director, associate director and delegate check it against the guidelines.</li>
+                <li>If one thing needs fixing, USG sends it back with a fix list instead of denying it.</li>
                 <li>If something is missing you get 2 business days to send it.</li>
                 <li>USG does not fund reimbursements (Section 5: &quot;Any reimbursements&quot;).</li>
                 <li>After the event: confirm post-event steps with USG.</li>

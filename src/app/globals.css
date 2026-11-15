@@ -483,3 +483,7 @@ h3 { font-weight: 700; letter-spacing: -0.01em; }
 .pw-toggle svg { width: 18px; height: 18px; }
 button.link { border: 0; background: none; padding: 0; cursor: pointer; }
 @media (max-width: 480px) { .auth-card { padding: 22px 18px; } }
+
+/* The fix list USG sent back, at the top of the club's request. */
+.fix-request { border-left: 4px solid var(--check); }
+.fix-request h2 { font-size: 18px; }

@@ -55,3 +55,11 @@ test("a returned application is overdue two business days later", () => {
   assert.deepEqual(fixDeadline(a, "2026-11-14"), { returned: "2026-11-06", due: "2026-11-10", overdue: true });
   assert.equal(fixDeadline(a, "2026-11-09")?.overdue, false);
 });
+
+test("non-food purchases need a named vendor the club confirmed is USG-approved", () => {
+  const print = { id: "p1", item: "Flyers", vendor: "Kinko Print Shop", link: "", justification: "", quantity: 1, unitPrice: 120, total: 120, orderBy: "", category: "printing" as const, estimate: false, toSponsor: false };
+  const fails = (items: Application["items"]) => runChecks(app({ items }), club).filter((c) => c.ruleId === "vendor-list" && c.level === "fail").map((c) => c.title);
+  assert.deepEqual(fails([print]), ["Confirm Kinko Print Shop is an approved USG vendor"]);
+  assert.deepEqual(fails([{ ...print, vendor: "" }]), ["Flyers: add the vendor"]);
+  assert.deepEqual(fails([{ ...print, vendorConfirmed: true }]), []);
+});

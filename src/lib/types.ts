@@ -50,6 +50,8 @@ export type LineItem = {
   /** Moved to the sponsor list instead of the USG request. */
   toSponsor: boolean;
   quote?: QuoteCheck;
+  /** The club checked that this (non-food) vendor is approved by USG. Greenlight's copy of the list covers food only. */
+  vendorConfirmed?: boolean;
 };
 
 export type CheckLevel = "fail" | "warn" | "pass" | "info";
@@ -63,7 +65,7 @@ export type Check = {
   quote: string;
   section: string;
   itemId?: string;
-  fix?: { label: string; action: "cap-food" | "to-sponsor" | "remove" };
+  fix?: { label: string; action: "cap-food" | "to-sponsor" | "remove" | "confirm-vendor" };
 };
 
 export type Status = "draft" | "submitted" | "in_review" | "needs_info" | "approved" | "partial" | "denied" | "post_event_due" | "closed";
@@ -104,6 +106,8 @@ export type Application = {
   decision: Decision | null;
   sponsorPlan: SponsorPlan | null;
   altRequests?: AltRequest[];
+  /** What a USG reviewer asked the club to fix instead of denying the request. */
+  fixRequest?: { at: string; items: { text: string; checkId?: string }[]; note: string };
 };
 
 export type SponsorPackage = { title: string; covers: string; amount: number; offer: string[] };

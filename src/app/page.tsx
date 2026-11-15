@@ -53,7 +53,7 @@ export default function Home() {
             <div className="stat"><b>$362K</b><span>across the four funding boards in FY26, shared by more than 1,000 clubs (USG FY26 Financial Report).</span></div>
             <div className="stat"><b>44%</b><span>of the 378 organizations that applied in 2023 got funding: 166 in all (<a href="https://www.uscannenbergmedia.com/2023/04/29/usg-rejected-funding-for-established-student-organizations/" target="_blank" rel="noreferrer">Annenberg Media</a>).</span></div>
             <div className="stat"><b>2 days</b><span>to fix an incomplete application before USG denies it.</span></div>
-            <div className="stat"><b>5 reviews</b><span>for every request, from board director to Campus Activities staff.</span></div>
+            <div className="stat"><b>3 reviewers</b><span>on every fund (a director, an associate director and a delegate) check each application against the guidelines, whatever the amount.</span></div>
           </ScrollIn>
         </section>
 
