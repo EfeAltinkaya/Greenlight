@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { Building2, Check, Copy, ExternalLink, HandCoins, Plus, Search, Sparkles, Trash2, Users } from "lucide-react";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import { Building2, Check, Copy, ExternalLink, HandCoins, Handshake, Plus, Search, Sparkles, Store, Trash2, Users } from "lucide-react";
+import { authFetch } from "@/lib/apiClient";
 import { buildPackages } from "@/lib/ai-shared";
 import { fmtDate, money, sponsorAsks, todayISO } from "@/lib/engine";
 import { needsFrom, rankSponsors } from "@/lib/sponsorMatch";
@@ -75,17 +76,50 @@ export default function Sponsors() {
     say(`${form.name.trim()} added to the company list`);
   }
 
+  const tab = useSyncExternalStore(
+    (cb) => { window.addEventListener("popstate", cb); return () => window.removeEventListener("popstate", cb); },
+    () => new URLSearchParams(window.location.search).get("tab") ?? "find",
+    () => "find",
+  );
+  const setTab = (t: string) => {
+    const u = new URL(window.location.href);
+    u.searchParams.set("tab", t);
+    history.replaceState(null, "", u.toString());
+    window.dispatchEvent(new Event("popstate"));
+  };
+
   return (
     <>
       {toast}
       <div className="page-head">
         <div>
-          <span className="eyebrow">Sponsors · {club.name}</span>
+          <span className="eyebrow">Cover the gap · {club.name}</span>
           <h1>Sponsors</h1>
-          <p className="lede">Companies ranked for your event and audience, with links to their recruiters and to USC alumni who work there. Track every conversation until the money is committed.</p>
+          <p className="lede">USG won&apos;t pay some lines — pick a path. Find companies, browse inbound offers, or advance deals. Sponsors pay vendors directly, never the club.</p>
         </div>
       </div>
 
+      <div className="segmented" role="tablist" aria-label="Sponsor paths" style={{ alignSelf: "start" }}>
+        {([["find", "Find companies"], ["outreach", "Outreach"], ["offers", "Offers"], ["deals", "Deals"]] as const).map(([id, label]) => (
+          <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</button>
+        ))}
+      </div>
+
+      {tab === "offers" && (
+        <section className="card card-pad stack-sm">
+          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><Store /></span><div className="stack-xs"><h2>Sponsor offers</h2><p className="small muted">Companies that posted what they will give and what they ask for. Request one to start a deal.</p></div></div>
+          <Link href="/club/offers" className="btn btn-primary" style={{ justifySelf: "start" }}>Open sponsor offers <ExternalLink /></Link>
+        </section>
+      )}
+      {tab === "deals" && (
+        <section className="card card-pad stack-sm">
+          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><Handshake /></span><div className="stack-xs"><h2>Deals</h2><p className="small muted">Agreements in progress — from request through vendor payment and post-event recap.</p></div></div>
+          <Link href="/club/deals" className="btn btn-primary" style={{ justifySelf: "start" }}>Open deals <ExternalLink /></Link>
+        </section>
+      )}
+
+      {(tab === "find" || tab === "outreach") && (
+        <>
       <section className="grid cols-4 stats">
         <div className="card card-pad stack-xs"><span className="small muted">To raise</span><span className="big-num">{money(toRaise)}</span><span className="tiny faint">From {withAsks.length} request{withAsks.length === 1 ? "" : "s"}</span></div>
         <div className="card card-pad stack-xs"><span className="small muted">Committed</span><span className="big-num" style={{ color: "var(--clear)" }}>{money(committed)}</span><div className="meter"><span style={{ width: `${toRaise ? Math.min(1, committed / toRaise) * 100 : 0}%`, background: "var(--clear)" }} /></div></div>
@@ -204,6 +238,8 @@ export default function Sponsors() {
         )}
         {sel && <Reveal k={sel.id}><OutreachDetail o={sel} pool={pool} say={say} onClose={() => setSelected(null)} /></Reveal>}
       </section>
+        </>
+      )}
     </>
   );
 }
@@ -251,7 +287,7 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
     try {
       const pkg = app ? buildPackages(sponsorAsks(app), app.event.attendance).find((p) => p.title === o.packageTitle) : undefined;
       const event = app?.event ?? { title: `${club?.name ?? "Club"} event`, type: "event", date: "", location: "USC", onCampus: true, attendance: 50, openToAll: true, ticketed: false, privateResidence: false, travel: false, international: false, food: false, description: "", board: "social" as const, boardReason: "" };
-      const r = await fetch("/api/outreach-email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sponsor: s, pkg: pkg ?? { title: o.packageTitle, covers: o.packageTitle, amount: o.amount, offer: ["Logo on event materials", "Thank-you in the recap"] }, event, clubName: club?.name ?? "our club", contactName: o.contactName }) });
+      const r = await authFetch("/api/outreach-email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sponsor: s, pkg: pkg ?? { title: o.packageTitle, covers: o.packageTitle, amount: o.amount, offer: ["Logo on event materials", "Thank-you in the recap"] }, event, clubName: club?.name ?? "our club", contactName: o.contactName }) });
       const j = await r.json();
       if (!r.ok) return say(j.error ?? "Could not draft the email");
       set({ email: j.data });

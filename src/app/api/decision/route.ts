@@ -1,10 +1,12 @@
 import { decisionEmail } from "@/lib/ai";
 import type { Application } from "@/lib/types";
+import { requireUser, unauthorized } from "@/lib/server/auth";
 
 export async function POST(req: Request) {
+  if (!(await requireUser(req))) return unauthorized();
   const b = (await req.json()) as { app: Application; clubName: string; outcome: string; amount: number; reasonLabel: string; notes: string[] };
-  return Response.json(await decisionEmail(b.app, b.clubName, b.outcome, b.amount, b.reasonLabel, b.notes ?? []));
+  const slim = { id: b.app.id, event: b.app.event, items: b.app.items, answers: b.app.answers } as Application;
+  return Response.json(await decisionEmail(slim, b.clubName, b.outcome, b.amount, b.reasonLabel, b.notes ?? []));
 }
 
-// AI calls can take 15+ seconds; give them room on Vercel.
 export const maxDuration = 60;

@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { announceNav } from "@/components/Motion";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CalendarClock, CircleDollarSign, FilePlus2, Inbox, PartyPopper, TriangleAlert } from "lucide-react";
+import { ArrowRight, CalendarClock, CircleDollarSign, FilePlus2, Handshake, Inbox, Landmark, PartyPopper, TriangleAlert } from "lucide-react";
 import { BOARDS, RULES } from "@/data/rules";
 import { fmtDate, money, requestTotal, runChecks, score, todayISO } from "@/lib/engine";
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import type { Application } from "@/lib/types";
-import { CountPills, StatusPill } from "@/components/ui";
+import { CountPills, StatusPill, stepOf } from "@/components/ui";
 import { useSession } from "@/lib/session";
+import { APP_FLOW } from "@/lib/workflow";
 
 function nextWednesday(today: string) {
   const d = new Date(today + "T12:00:00Z");
@@ -17,8 +18,24 @@ function nextWednesday(today: string) {
   return d.toISOString().slice(0, 10);
 }
 
+function continueHref(a: Application, clubId: string) {
+  if (a.status === "draft" || a.status === "needs_info") {
+    const club = store.get().clubs.find((c) => c.id === clubId);
+    if (club) {
+      const fail = runChecks(a, club).find((c) => c.level === "fail");
+      if (fail) return `/club/app/${a.id}#${stepOf(fail)}`;
+    }
+    if (!a.answers.description.trim()) return `/club/app/${a.id}#answers`;
+    return `/club/app/${a.id}#event`;
+  }
+  if (a.status === "post_event_due") return `/club/app/${a.id}#status`;
+  if (a.status === "denied" || a.status === "partial") return `/club/funding?app=${a.id}`;
+  if (["submitted", "in_review", "approved"].includes(a.status)) return `/club/app/${a.id}#status`;
+  return `/club/app/${a.id}`;
+}
+
 export default function ClubOverview() {
-  const { clubs, apps, outreach } = useStore();
+  const { clubs, apps, outreach, deals } = useStore();
   const club = useCurrentClub();
   const router = useRouter();
   const session = useSession();
@@ -27,17 +44,35 @@ export default function ClubOverview() {
   const left = RULES.annualCap.limit - club.receivedThisYear;
   const wed = nextWednesday(today);
 
-  const attention: { key: string; href: string; title: string; text: string; tone: "fix" | "check" | "gold" }[] = [];
-  const push = (app: Application, text: string, tone: "fix" | "check" | "gold") => attention.push({ key: app.id, href: `/club/app/${app.id}`, title: app.event.title, text, tone });
+  type Card = { key: string; href: string; title: string; text: string; tone: "fail" | "check" | "gold"; owner: string };
+  const attention: Card[] = [];
+  const push = (key: string, href: string, title: string, text: string, tone: Card["tone"], owner: string) =>
+    attention.push({ key, href, title, text, tone, owner });
+
   for (const a of mine) {
-    if (a.status === "needs_info") push(a, "USG returned it as incomplete. You have 2 business days to send the missing items.", "fix");
+    const owner = APP_FLOW[a.status]?.owner ?? "club";
+    if (a.status === "needs_info") push(a.id + "-info", continueHref(a, club.id), a.event.title, "USG returned it as incomplete. You have 2 business days to send the missing items.", "fail", "Your turn");
     else if (a.status === "draft") {
       const s = score(runChecks(a, club));
-      if (s.fail) push(a, `${s.fail} item${s.fail > 1 ? "s" : ""} to fix before you can submit.`, "check");
-    } else if ((a.status === "approved" || a.status === "partial") && a.event.date < today) push(a, "Post-event evaluation and final invoices are due within 3 business days of the event.", "gold");
+      push(a.id + "-draft", continueHref(a, club.id), a.event.title, s.fail ? `${s.fail} item${s.fail > 1 ? "s" : ""} to fix before you can submit.` : "Continue drafting this request.", s.fail ? "check" : "gold", "Your turn");
+    } else if (a.status === "post_event_due") push(a.id + "-pe", continueHref(a, club.id), a.event.title, "Post-event evaluation and final invoices are due within 3 business days.", "gold", "Your turn");
+    else if (a.status === "denied" || a.status === "partial") {
+      const gap = Math.max(0, requestTotal(a) - (a.decision && a.decision.outcome !== "denied" ? a.decision.amount : 0));
+      if (gap > 0) push(a.id + "-fund", `/club/funding?app=${a.id}`, a.event.title, `${money(gap)} still needed — other USC sources and sponsors can cover the gap.`, "gold", "Cover the gap");
+    } else if (owner === "usg") push(a.id + "-wait", continueHref(a, club.id), a.event.title, APP_FLOW[a.status].label + ".", "check", "Waiting on USG");
   }
+
   const followUps = (outreach ?? []).filter((o) => o.clubId === club.id && o.followUp && o.followUp <= today && (o.status === "emailed" || o.status === "replied"));
-  if (followUps.length) attention.push({ key: "followups", href: "/club/sponsors", title: `Follow up with ${followUps.length} sponsor${followUps.length > 1 ? "s" : ""}`, text: "It has been a few days since your last email.", tone: "gold" });
+  if (followUps.length) push("followups", "/club/sponsors?tab=outreach", `Follow up with ${followUps.length} sponsor${followUps.length > 1 ? "s" : ""}`, "It has been a few days since your last email.", "gold", "Your turn");
+
+  const clubDealTurn = (deals ?? []).filter((d) => {
+    if (d.clubId !== club.id || d.stage === "declined" || d.stage === "recap_sent") return false;
+    return (["details_sent", "signed", "paid", "event_done"] as const).includes(d.stage as "details_sent");
+  });
+  if (clubDealTurn.length) push("deals", "/club/sponsors?tab=deals", `${clubDealTurn.length} sponsor deal${clubDealTurn.length > 1 ? "s" : ""} need you`, "Advance the agreement, invoice, or recap.", "gold", "Your turn");
+
+  // Prefer "your turn" first
+  attention.sort((a, b) => (a.owner === "Your turn" ? 0 : 1) - (b.owner === "Your turn" ? 0 : 1));
 
   return (
     <>
@@ -82,25 +117,40 @@ export default function ClubOverview() {
         </div>
       </section>
 
-      {attention.length > 0 && (
-        <section className="stack-sm">
-          <h2>Needs your attention</h2>
+      <section className="stack-sm">
+        <div className="between"><h2>Continue</h2><span className="small faint">{attention.length ? `${attention.filter((a) => a.owner === "Your turn").length} need you` : "You're caught up"}</span></div>
+        {attention.length === 0 ? (
+          <div className="card empty">
+            <Inbox />
+            <strong>Nothing waiting on you</strong>
+            <span className="small">Start a request, or check Updates if USG or a sponsor replies.</span>
+            <div className="row">
+              <Link href="/club/new" className="btn btn-primary">Start a request</Link>
+              <Link href="/club/sponsors" className="btn"><Handshake />Sponsors</Link>
+              <Link href="/club/funding" className="btn"><Landmark />Other funding</Link>
+            </div>
+          </div>
+        ) : (
           <div className="card">
-            {attention.map(({ key, href, title, text, tone }, i) => (
+            {attention.map(({ key, href, title, text, tone, owner }, i) => (
               <Link key={key} href={href} className="between" style={{ padding: "16px 20px", borderTop: i ? "1px solid var(--line-2)" : 0 }}>
                 <div className="row" style={{ gap: 14, flexWrap: "nowrap" }}>
-                  <span className={"icon-tile " + (tone === "gold" ? "gold" : "")} style={tone === "fix" ? { background: "var(--fix-tint)", color: "var(--fix)" } : undefined}><TriangleAlert /></span>
-                  <div className="stack-xs"><strong>{title}</strong><span className="small muted">{text}</span></div>
+                  <span className={"icon-tile " + (tone === "gold" ? "gold" : "")} style={tone === "fail" ? { background: "var(--fail-tint)", color: "var(--fail)" } : undefined}><TriangleAlert /></span>
+                  <div className="stack-xs">
+                    <span className="tiny faint">{owner}</span>
+                    <strong>{title}</strong>
+                    <span className="small muted">{text}</span>
+                  </div>
                 </div>
                 <ArrowRight style={{ width: 18, height: 18, color: "var(--ink-3)", flex: "none" }} />
               </Link>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <section className="stack-sm">
-        <div className="between"><h2>Requests</h2><span className="small faint">{mine.length} total</span></div>
+        <div className="between"><h2>All requests</h2><span className="small faint">{mine.length} total</span></div>
         {mine.length === 0 ? (
           <div className="card empty">
             <Inbox />
@@ -116,8 +166,8 @@ export default function ClubOverview() {
                 {mine.map((a) => {
                   const s = score(runChecks(a, club));
                   return (
-                    <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/club/app/${a.id}`); }}>
-                      <td><Link href={`/club/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{a.event.location}{a.sample ? " · Sample" : ""}</span></Link></td>
+                    <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(continueHref(a, club.id)); }}>
+                      <td><Link href={continueHref(a, club.id)} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{a.event.location}{a.sample ? " · Sample" : ""}</span></Link></td>
                       <td className="small num" style={{ whiteSpace: "nowrap" }}>{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
                       <td className="small">{BOARDS[a.event.board].short}</td>
                       <td className="r">{money(requestTotal(a))}</td>

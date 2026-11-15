@@ -1,8 +1,10 @@
 import { readQuote } from "@/lib/ai";
+import { requireUser, unauthorized } from "@/lib/server/auth";
 
 const TYPES = ["application/pdf", "image/png", "image/jpeg", "image/webp"];
 
 export async function POST(req: Request) {
+  if (!(await requireUser(req))) return unauthorized();
   const form = await req.formData();
   const file = form.get("file");
   if (!(file instanceof File)) return Response.json({ error: "No file uploaded." }, { status: 400 });
@@ -14,5 +16,4 @@ export async function POST(req: Request) {
   return Response.json(r);
 }
 
-// AI calls can take 15+ seconds; give them room on Vercel.
 export const maxDuration = 60;

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { BarChart3, Bell, BookOpen, CalendarClock, CircleHelp, FilePlus2, Handshake, Inbox, Landmark, LayoutGrid, LogOut, Megaphone, Menu, ReceiptText, RotateCcw, Store, Wallet, X } from "lucide-react";
+import { BarChart3, Bell, BookOpen, CalendarClock, CircleHelp, FilePlus2, Handshake, Inbox, Landmark, LayoutGrid, LogOut, Menu, ReceiptText, RotateCcw, Store, Wallet, X } from "lucide-react";
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import { useSession } from "@/lib/session";
 import { Mark, useAiStatus } from "./ui";
@@ -38,10 +38,8 @@ export function AppShell({ role, children }: { role: Role; children: React.React
             { href: "/club/deadlines", label: "Deadlines", Icon: CalendarClock, tour: "deadlines" },
             { href: "/club/funding", label: "Other funding", Icon: Landmark, tour: "funding" },
           ] },
-          { title: "Sponsors", items: [
-            { href: "/club/offers", label: "Sponsor offers", Icon: Store, tour: "offers" },
-            { href: "/club/deals", label: "Deals", Icon: Handshake, count: myDeals, match: (p) => p.startsWith("/club/deals"), tour: "deals" },
-            { href: "/club/sponsors", label: "Find companies", Icon: Megaphone, tour: "sponsors" },
+          { title: "Cover the gap", items: [
+            { href: "/club/sponsors", label: "Sponsors", Icon: Handshake, count: myDeals, match: (p) => p.startsWith("/club/sponsors") || p.startsWith("/club/offers") || p.startsWith("/club/deals"), tour: "sponsors" },
           ] },
           { title: "Money", items: [
             { href: "/club/money", label: "Money tracker", Icon: Wallet, tour: "money" },

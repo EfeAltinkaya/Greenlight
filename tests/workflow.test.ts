@@ -23,7 +23,7 @@ test("submitting notifies USG; a decision notifies the club", () => {
   assert.equal(s.notices[0].to, "usg");
   const d = moveApp(s.app, "denied", "usg", "Late");
   assert.equal(d.notices[0].to, "club");
-  assert.match(d.notices[0].href, /#funding$/);
+  assert.match(d.notices[0].href, /\/club\/funding\?app=a1$/);
 });
 
 test("illegal application steps are refused", () => {
@@ -34,6 +34,12 @@ test("after an approved event, the evaluation becomes due automatically", () => 
   const a = app({ status: "approved", event: { ...app().event, date: "2026-11-01" } });
   assert.equal(autoAdvance(a, "2026-11-14")?.app.status, "post_event_due");
   assert.equal(autoAdvance(app({ status: "approved" }), "2026-11-14"), null);
+});
+
+test("club can close out after post_event_due", () => {
+  const pe = moveApp(app({ status: "post_event_due" }), "closed", "club", "Evaluation submitted");
+  assert.equal(pe.app.status, "closed");
+  assert.equal(pe.notices.length, 0);
 });
 
 test("deal steps notify the other side and refuse skips", () => {

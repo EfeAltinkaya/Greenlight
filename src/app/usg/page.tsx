@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Inbox } from "lucide-react";
 import { BOARDS, type BoardId } from "@/data/rules";
-import { fmtDate, lookupDeadline, money, requestTotal, runChecks, score } from "@/lib/engine";
+import { fmtDate, lookupDeadline, money, needsNineWeeks, requestTotal, runChecks, score } from "@/lib/engine";
 import { useStore } from "@/lib/store";
 import type { Status } from "@/lib/types";
 import { CountPills, StatusPill } from "@/components/ui";
@@ -23,11 +23,19 @@ export default function Queue() {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("open");
   const [board, setBoard] = useState<BoardId | "all">("all");
   const t = TABS.find((x) => x.id === tab)!;
-  const rows = apps.filter((a) => t.match(a.status) && (board === "all" || a.event.board === board)).sort((a, b) => (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
   const open = apps.filter((a) => OPEN.includes(a.status));
   const clean = open.filter((a) => { const c = clubs.find((x) => x.id === a.clubId); return c && score(runChecks(a, c)).fail === 0; });
   const awarded = (b: BoardId) => apps.filter((a) => a.event.board === b && a.decision).reduce((s, a) => s + (a.decision?.amount ?? 0), 0);
   const pending = (b: BoardId) => open.filter((a) => a.event.board === b).reduce((s, a) => s + requestTotal(a), 0);
+  const risk = (a: (typeof apps)[number]) => {
+    const c = clubs.find((x) => x.id === a.clubId);
+    const sc = c ? score(runChecks(a, c)) : { fail: 0, warn: 0 };
+    const age = a.submittedAt ? Date.parse(a.submittedAt + "T12:00:00Z") : 0;
+    return sc.fail * 1_000_000 + sc.warn * 10_000 + (age ? 1e15 - age : 0);
+  };
+  const rows = apps
+    .filter((a) => t.match(a.status) && (board === "all" || a.event.board === board))
+    .sort((a, b) => (tab === "open" ? risk(b) - risk(a) : (a.submittedAt ?? "").localeCompare(b.submittedAt ?? "")));
 
   return (
     <>
@@ -78,7 +86,7 @@ export default function Queue() {
                 {rows.map((a) => {
                   const club = clubs.find((c) => c.id === a.clubId)!;
                   const sc = score(runChecks(a, club));
-                  const dl = lookupDeadline(a.event.date, a.event.travel, a.submittedAt ?? undefined);
+                  const dl = lookupDeadline(a.event.date, needsNineWeeks(a), a.submittedAt ?? undefined);
                   const onTime = dl.kind === "ok" && !dl.passed;
                   return (
                     <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/usg/app/${a.id}`); }}>
@@ -96,7 +104,7 @@ export default function Queue() {
             </table>
           </div>
         )}
-        <p className="tiny faint">Board totals are FY26 budgets from USG&apos;s financial report. Awards count decisions made in Greenlight.</p>
+        <p className="tiny faint">Board totals are FY26 budgets from USG&apos;s financial report. Awards count decisions in Greenlight. Open queue is sorted by rule risk, then age.</p>
       </section>
     </>
   );

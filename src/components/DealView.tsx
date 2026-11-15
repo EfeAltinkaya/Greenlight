@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Check, ChevronRight, FileSignature, FileUp, PartyPopper, Send, Sparkles, X } from "lucide-react";
+import { authFetch } from "@/lib/apiClient";
 import { contractText } from "@/lib/contract";
 import { fmtDate, money } from "@/lib/engine";
 import { store, useStore } from "@/lib/store";
@@ -34,7 +35,7 @@ export function DealView({ id, as }: { id: string; as: "club" | "sponsor" }) {
   async function draftRecap() {
     setBusy(true);
     try {
-      const r = await fetch("/api/outreach-email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ recap: true, sponsor: { id: "x", name: deal!.sponsorName, industry: "", hires: [], la: "", tie: null, tieSource: null, inKind: [] }, pkg: { title: deal!.covers, covers: deal!.covers, amount: deal!.amount, offer: deal!.deliverables }, event: app?.event ?? { title: "our event", date: "", location: "", attendance: 0, description: "" }, clubName: club?.name ?? "our club" }) });
+      const r = await authFetch("/api/outreach-email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ recap: true, sponsor: { id: "x", name: deal!.sponsorName, industry: "", hires: [], la: "", tie: null, tieSource: null, inKind: [] }, pkg: { title: deal!.covers, covers: deal!.covers, amount: deal!.amount, offer: deal!.deliverables }, event: app?.event ?? { title: "our event", date: "", location: "", attendance: 0, description: "" }, clubName: club?.name ?? "our club" }) });
       const j = await r.json();
       setMsg(`${j.data?.body ?? ""}`);
     } finally { setBusy(false); }

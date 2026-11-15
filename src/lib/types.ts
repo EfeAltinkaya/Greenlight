@@ -81,6 +81,22 @@ export type Decision = {
   reasonCode: string;
   email: string;
   sentAt: string;
+  /** Whether the drafted letter was emailed (or only saved in-app). */
+  emailed?: boolean;
+};
+
+export type AuditEntry = {
+  at: string;
+  by: "club" | "usg" | "system";
+  action: string;
+  detail: string;
+};
+
+export type PostEventEval = {
+  photos: boolean;
+  invoices: boolean;
+  notes: string;
+  submittedAt?: string;
 };
 
 export type Application = {
@@ -91,8 +107,10 @@ export type Application = {
   items: LineItem[];
   answers: { description: string; missionFit: string; otherSources: string };
   docs: Record<string, boolean>;
-  /** File names attached per document key (names only; files stay on the device). */
+  /** File names attached per document key. */
   docFiles?: Record<string, string>;
+  /** Storage path or idb: key per document, for USG preview. */
+  docPaths?: Record<string, string>;
   uepa: string;
   status: Status;
   createdAt: string;
@@ -102,6 +120,9 @@ export type Application = {
   decision: Decision | null;
   sponsorPlan: SponsorPlan | null;
   altRequests?: AltRequest[];
+  /** Immutable-ish trail of reviewer/club actions that matter for fairness. */
+  audit?: AuditEntry[];
+  postEvent?: PostEventEval;
 };
 
 export type SponsorPackage = { title: string; covers: string; amount: number; offer: string[] };

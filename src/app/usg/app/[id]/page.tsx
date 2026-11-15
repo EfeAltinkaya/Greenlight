@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Check, CheckCheck, ChevronRight, FileCheck2, FileX2, Pencil, RotateCcw, Send, Sparkles, X } from "lucide-react";
-import { BOARDS } from "@/data/rules";
+import { BOARDS, RULES } from "@/data/rules";
 import { documentList, fmtDate, money, requestItems, requestTotal, runChecks } from "@/lib/engine";
+import { authFetch } from "@/lib/apiClient";
+import { getDocUrl } from "@/lib/docStore";
 import { store, useStore } from "@/lib/store";
 import type { AiComment, Check as CheckT } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
@@ -44,7 +46,7 @@ export default function Review() {
     asked.current = app.id;
     if (app.status === "submitted") store.moveApp(app.id, "in_review", "usg", "Opened by the funding director");
     if (app.aiComments.length === 0 && OPEN.includes(app.status)) {
-      fetch("/api/review", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, checks }) })
+      authFetch("/api/review", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, checks }) })
         .then((r) => r.json())
         .then((j: { data: { checkId: string; text: string }[]; offline?: boolean }) => {
           setAiOffline(Boolean(j.offline));
@@ -53,6 +55,7 @@ export default function Review() {
             return { id: "c" + i, checkId: c.checkId, text: c.text, citation: ck ? `${ck.section}: "${ck.quote}"` : "", action: "pending" };
           });
           store.patchApp(app.id, { aiComments: comments });
+          store.audit(app.id, { by: "system", action: "ai_review", detail: `Generated ${comments.length} review comments${j.offline ? " (offline)" : ""}` });
         })
         .catch(() => setAiOffline(true));
     }
@@ -69,10 +72,28 @@ export default function Review() {
   const missing = docs.filter((d) => !app.docs[d.key]);
   const loading = app.aiComments.length === 0 && OPEN.includes(app.status) && aiOffline === null;
   const handled = app.aiComments.filter((c) => c.action !== "pending").length;
-  const nextApp = apps.find((a) => a.id !== app.id && OPEN.includes(a.status));
+  const nextApp = [...apps]
+    .filter((a) => a.id !== app.id && OPEN.includes(a.status))
+    .sort((a, b) => {
+      const ca = clubs.find((c) => c.id === a.clubId);
+      const cb = clubs.find((c) => c.id === b.clubId);
+      const fa = ca ? runChecks(a, ca).filter((x) => x.level === "fail").length : 0;
+      const fb = cb ? runChecks(b, cb).filter((x) => x.level === "fail").length : 0;
+      return fb - fa || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? "");
+    })[0];
 
-  const act = (cid: string, action: AiComment["action"], edited?: string) => store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.id === cid ? { ...c, action, edited: edited ?? c.edited } : c)) }));
-  const agreeAll = () => store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.action === "pending" ? { ...c, action: "agree" } : c)) }));
+  const act = (cid: string, action: AiComment["action"], edited?: string) => {
+    store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.id === cid ? { ...c, action, edited: edited ?? c.edited } : c)) }));
+    store.audit(app.id, { by: "usg", action: `comment_${action}`, detail: edited ? edited.slice(0, 160) : `Comment ${cid} marked ${action}` });
+  };
+  const agreeAll = () => {
+    store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.action === "pending" ? { ...c, action: "agree" } : c)) }));
+    store.audit(app.id, { by: "usg", action: "comment_agree_all", detail: "Agreed with remaining AI comments" });
+  };
+  const pendingComments = app.aiComments.filter((c) => c.action === "pending" && checks.some((ck) => ck.id === c.checkId && (ck.level === "fail" || ck.level === "warn")));
+  const clubLeft = RULES.annualCap.limit - club.receivedThisYear;
+  const boardLeft = Math.max(0, BOARDS[app.event.board].fy26Budget - apps.filter((a) => a.event.board === app.event.board && a.decision).reduce((s, a) => s + (a.decision?.amount ?? 0), 0));
+  const maxAward = Math.min(total, clubLeft, boardLeft);
 
   async function draftEmail() {
     setDrafting(true);
@@ -82,7 +103,7 @@ export default function Review() {
         .map((c) => ({ c, ck: checks.find((x) => x.id === c.checkId) }))
         .filter(({ c, ck }) => c.action === "edited" || (ck && (ck.level === "fail" || ck.level === "warn")))
         .map(({ c, ck }) => (c.action === "edited" ? `${c.edited} (${ck?.section ?? "Guidelines"})` : `${ck!.title}. ${ck!.detail} (${ck!.section})`));
-      const r = await fetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club!.name, outcome, amount: amt, reasonLabel: REASONS.find((x) => x.id === reason)!.label, notes }) });
+      const r = await authFetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club!.name, outcome, amount: amt, reasonLabel: REASONS.find((x) => x.id === reason)!.label, notes }) });
       const j = await r.json();
       setEmail(j.data);
       setEmailOffline(Boolean(j.offline));
@@ -91,16 +112,49 @@ export default function Review() {
     }
   }
 
-  function send() {
+  async function send() {
+    if (pendingComments.length) return say("Handle the fail and warn AI comments before you send");
+    if (!email.trim()) return say("Draft the email first");
+    const capped = outcome === "denied" ? 0 : Math.min(amt, maxAward);
+    if (outcome !== "denied" && capped < amt) say(`Amount capped at ${money(capped)} (club/board remaining)`);
     const at = new Date().toISOString().slice(0, 10);
-    store.moveApp(app!.id, outcome, "usg", outcome === "denied" ? "Denied. Explanation emailed to the club." : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(amt)}. Explanation emailed to the club.`, { decision: { outcome, amount: amt, reasonCode: reason, email, sentAt: at } });
-    if (outcome !== "denied") store.patchClub(club!.id, { receivedThisYear: club!.receivedThisYear + amt, eventsThisSemester: club!.eventsThisSemester + 1 });
-    say("Decision sent. The club sees it now");
+    let emailed = false;
+    try {
+      const r = await authFetch("/api/decision-send", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ clubId: club!.id, appId: app!.id, title: app!.event.title, outcome, amount: capped, email }),
+      });
+      const j = await r.json();
+      emailed = (j.sent ?? 0) > 0;
+    } catch {
+      /* demo / offline: still save the decision */
+    }
+    store.moveApp(
+      app!.id,
+      outcome,
+      "usg",
+      outcome === "denied"
+        ? emailed ? "Denied. Decision letter emailed to the club." : "Denied. Decision letter saved for the club in Greenlight."
+        : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(capped)}. ${emailed ? "Decision letter emailed." : "Decision letter saved in Greenlight."}`,
+      { decision: { outcome, amount: capped, reasonCode: reason, email, sentAt: at, emailed } },
+    );
+    store.audit(app!.id, { by: "usg", action: "decision", detail: `${outcome} ${money(capped)}; reason ${reason}${emailed ? "; emailed" : "; in-app only"}` });
+    if (outcome !== "denied") store.patchClub(club!.id, { receivedThisYear: club!.receivedThisYear + capped, eventsThisSemester: club!.eventsThisSemester + 1 });
+    say(emailed ? "Decision emailed to the club" : "Decision saved. The club sees it in Greenlight");
   }
 
   function returnIncomplete() {
-    store.moveApp(app!.id, "needs_info", "usg", `Returned as incomplete: ${missing.map((m) => m.label.split(" (")[0]).join("; ")}. 2 business days to fix.`);
+    const note = `Returned as incomplete: ${missing.map((m) => m.label.split(" (")[0]).join("; ")}. 2 business days to fix.`;
+    store.moveApp(app!.id, "needs_info", "usg", note);
+    store.audit(app!.id, { by: "usg", action: "return_incomplete", detail: note });
     say("Returned to the club. The 2-business-day clock started");
+  }
+
+  async function openDoc(key: string) {
+    const url = await getDocUrl(app!.id, key, app!.docPaths?.[key]);
+    if (!url) return say("No file available to preview on this device");
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -134,11 +188,16 @@ export default function Review() {
           </section>
           <section className="card card-pad stack-sm">
             <div className="between"><h2>Documents</h2><span className="small faint">{docs.length - missing.length} of {docs.length}</span></div>
-            <div className="row small" style={{ gap: 10, flexWrap: "nowrap" }}>{app.uepa ? <FileCheck2 style={{ width: 18, color: "var(--clear)" }} /> : <FileX2 style={{ width: 18, color: "var(--fix)" }} />}UEPA <span className="code">{app.uepa || "missing"}</span></div>
+            <div className="row small" style={{ gap: 10, flexWrap: "nowrap" }}>{app.uepa ? <FileCheck2 style={{ width: 18, color: "var(--clear)" }} /> : <FileX2 style={{ width: 18, color: "var(--fail)" }} />}UEPA <span className="code">{app.uepa || "missing"}</span></div>
             {docs.map((d) => (
-              <div key={d.key} className="row small" style={{ gap: 10, flexWrap: "nowrap", alignItems: "flex-start" }}>
-                {app.docs[d.key] ? <FileCheck2 style={{ width: 18, flex: "none", color: "var(--clear)" }} /> : <FileX2 style={{ width: 18, flex: "none", color: "var(--fix)" }} />}
-                <span className="wrap-any">{d.label}{app.docFiles?.[d.key] ? <span className="faint"> · {app.docFiles[d.key]}</span> : null}</span>
+              <div key={d.key} className="between small" style={{ gap: 10, flexWrap: "nowrap", alignItems: "flex-start" }}>
+                <div className="row" style={{ gap: 10, flexWrap: "nowrap", alignItems: "flex-start", flex: 1 }}>
+                  {app.docs[d.key] ? <FileCheck2 style={{ width: 18, flex: "none", color: "var(--clear)" }} /> : <FileX2 style={{ width: 18, flex: "none", color: "var(--fail)" }} />}
+                  <span className="wrap-any">{d.label}{app.docFiles?.[d.key] ? <span className="faint"> · {app.docFiles[d.key]}</span> : null}</span>
+                </div>
+                {(app.docPaths?.[d.key] || app.docFiles?.[d.key]) && (
+                  <button type="button" className="btn btn-sm btn-ghost" onClick={() => openDoc(d.key)}>Preview</button>
+                )}
               </div>
             ))}
           </section>
@@ -150,6 +209,18 @@ export default function Review() {
                 <span className="small">{h.note}</span>
               </div>
             ))}
+            {(app.audit?.length ?? 0) > 0 && (
+              <>
+                <hr className="hr" />
+                <h3 className="small">Audit trail</h3>
+                {[...(app.audit ?? [])].reverse().slice(0, 12).map((e, i) => (
+                  <div key={i} className="row" style={{ gap: 14, padding: "6px 0", flexWrap: "nowrap", alignItems: "flex-start" }}>
+                    <span className="tiny faint num" style={{ width: 70, flex: "none" }}>{e.at.slice(0, 10)}</span>
+                    <span className="tiny"><strong>{e.by}</strong> · {e.action}: {e.detail}</span>
+                  </div>
+                ))}
+              </>
+            )}
           </section>
         </div>
 
@@ -178,19 +249,20 @@ export default function Review() {
                 ))}
               </div>
               {outcome !== "denied" && (
-                <label className="field"><span className="lbl">Amount awarded</span><input id="amount" className="input num" style={{ textAlign: "left", fontSize: 18, fontWeight: 600 }} type="number" min={0} max={total} value={amt} onChange={(e) => setAmount(Number(e.target.value))} />
-                  {outcome === "partial" && <span className="tiny faint">Suggested: lines with no red flags, capped at $4,000 ({money(fundable)} fundable).</span>}
+                <label className="field"><span className="lbl">Amount awarded</span><input id="amount" className="input num" style={{ textAlign: "left", fontSize: 18, fontWeight: 600 }} type="number" min={0} max={maxAward} value={Math.min(amt, maxAward)} onChange={(e) => setAmount(Math.min(Number(e.target.value), maxAward))} />
+                  <span className="tiny faint">Hard cap {money(maxAward)} (club + board remaining).{outcome === "partial" ? ` Suggested fundable lines: ${money(fundable)}.` : ""}</span>
                 </label>
               )}
               <label className="field"><span className="lbl">Reason</span>
                 <select id="reason" className="select" value={reason} onChange={(e) => setReason(e.target.value)}>{REASONS.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}</select>
               </label>
+              {pendingComments.length > 0 && <p className="small" style={{ color: "var(--check)" }}>Agree, disagree, or edit {pendingComments.length} fail/warn AI comment{pendingComments.length > 1 ? "s" : ""} before sending.</p>}
               <button className="btn" onClick={draftEmail} disabled={drafting}>{drafting ? <><Spinner />Writing</> : <><Sparkles />Draft the email to the club</>}</button>
               {email && (
                 <>
                   {emailOffline !== null && <AiTag offline={emailOffline} />}
                   <textarea id="decision-email" className="textarea email" style={{ minHeight: 260 }} value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Decision email" />
-                  <button className="btn btn-primary btn-lg" onClick={send}><Send />Send decision</button>
+                  <button className="btn btn-primary btn-lg" onClick={send} disabled={pendingComments.length > 0}><Send />Send decision</button>
                 </>
               )}
               {missing.length > 0 && app.status !== "needs_info" && (<><hr className="hr" /><button className="btn btn-ghost" style={{ color: "var(--fix)" }} onClick={returnIncomplete}><RotateCcw />Return as incomplete ({missing.length} missing)</button></>)}
