@@ -243,3 +243,27 @@ do $$ begin
   begin alter publication supabase_realtime add table public.ledger_lines; exception when duplicate_object then null; end;
   begin alter publication supabase_realtime add table public.ledger_events; exception when duplicate_object then null; end;
 end $$;
+
+-- Campus-wide sponsor claims: one live ask per company (21-day hold).
+create table if not exists public.campus_claims (
+  id text primary key,
+  company_id text not null,
+  company_name text not null,
+  club_id text not null references public.clubs (id),
+  club_name text not null,
+  event_date date,
+  event_title text,
+  held_until date not null,
+  status text not null check (status in ('held', 'released', 'replied')) default 'held',
+  created_at timestamptz not null default now()
+);
+-- At most one held claim per company across campus.
+create unique index if not exists campus_claims_one_live
+  on public.campus_claims (company_id) where (status = 'held');
+alter table public.campus_claims enable row level security;
+drop policy if exists campus_claims_read on public.campus_claims;
+create policy campus_claims_read on public.campus_claims for select to authenticated using (true);
+drop policy if exists campus_claims_write on public.campus_claims;
+create policy campus_claims_write on public.campus_claims for all to authenticated
+  using (club_id = my_club() or my_role() = 'usg')
+  with check (club_id = my_club() or my_role() = 'usg');

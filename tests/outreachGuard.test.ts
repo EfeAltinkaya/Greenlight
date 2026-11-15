@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { outreachTemplate, outreachFacts } from "../src/lib/ai";
-import { followUpAllowed, outreachProblems } from "../src/lib/outreachGuard";
+import { followUpAllowed, followUpDate, outreachProblems, researchGate } from "../src/lib/outreachGuard";
 import { SPONSORS } from "../src/data/sponsors";
 import type { EventInfo, SponsorPackage } from "../src/lib/types";
 
@@ -29,7 +29,7 @@ test("filler, invented amounts, placeholders and unsourced USC claims are caught
 test("a reply may not commit to a day the officer never gave", () => {
   const sponsor = SPONSORS[0];
   const base = { ...outreachFacts({ sponsor, pkg, event, clubName: "Club" }), eventTitle: "" };
-  const body = `Hi Sam, thank you for getting back to me about ${sponsor.name} covering the prizes. Thursday at 3pm works for a call, and I will send the budget then. Thank you, [Your name]`;
+  const body = `Hi Sam, thank you for getting back to me about ${sponsor.name} covering the prizes. Thursday at 3pm works for a call, and I will send the budget then. You pay the vendor directly. Thank you, [Your name]`;
   assert.ok(outreachProblems({ subject: "Re: prizes", body }, { ...base, given: "yes a call works, send budget" }).some((x) => /commits to/.test(x)));
   assert.deepEqual(outreachProblems({ subject: "Re: prizes", body }, { ...base, given: "yes thursday 3pm works, send budget" }), []);
 });
@@ -38,4 +38,23 @@ test("follow-ups only while a company is still at Emailed, never after a reply",
   assert.equal(followUpAllowed("emailed", "2026-11-10", "2026-11-14"), true);
   assert.equal(followUpAllowed("replied", "2026-11-10", "2026-11-14"), false);
   assert.equal(followUpAllowed("emailed", "2026-11-20", "2026-11-14"), false);
+});
+
+test("research gate needs two sourced facts", () => {
+  assert.ok(researchGate(0));
+  assert.ok(researchGate(1));
+  assert.equal(researchGate(2), null);
+});
+
+test("follow-up is scheduled +5 business days", () => {
+  // Mon Nov 10 2026 -> Tue Wed Thu Fri Mon = Nov 17
+  assert.equal(followUpDate("2026-11-10"), "2026-11-17");
+});
+
+test("em dash, banned phrase, invented number, and missing facts are rejected", () => {
+  const sponsor = SPONSORS[0];
+  const facts = { ...outreachFacts({ sponsor, pkg, event, clubName: "Club" }), sourcedFacts: 1 };
+  const body = `Hi team — I wanted to reach out about ${event.title}. Could ${sponsor.name} give $9999? Thank you, [Your name]`;
+  const p = outreachProblems({ subject: "Quick question", body }, facts);
+  assert.ok(p.some((x) => /dash|Filler|\$9999|sourced facts|Subject/i.test(x)));
 });

@@ -64,7 +64,9 @@ export default function Sponsors() {
       contactName: "", contactInfo: "", notes: "", committed: 0, followUp: "", updatedAt: today, email: null,
     });
     say(`${s.name} added to To contact`);
-    otherClubsTalking(s.id, club.id).then((n) => { if (n > 0) say(`Heads up: ${n} other USC club${n === 1 ? " is" : "s are"} already talking to ${s.name}. Coordinate before you email.`, "error"); });
+    otherClubsTalking(s.id, club.id).then((n) => {
+      if (n > 0) say(`Another USC club is talking to ${s.name}; ask USG's RSO Outreach Team or co-host.`, "error");
+    });
   }
 
   const [selected, setSelected] = useState<string | null>(null);
