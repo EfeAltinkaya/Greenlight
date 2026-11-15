@@ -1,0 +1,67 @@
+// Other USC funding sources, from USG's "Final Funding Sources" list (linked from usg.usc.edu/branches/funding)
+// and each source's own page. Used when USG denies or only partly funds a request.
+import type { Club } from "@/lib/types";
+
+export type FundingSource = {
+  id: string;
+  name: string;
+  who: string; // plain-language eligibility
+  eligible: (club: Club) => boolean;
+  lead: string; // how far ahead to apply
+  how: string;
+  url: string;
+  note?: string;
+};
+
+export const FUNDING_SOURCES: FundingSource[] = [
+  {
+    id: "vfb", name: "Viterbi Funding Board (VFB)", who: "Viterbi-affiliated student organizations",
+    eligible: (c) => c.school === "Viterbi", lead: "Meets weekly during the semester until funds run out",
+    how: "Complete application with all supporting documents; organization must be in good standing with the Viterbi Presidents Council and have filed its annual report.",
+    url: "https://engage.usc.edu/viterbi/vfb/", note: "Gift cards and prizes are not funded.",
+  },
+  {
+    id: "viterbi-sos", name: "Viterbi Student Organization Support (SOS)", who: "Viterbi-affiliated student organizations",
+    eligible: (c) => c.school === "Viterbi", lead: "Apply after other sources",
+    how: "Request through Viterbi Admission & Student Engagement. SOS supplements other funding and should be the last place a club asks.",
+    url: "https://viterbiundergrad.usc.edu/studentorganizationleaders/sos/",
+  },
+  {
+    id: "marshall", name: "Marshall / Leventhal RSO funding", who: "Marshall-affiliated student organizations",
+    eligible: (c) => c.school === "Marshall", lead: "Review Marshall's funding criteria before applying",
+    how: "Submit Marshall's RSO funding request form.",
+    url: "https://usc.qualtrics.com/jfe/form/SV_dpw9wBhxEIm5aDz",
+  },
+  {
+    id: "gsg", name: "Graduate Student Government (GSG) funding", who: "Any RSO whose event is open to graduate students",
+    eligible: () => true, lead: "Submit through EngageSC; check GSG's deadline calendar",
+    how: "Complete the GSG Finance Orientation video and Finance Assessment first, then apply in EngageSC. Only USC-authorized vendors.",
+    url: "https://gsg.usc.edu/gsg-funding/",
+  },
+  {
+    id: "ignite", name: "IgniteSC crowdfunding", who: "Any recognized student organization",
+    eligible: () => true, lead: "Apply to launch a campaign",
+    how: "USC's own crowdfunding platform: alumni, parents and friends give directly to the club's campaign.",
+    url: "https://forms.usc.edu/ignite-application/",
+  },
+  {
+    id: "assemblies", name: "Co-sponsorship with a USG programming assembly", who: "Any RSO with an event that serves an assembly's community",
+    eligible: () => true, lead: "Reach out well before the event",
+    how: "USG has 19 programming assemblies. Ask the one closest to your event's audience to co-sponsor.",
+    url: "https://usg.usc.edu/branches/programming/",
+  },
+  {
+    id: "price", name: "Price School student organization funding", who: "Price-affiliated student organizations",
+    eligible: (c) => c.school === "Price", lead: "10 business days ahead under $850; 30 calendar days ahead above",
+    how: "Price Student Organization Purchase Request form; permits must already be approved.",
+    url: "https://priceschool.usc.edu/",
+  },
+  {
+    id: "departments", name: "Your academic department", who: "Clubs whose event fits a department's subject",
+    eligible: () => true, lead: "Ask early; budgets are set per semester",
+    how: "Email the department's student services office with the event, audience and the exact amount you need.",
+    url: "https://undergrad.usc.edu/experience/research/",
+  },
+];
+
+export const eligibleSources = (club: Club) => FUNDING_SOURCES.filter((s) => s.eligible(club));

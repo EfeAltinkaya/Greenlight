@@ -10,6 +10,7 @@ import type { Outreach, OutreachStatus, SponsorPackage } from "@/lib/types";
 import { MAJORS, SCHOOL_MAJORS, SPONSORS, linkedInAlumni, linkedInRecruiters, universityPage, type Major, type Sponsor } from "@/data/sponsors";
 import { AiTag, Spinner, useToast } from "@/components/ui";
 import { Reveal } from "@/components/Motion";
+import { SponsorInbox } from "@/components/Inbox";
 
 const STAGES: { id: OutreachStatus; label: string }[] = [
   { id: "shortlist", label: "To contact" },
@@ -305,6 +306,7 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
               <div className="row"><button className="btn btn-sm" onClick={copy}><Copy />Copy</button>{o.status === "shortlist" && <button className="btn btn-sm btn-primary" onClick={() => setStatus("emailed")}><Check />I sent it</button>}</div>
             </div>
           )}
+          <SponsorInbox email={o.contactInfo} name={s.name} />
           <button className="btn btn-sm btn-ghost" style={{ color: "var(--fix)", justifySelf: "start" }} onClick={() => { store.removeOutreach(o.id); onClose(); }}><Trash2 />Remove from outreach</button>
         </div>
       </div>

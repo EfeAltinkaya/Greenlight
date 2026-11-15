@@ -1,6 +1,6 @@
 // Example data so every screen has something real to show. All clubs and requests are made up
 // and marked as samples; no real student data.
-import type { Application, Club, LineItem, Outreach } from "./types";
+import type { Application, Club, Deal, LineItem, Offer, Outreach } from "./types";
 
 export const DEMO_CLUB_ID = "builders";
 
@@ -120,4 +120,19 @@ export const SEED_APPS: Application[] = [
 export const SEED_OUTREACH: Outreach[] = [
   { id: "o1", clubId: "builders", appId: "s-robotics", sponsorId: "northrop", packageTitle: "Prizes for the top three teams", amount: 450, status: "emailed", contactName: "", contactInfo: "", notes: "Sample: emailed the university recruiting inbox.", committed: 0, followUp: "2026-11-12", updatedAt: "2026-11-07", email: null },
   { id: "o2", clubId: "builders", appId: "s-robotics", sponsorId: "spacex", packageTitle: "Club t-shirts for volunteers", amount: 450, status: "shortlist", contactName: "", contactInfo: "", notes: "", committed: 0, followUp: "", updatedAt: "2026-11-07", email: null },
+];
+
+// Sample sponsor offers from made-up local businesses (clearly labeled), so the portal is not empty.
+export const SEED_OFFERS: Offer[] = [
+  { id: "of1", sponsorName: "Sample: Westside Robotics Supply", sponsorEmail: "sponsor@example.com", title: "Parts and prizes for build nights", themes: ["engineering", "robotics", "hackathon"], majors: ["Mechanical Engineering", "Electrical Engineering", "Computer Science"], windowStart: "2026-11-01", windowEnd: "2027-04-30", gives: "Robot kits, tools and prizes, shipped to the club or paid to the vendor", maxAmount: 800, asks: ["Logo on event slides", "5-minute demo of our kits", "Photos for our newsletter"], createdAt: "2026-11-02", sample: true },
+  { id: "of2", sponsorName: "Sample: Figueroa Coffee Roasters", sponsorEmail: "sponsor@example.com", title: "Coffee and pastries for morning events", themes: ["networking", "workshop", "career"], majors: [], windowStart: "2026-11-15", windowEnd: "2027-05-01", gives: "Coffee service for up to 100 people, delivered", maxAmount: 400, asks: ["Mention in the event recap", "Table card with our name"], createdAt: "2026-11-05", sample: true },
+  { id: "of3", sponsorName: "Sample: Pacific Stagecraft Rentals", sponsorEmail: "sponsor@example.com", title: "Lighting and sound for student performances", themes: ["dance", "concert", "showcase", "film"], majors: ["Music and Dance", "Cinematic Arts"], windowStart: "2027-01-15", windowEnd: "2027-04-30", gives: "Discounted lighting and sound rental, paid to the venue", maxAmount: 1200, asks: ["Logo in the program", "Thank-you from the stage"], createdAt: "2026-11-08", sample: true },
+];
+
+export const SEED_DEALS: Deal[] = [
+  { id: "d-sample", offerId: "of1", clubId: "builders", appId: "s-robotics", sponsorName: "Sample: Westside Robotics Supply", sponsorEmail: "sponsor@example.com", stage: "details_sent", amount: 450, covers: "Prizes for the top three teams", deliverables: ["Logo on event slides", "5-minute demo of our kits"], message: "We'd love to cover prizes for Robotics Build Night.", contract: null, invoice: null, recap: "",
+    history: [
+      { at: "2026-11-09", stage: "requested", note: "Club asked for details on prizes", by: "club" },
+      { at: "2026-11-11", stage: "details_sent", note: "We can cover $450 of prizes. We'd like a 5-minute kit demo.", by: "sponsor" },
+    ] },
 ];

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Schibsted_Grotesk, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { NavProgress } from "@/components/Motion";
 
-const display = Inter_Tight({ variable: "--font-display", subsets: ["latin"], weight: ["600", "700"] });
-const body = Inter({ variable: "--font-body", subsets: ["latin"] });
+const display = Schibsted_Grotesk({ variable: "--font-display", subsets: ["latin"], weight: ["600", "700", "800", "900"] });
+const body = Source_Sans_3({ variable: "--font-body", subsets: ["latin"] });
 const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"], weight: ["500"] });
 
 export const metadata: Metadata = {

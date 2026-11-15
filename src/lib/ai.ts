@@ -363,3 +363,24 @@ Companies: ${JSON.stringify(ranked.map((m) => ({ id: m.sponsor.id, name: m.spons
 }
 
 export const INELIGIBLE_LABELS = INELIGIBLE;
+
+// ---------- 7. Post-event recap for a sponsor ----------
+export async function recapEmail({ sponsor, pkg, event, clubName }: EmailInput): Promise<Out<{ subject: string; body: string }>> {
+  const fallback = {
+    subject: `Thank you from ${clubName}`,
+    body: `Hi ${sponsor.name} team,\n\nThank you for covering ${pkg.covers.toLowerCase()} for ${event.title}. About ${event.attendance || "our"} students came, and your support made that part of the event possible.\n\nAs agreed, we included: ${pkg.offer.join("; ").toLowerCase()}. Photos are attached.\n\nWe would love to work with you again next semester.\n\nThank you,\n[Your name]\n${clubName}`,
+  };
+  if (!hasKey()) return { data: fallback, offline: true };
+  try {
+    const r = await parse(
+      MODELS.write,
+      EmailSchema,
+      `Write a short thank-you recap (under 130 words) from ${clubName}, a USC student club, to ${sponsor.name} after the event. Facts only: event ${JSON.stringify({ title: event.title, date: event.date, attendance: event.attendance, description: event.description })}; the sponsor covered ${pkg.covers} (${money(pkg.amount)}); recognition given: ${pkg.offer.join("; ")}. Leave [number] placeholders for anything not given (for example final attendance). Mention photos are attached. Sign as [Your name], ${clubName}.`,
+      900,
+    );
+    if (r) return { data: r, offline: false };
+  } catch (e) {
+    console.error("recapEmail failed", e);
+  }
+  return { data: fallback, offline: true };
+}

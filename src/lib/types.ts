@@ -3,7 +3,7 @@ import type { BoardId, ItemCategory } from "@/data/rules";
 export type Club = {
   id: string;
   name: string;
-  school: "Viterbi" | "Marshall" | "Dornsife" | "Other";
+  school: "Viterbi" | "Marshall" | "Dornsife" | "Price" | "Annenberg" | "Cinematic Arts" | "Thornton" | "Kaufman" | "Roski" | "Other";
   /** First registered with Campus Activities within the last two semesters (Startup fund). */
   startupEligible: boolean;
   /** USG Funding Department money already awarded this academic year. */
@@ -101,6 +101,7 @@ export type Application = {
   aiComments: AiComment[];
   decision: Decision | null;
   sponsorPlan: SponsorPlan | null;
+  altRequests?: AltRequest[];
 };
 
 export type SponsorPackage = { title: string; covers: string; amount: number; offer: string[] };
@@ -126,3 +127,48 @@ export type Outreach = {
   updatedAt: string;
   email: { subject: string; body: string } | null;
 };
+
+// ---------- Sponsor portal ----------
+
+/** What a sponsor posts: the kind of event it wants to support and what it asks for in return. */
+export type Offer = {
+  id: string;
+  sponsorName: string;
+  sponsorEmail: string;
+  title: string;
+  themes: string[];
+  majors: string[];
+  windowStart: string; // YYYY-MM-DD
+  windowEnd: string;
+  gives: string; // what the sponsor provides, in kind or paid to the vendor
+  maxAmount: number;
+  asks: string[]; // what the sponsor wants back
+  createdAt: string;
+  sample?: boolean;
+};
+
+export type DealStage = "requested" | "details_sent" | "contract_ready" | "signed" | "vendor_invoiced" | "paid" | "event_done" | "recap_sent" | "declined";
+
+/** One club working with one sponsor on one event, from first request to post-event recap. */
+export type Deal = {
+  id: string;
+  offerId: string | null;
+  clubId: string;
+  appId: string | null;
+  sponsorName: string;
+  sponsorEmail: string;
+  stage: DealStage;
+  amount: number;
+  covers: string;
+  deliverables: string[];
+  message: string;
+  contract: { text: string; clubSignedBy: string; clubSignedAt: string; sponsorSignedBy: string; sponsorSignedAt: string } | null;
+  invoice: { fileName: string; amount: number; vendor: string; uploadedAt: string } | null;
+  recap: string;
+  history: { at: string; stage: DealStage; note: string; by: "club" | "sponsor" | "system" }[];
+};
+
+/** A request to another USC funding source after USG denies or partly funds. */
+export type AltRequest = { sourceId: string; status: "drafted" | "applied" | "awarded" | "declined"; amount: number; draft: string; updatedAt: string };
+
+export type Notice = { id: string; at: string; to: "club" | "usg" | "sponsor"; clubId: string | null; title: string; body: string; href: string; read: boolean };

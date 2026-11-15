@@ -8,6 +8,7 @@ import { documentList, fmtDate, money, requestItems, requestTotal, runChecks } f
 import { store, useStore } from "@/lib/store";
 import type { AiComment, Check as CheckT } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
+import { decisionSupport, type DecisionSupport } from "@/lib/decision";
 import { AiTag, LEVEL, Spinner, StatusPill, useToast } from "@/components/ui";
 
 const REASONS = [
@@ -41,7 +42,7 @@ export default function Review() {
   useEffect(() => {
     if (!app || asked.current === app.id) return;
     asked.current = app.id;
-    if (app.status === "submitted") store.setStatus(app.id, "in_review", "Opened by the funding director");
+    if (app.status === "submitted") store.moveApp(app.id, "in_review", "usg", "Opened by the funding director");
     if (app.aiComments.length === 0 && OPEN.includes(app.status)) {
       fetch("/api/review", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, checks }) })
         .then((r) => r.json())
@@ -63,6 +64,7 @@ export default function Review() {
   const fundable = requestItems(app).filter((i) => !checks.some((c) => c.itemId === i.id && c.level === "fail")).reduce((s, i) => s + i.total, 0);
   const amt = amount ?? (outcome === "denied" ? 0 : outcome === "partial" ? Math.min(fundable, 4000) : total);
   const decided = Boolean(app.decision);
+  const ds = decisionSupport(app, club, apps, clubs);
   const docs = documentList(app);
   const missing = docs.filter((d) => !app.docs[d.key]);
   const loading = app.aiComments.length === 0 && OPEN.includes(app.status) && aiOffline === null;
@@ -91,14 +93,13 @@ export default function Review() {
 
   function send() {
     const at = new Date().toISOString().slice(0, 10);
-    store.patchApp(app!.id, { decision: { outcome, amount: amt, reasonCode: reason, email, sentAt: at } });
-    store.setStatus(app!.id, outcome, outcome === "denied" ? "Denied. Explanation emailed to the club." : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(amt)}. Explanation emailed to the club.`);
+    store.moveApp(app!.id, outcome, "usg", outcome === "denied" ? "Denied. Explanation emailed to the club." : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(amt)}. Explanation emailed to the club.`, { decision: { outcome, amount: amt, reasonCode: reason, email, sentAt: at } });
     if (outcome !== "denied") store.patchClub(club!.id, { receivedThisYear: club!.receivedThisYear + amt, eventsThisSemester: club!.eventsThisSemester + 1 });
     say("Decision sent. The club sees it now");
   }
 
   function returnIncomplete() {
-    store.setStatus(app!.id, "needs_info", `Returned as incomplete: ${missing.map((m) => m.label.split(" (")[0]).join("; ")}. 2 business days to fix.`);
+    store.moveApp(app!.id, "needs_info", "usg", `Returned as incomplete: ${missing.map((m) => m.label.split(" (")[0]).join("; ")}. 2 business days to fix.`);
     say("Returned to the club. The 2-business-day clock started");
   }
 
@@ -165,6 +166,7 @@ export default function Review() {
             {!decided && app.aiComments.some((c) => c.action === "pending") && <div><button className="btn btn-sm" onClick={agreeAll}><CheckCheck />Agree with the rest</button></div>}
           </div>
 
+          {!decided && <SupportCard ds={ds} onUse={(v) => { setOutcome(v >= total ? "approved" : "partial"); setAmount(v); setEmail(""); }} />}
           {!decided ? (
             <div className="card card-pad stack">
               <h2>Decision</h2>
@@ -235,6 +237,33 @@ function Comment({ c, check, locked, onAct }: { c: AiComment; check?: CheckT; lo
         )}
         {c.action === "edited" && !editing && <span className="tiny faint">Edited by you</span>}
       </div>
+    </div>
+  );
+}
+
+function SupportCard({ ds, onUse }: { ds: DecisionSupport; onUse: (v: number) => void }) {
+  const per = Math.round(ds.costPerAttendee);
+  const med = ds.boardMedianPerAttendee == null ? null : Math.round(ds.boardMedianPerAttendee);
+  return (
+    <div className="card card-pad stack-sm" style={{ borderTop: "4px solid var(--gold)" }}>
+      <h2>Decision support</h2>
+      <div className="between"><span className="small muted">Suggested range</span><strong className="num" style={{ fontSize: 20 }}>{money(ds.low)}{ds.high !== ds.low ? ` to ${money(ds.high)}` : ""}</strong></div>
+      <ul className="small muted" style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 4 }}>{ds.basis.map((b) => <li key={b}>{b}</li>)}</ul>
+      <div className="row"><button className="btn btn-sm" onClick={() => onUse(ds.high)}>Use {money(ds.high)}</button>{ds.low !== ds.high && <button className="btn btn-sm btn-ghost" onClick={() => onUse(ds.low)}>Use {money(ds.low)}</button>}</div>
+      <hr className="hr" />
+      <dl className="kv" style={{ gridTemplateColumns: "160px minmax(0,1fr)", fontSize: 13.5 }}>
+        <dt>Cost per attendee</dt><dd>{money(per)}{med != null ? ` (board typical ${money(med)})` : ""}</dd>
+        <dt>Club has left</dt><dd>{money(ds.clubLeft)} of $8,000</dd>
+        <dt>Board after this</dt><dd style={{ color: ds.boardUsedAfter > 0.5 ? "var(--cardinal)" : undefined }}>{Math.round(ds.boardUsedAfter * 100)}% of its budget</dd>
+      </dl>
+      {ds.flags.length > 0 && <div className="row" style={{ gap: 6 }}>{ds.flags.map((f) => <span key={f} className="pill pill-gold" style={{ height: "auto", padding: "4px 10px", whiteSpace: "normal" }}>{f}</span>)}</div>}
+      {ds.similar.length > 0 && (
+        <div className="stack-xs">
+          <span className="tiny faint">Similar past decisions on this board</span>
+          {ds.similar.map((x) => <div key={x.title} className="between small"><span>{x.title} <span className="faint">· {x.club}</span></span><span className="num">{money(x.awarded)} of {money(x.requested)}</span></div>)}
+        </div>
+      )}
+      <p className="tiny faint">Calculated in code from the 2026-27 rules and past decisions in Greenlight. A suggestion; you decide.</p>
     </div>
   );
 }

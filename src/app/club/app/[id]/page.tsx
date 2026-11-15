@@ -118,8 +118,7 @@ export default function Workspace() {
   }
 
   function submit() {
-    store.patchApp(app!.id, { submittedAt: new Date().toISOString().slice(0, 10) });
-    store.setStatus(app!.id, "submitted", app!.status === "needs_info" ? "Resubmitted with the missing items" : "Submitted to USG");
+    store.moveApp(app!.id, "submitted", "club", app!.status === "needs_info" ? "Resubmitted with the missing items" : "Submitted to USG");
     say("Submitted to USG");
     go("status");
   }
@@ -354,7 +353,7 @@ function StatusView({ app, onSponsors }: { app: Application; onSponsors: () => v
           <span className="eyebrow">{d.outcome === "denied" ? "Decision" : "Funded"}</span>
           <h2 style={{ fontSize: 28 }}>{d.outcome === "denied" ? "USG denied this request" : `USG awarded ${money(d.amount)}`}</h2>
           <div className="email small muted">{d.email}</div>
-          {d.outcome !== "denied" && <div><button className="btn btn-primary" onClick={onSponsors}>Cover the rest with sponsors<ArrowRight /></button></div>}
+          <div id="funding" className="row">{d.outcome !== "denied" && <button className="btn btn-primary" onClick={onSponsors}>Cover the rest with sponsors<ArrowRight /></button>}{d.outcome !== "approved" && <Link href="/club/funding" className={"btn" + (d.outcome === "denied" ? " btn-primary" : "")}>Apply to other USC funding<ArrowRight /></Link>}</div>
         </div>
       )}
       <div className="card card-pad stack-sm">

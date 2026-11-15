@@ -8,6 +8,7 @@ import { fmtDate, money, requestTotal, runChecks, score, todayISO } from "@/lib/
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import type { Application } from "@/lib/types";
 import { CountPills, StatusPill } from "@/components/ui";
+import { useSession } from "@/lib/session";
 
 function nextWednesday(today: string) {
   const d = new Date(today + "T12:00:00Z");
@@ -20,6 +21,7 @@ export default function ClubOverview() {
   const { clubs, apps, outreach } = useStore();
   const club = useCurrentClub();
   const router = useRouter();
+  const session = useSession();
   const mine = apps.filter((a) => a.clubId === club.id);
   const today = todayISO();
   const left = RULES.annualCap.limit - club.receivedThisYear;
@@ -43,12 +45,16 @@ export default function ClubOverview() {
         <div>
           <span className="eyebrow">Club desk</span>
           <h1>{club.name}</h1>
+          {session.user ? (
+            <span className="small muted">{session.user.joinCode ? <>Teammates join with code <strong className="code">{session.user.joinCode}</strong></> : "Signed in as " + session.user.email}</span>
+          ) : (
           <label className="row small muted" style={{ gap: 8 }}>
             Acting for
             <select className="select" style={{ width: "auto", padding: "5px 10px", fontSize: 13 }} value={club.id} onChange={(e) => store.setClub(e.target.value)} aria-label="Club">
               {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </label>
+          )}
         </div>
         <Link href="/club/new" className="btn btn-primary btn-lg"><FilePlus2 />New request</Link>
       </div>
