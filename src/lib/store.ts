@@ -25,7 +25,7 @@ export type State = {
   notices?: Notice[];
   ledger?: LedgerLine[];
 };
-const KEY = "greenlight:v5";
+const KEY = "greenlight:v5"; // ledger + sample outreach outcomes for learned sponsor ranking
 const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS, currentClub: DEMO_CLUB_ID, outreach: SEED_OUTREACH, offers: SEED_OFFERS, deals: SEED_DEALS, notices: [], ledger: SEED_LEDGER };
 
 let state: State | null = null;

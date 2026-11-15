@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { NavActions } from "@/components/Landing";
+import { Mark } from "@/components/ui";
 import { SOURCES } from "@/data/sources";
 import { SPONSORS } from "@/data/sponsors";
 import { ROSTER_AS_OF, ROSTER_SOURCE } from "@/data/people";
@@ -16,7 +17,7 @@ export default function SourcesPage() {
   return (
     <div className="landing" style={{ minHeight: "100vh" }}>
       <header className="land-nav">
-        <Link href="/" className="land-mark" aria-label="Greenlight home">Greenlight</Link>
+        <Link href="/" className="land-mark" aria-label="Greenlight home"><Mark slogan /></Link>
         <NavActions />
       </header>
       <main className="land-wrap" style={{ padding: "48px 24px 80px", maxWidth: 800, margin: "0 auto" }}>

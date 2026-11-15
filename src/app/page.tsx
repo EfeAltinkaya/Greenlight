@@ -13,8 +13,8 @@ import { BOARDS, GUIDELINES_URL } from "@/data/rules";
 import { DEADLINES_URL } from "@/data/deadlines";
 
 export const metadata: Metadata = {
-  title: "Greenlight: club funding at USC, checked, routed and recorded.",
-  description: "Greenlight writes your USG request, checks it against every rule before you send it, finds the rest from USC and sponsors, and keeps every dollar on one ledger.",
+  title: "Greenlight: Your Highway to Capital",
+  description: "Greenlight: Your Highway to Capital. Club funding at USC, checked against every USG rule before you send it, with the rest found from USC and sponsors on one ledger.",
 };
 
 const LONG = { weekday: "long", month: "short", day: "numeric" } as const;
@@ -69,7 +69,7 @@ export default function Home() {
     <div className="ed">
       <header className="site-nav ed-nav">
         <div className="site-nav-in">
-          <Link href="/" aria-label="Greenlight home"><Mark /></Link>
+          <Link href="/" aria-label="Greenlight home"><Mark slogan /></Link>
           <nav className="site-nav-links" aria-label="Sections">
             <a href="#story">The story</a>
             <a href="#why">Why USC</a>
@@ -239,8 +239,9 @@ export default function Home() {
 
       <footer className="ed-footer">
         <div className="ed-wrap">
-          <Mark />
+          <Mark slogan />
           <p>Built at AI@USC Hackathon Nov 2026. Not an official USC or USG service.</p>
+          <p className="ed-fine"><Link href="/models">Greenlight Models</Link> · <Link href="/sources">Data sources</Link> · <Link href="/privacy">Privacy</Link></p>
           <p className="ed-fine">
             Sources: <a href={GUIDELINES_URL} target="_blank" rel="noreferrer">USG 2026-27 Funding Guidelines</a>, <a href={DEADLINES_URL} target="_blank" rel="noreferrer">USG deadline sheet</a>, <a href={source("fy26-total").url!} target="_blank" rel="noreferrer">USG FY26 Financial Report</a>, a conversation with a USG Funding Department officer (Nov 14, 2026, paraphrased), and the USC sources linked on each sponsor tie. Sample clubs and requests are made up.
           </p>

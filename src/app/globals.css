@@ -178,6 +178,13 @@ p { margin: 0; }
 
 /* ---------- Brand mark ---------- */
 .mark { display: inline-flex; align-items: center; gap: 10px; font: 700 18px/1 var(--display); letter-spacing: -0.03em; color: var(--ink); }
+.mark-lg { font-size: 22px; gap: 12px; }
+.mark-ico { display: block; flex: none; width: 28px; height: 28px; object-fit: contain; border-radius: 6px; }
+.mark-lg .mark-ico { width: 40px; height: 40px; border-radius: 8px; }
+.mark-word { display: grid; gap: 2px; line-height: 1; }
+.mark-slogan { font: 500 11px/1.1 var(--body); letter-spacing: 0; color: var(--ink-3); }
+.mark-with-slogan { align-items: center; }
+.logo-lockup { display: block; width: min(280px, 70vw); height: auto; }
 .stoplight { display: inline-flex; flex-direction: column; gap: 3px; padding: 4px 5px; border-radius: 9px; background: #1d1d1f; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); flex: none; }
 .stoplight i { width: 8px; height: 8px; border-radius: 50%; display: block; }
 .stoplight i:nth-child(1) { background: #5a1f1c; }
@@ -357,6 +364,7 @@ a.card:active, button.card:active { transform: translateY(0) scale(.99); }
 /* ---------- Stone + cardinal theme: sidebar ---------- */
 .side { background: var(--cardinal-deep); border-right: 0; color: #f3e6e3; }
 .side .mark { color: #fff; }
+.side .mark-slogan { color: rgba(255, 240, 236, .72); }
 .side .side-label { color: rgba(255,240,236,.55); }
 .side .side-link { color: rgba(255,240,236,.82); position: relative; }
 .side .side-link svg { color: rgba(255,240,236,.6); }
@@ -477,6 +485,16 @@ button.link { border: 0; background: none; padding: 0; cursor: pointer; }
 /* The fix list USG sent back, at the top of the club's request. */
 .fix-request { border-left: 4px solid var(--check); }
 .fix-request h2 { font-size: 18px; }
+
+/* Learned reply chance on sponsor cards */
+.learned-line { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-weight: 600; }
+.learned-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 25%, transparent); }
+.learn-note { margin: -4px 0 6px; max-width: 70ch; }
+
+/* Sign out sits next to the account name at the top of the sidebar. */
+.side-signout { display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(255,255,255,.22); background: transparent; color: rgba(255,240,236,.9); border-radius: 8px; padding: 4px 9px; font: 600 12px/1 var(--font-body, inherit); cursor: pointer; white-space: nowrap; }
+.side-signout svg { width: 13px; height: 13px; }
+.side-signout:hover { background: rgba(255,255,255,.1); color: #fff; }
 
 /* ---------- Editorial landing (follow one event's money) ---------- */
 .ed {

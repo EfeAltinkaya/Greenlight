@@ -9,8 +9,9 @@ const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"], weigh
 const serif = Instrument_Serif({ variable: "--font-serif", subsets: ["latin"], weight: "400", style: ["normal", "italic"] });
 
 export const metadata: Metadata = {
-  title: "Greenlight: club funding at USC, checked, routed and recorded.",
-  description: "Greenlight writes your USG request, checks it against every rule before you send it, finds the rest from USC and sponsors, and keeps every dollar on one ledger.",
+  title: "Greenlight: Your Highway to Capital",
+  description: "Greenlight: Your Highway to Capital. Club funding at USC, checked against every USG rule before you send it, with the rest found from USC and sponsors on one ledger.",
+  icons: { icon: "/favicon.png", apple: "/greenlight-mark.png" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

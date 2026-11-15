@@ -3,12 +3,24 @@ import { AlertCircle, Check, CircleAlert, Info, Sparkles, X, AlertTriangle } fro
 import { useCallback, useEffect, useState } from "react";
 import type { Check as CheckT, CheckLevel, Status } from "@/lib/types";
 
-export function Mark({ size = "md" }: { size?: "md" | "lg" }) {
+export function Mark({ size = "md", slogan = false }: { size?: "md" | "lg"; slogan?: boolean }) {
   return (
-    <span className="mark" style={size === "lg" ? { fontSize: 22 } : undefined}>
-      <Stoplight />
-      Greenlight
+    <span className={"mark" + (size === "lg" ? " mark-lg" : "") + (slogan ? " mark-with-slogan" : "")}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/greenlight-mark.png" alt="" className="mark-ico" width={size === "lg" ? 40 : 28} height={size === "lg" ? 40 : 28} />
+      <span className="mark-word">
+        Greenlight
+        {slogan && <span className="mark-slogan">Your Highway to Capital</span>}
+      </span>
     </span>
+  );
+}
+
+/** Full horizontal lockup (helmet + name + slogan) for landing and print. */
+export function LogoLockup({ className }: { className?: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/greenlight-logo.png" alt="Greenlight: Your Highway to Capital" className={className ?? "logo-lockup"} width={777} height={320} />
   );
 }
 

@@ -108,7 +108,13 @@ function logError({ error }: { error: unknown }) {
 }
 
 export function startSync(client: SupabaseClient, user: User) {
-  if (current?.user.id === user.id) return;
+  // Same person, new active role (or club): keep the live channel, but reload what this role can see.
+  if (current?.user.id === user.id) {
+    const changed = current.user.role !== user.role || current.user.clubId !== user.clubId || current.user.org !== user.org;
+    current = { client, user };
+    if (changed) loadAll();
+    return;
+  }
   current = { client, user };
   attachSync(write, notify);
   loadAll();

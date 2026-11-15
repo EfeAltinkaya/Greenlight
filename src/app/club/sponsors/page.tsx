@@ -6,6 +6,7 @@ import { authFetch } from "@/lib/apiClient";
 import { buildPackages } from "@/lib/ai-shared";
 import { fmtDate, money, sponsorAsks, todayISO } from "@/lib/engine";
 import { needsFrom, rankSponsors } from "@/lib/sponsorMatch";
+import { learn, rerank, tally, type Tallies } from "@/lib/sponsorLearning";
 import { newId, store, useCurrentClub, useStore } from "@/lib/store";
 import type { Outreach, OutreachStatus, SponsorPackage } from "@/lib/types";
 import { MAJORS, SCHOOL_MAJORS, SPONSORS, linkedInAlumni, linkedInRecruiters, universityPage, type Major, type Sponsor } from "@/data/sponsors";
@@ -43,7 +44,24 @@ export default function Sponsors() {
   const [q, setQ] = useState("");
   const [tieOnly, setTieOnly] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const ranked = rankSponsors(pool, majors, needs).filter((m) => (!tieOnly || m.sponsor.tie) && (!q || `${m.sponsor.name} ${m.sponsor.industry} ${m.sponsor.hires.join(" ")}`.toLowerCase().includes(q.toLowerCase())));
+  // Learned layer: reply counts from every club (server, counts only) or, in demo mode, from this browser.
+  const [pooled, setPooled] = useState<{ tallies: Tallies; outcomes: number } | null>(null);
+  useEffect(() => {
+    if (!supabase) return;
+    let off = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) return;
+      fetch("/api/learning", { headers: { authorization: `Bearer ${data.session.access_token}` } })
+        .then((r) => r.json())
+        .then((j) => { if (!off && j.pooled) setPooled({ tallies: j.tallies, outcomes: j.outcomes }); })
+        .catch(() => {});
+    });
+    return () => { off = true; };
+  }, [outreach]);
+  const tallies = useMemo(() => pooled?.tallies ?? tally(outreach ?? [], today), [pooled, outreach, today]);
+  const evidence = Object.values(tallies).reduce((n, t) => n + t.replies + t.misses, 0);
+  const learned = useMemo(() => learn(pool, tallies, `${club.id}-${today}`), [pool, tallies, club.id, today]);
+  const ranked = rerank(rankSponsors(pool, majors, needs), learned).filter((m) => (!tieOnly || m.sponsor.tie) && (!q || `${m.sponsor.name} ${m.sponsor.industry} ${m.sponsor.hires.join(" ")}`.toLowerCase().includes(q.toLowerCase())));
   const shown = showAll ? ranked : ranked.slice(0, 9);
 
   const mine = (outreach ?? []).filter((o) => o.clubId === club.id);
@@ -167,6 +185,7 @@ export default function Sponsors() {
       <section className="stack-sm">
         <div className="between">
           <h2>Companies</h2>
+          <p className="tiny faint learn-note">Ranked by fit to your event and by how likely each company is to answer. The reply chance learns from {evidence} outreach {evidence === 1 ? "result" : "results"} so far{pooled ? " across USC clubs" : " (sample data in demo mode)"}: every reply or silence you record makes the next ranking better.</p>
           <div className="row">
             <label className="card row" style={{ padding: "0 12px", gap: 8, flexWrap: "nowrap", borderRadius: 999 }}>
               <Search style={{ width: 16, height: 16, color: "var(--ink-3)" }} />
@@ -194,11 +213,12 @@ export default function Sponsors() {
         )}
 
         <div className="grid cols-3 appear" key={majors.join() + needs.join() + tieOnly + q}>
-          {shown.map(({ sponsor: s, reasons }) => {
+          {shown.map(({ sponsor: s, reasons, learned: l }) => {
             const tracked = mine.some((o) => o.sponsorId === s.id && o.appId === (target?.a.id ?? null));
             return (
               <div key={s.id} className="card card-pad stack-sm" style={{ alignContent: "start" }}>
                 <div className="row" style={{ gap: 12, flexWrap: "nowrap" }}><span className="icon-tile" style={{ width: 36, height: 36 }}><Building2 style={{ width: 18, height: 18 }} /></span><div className="stack-xs"><strong>{s.name}</strong><span className="tiny faint">{s.industry}</span></div></div>
+                {l && <span className="tiny learned-line" title={`Reply chance is learned from outreach results: ${l.basis}. Ranking samples from it (Thompson sampling), so companies with little history still get tried.`}><span className="learned-dot" aria-hidden="true" />Reply chance about {Math.round(l.mean * 100)}% · {l.seen ? `${l.replies} of ${l.seen} replied` : l.basis === "no results yet" ? "no results yet, being tried" : "from similar companies"}</span>}
                 <p className="small muted" style={{ margin: 0 }}>{reasons.length ? reasons.join(" · ") : "No overlap with this event yet"}</p>
                 {s.tie && <a className="tiny wrap-any" style={{ color: "var(--gold-deep)", fontWeight: 600 }} href={s.tieSource ?? undefined} target="_blank" rel="noreferrer">{s.tie}<ExternalLink style={{ width: 11, height: 11, marginLeft: 3, verticalAlign: -1 }} /></a>}
                 {s.la ? <span className="tiny faint">{s.la}</span> : null}

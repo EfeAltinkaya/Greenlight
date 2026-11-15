@@ -114,7 +114,7 @@ function Login() {
   return (
     <div className="site auth-page">
       <header className="auth-top">
-        <Link href="/" aria-label="Greenlight home"><Mark /></Link>
+        <Link href="/" aria-label="Greenlight home"><Mark slogan /></Link>
         <Link href="/" className="link small"><ArrowLeft />Back to the home page</Link>
       </header>
       <main className="auth-main">

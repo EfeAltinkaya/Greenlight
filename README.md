@@ -1,10 +1,10 @@
-# Greenlight: club funding at USC, checked, routed and recorded.
+# Greenlight: Your Highway to Capital
 
 **Live:** https://greenlight-lac-tau.vercel.app (auto-deploys every push to `main`)
 
 Greenlight follows a club's money from idea to receipt: plan the event, ask USG, get USG's answer fast, cover whatever USG will not pay (other USC sources, then sponsors), and record every dollar in the club's ledger. Built for the AI@USC Hackathon (Nov 14-15, 2026).
 
-From idea to event, without a red light.
+Your Highway to Capital. From idea to event, without a red light.
 
 ## Run it
 
