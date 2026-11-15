@@ -661,6 +661,24 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
           ))}
         </ol>
       </div>
+
+      {(app.audit?.length ?? 0) > 0 && (
+        <div className="card card-pad stack-sm">
+          <h2>Audit log</h2>
+          <p className="tiny faint">Who did what, when. From this request&apos;s ledger of actions.</p>
+          <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 0 }}>
+            {[...(app.audit ?? [])].reverse().map((e, i) => (
+              <li key={i} className="row" style={{ alignItems: "flex-start", gap: 14, padding: "10px 0", borderTop: i ? "1px solid var(--line-2)" : 0, flexWrap: "nowrap" }}>
+                <span className="small faint num" style={{ width: 86, flex: "none" }}>{fmtDate(e.at, { month: "short", day: "numeric" })}</span>
+                <span className="stack-xs">
+                  <span className="small"><strong>{e.by === "usg" ? "USG" : e.by === "club" ? "Club" : "System"}</strong> · {e.action.replace(/_/g, " ")}</span>
+                  {e.detail && <span className="tiny faint">{e.detail}</span>}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
     </section>
   );
 }

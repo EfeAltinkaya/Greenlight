@@ -39,6 +39,18 @@ Greenlight follows a club's money from idea to receipt: plan the event, ask USG,
 | Outreach draft | Write ask email | `outreachGuard.ts`; research gate (≥2 facts); never silent send |
 | Reply classify | Label Gmail replies | Officer confirms next step |
 
+## Greenlight Models (local classifiers)
+
+Honest framing: Greenlight Models are small classifiers we trained on USC club-funding data, on top of the open BAAI bge-small-en-v1.5 encoder (MIT license). They run in your browser, so request text never leaves your device for classification. They suggest; the rules engine and people decide.
+
+- One shared encoder (Xenova/bge-small-en-v1.5 ONNX q8 in a Web Worker); tiny logistic heads in `public/models/heads/`.
+- GL-Items, GL-Board, GL-Replies suggest categories; GL-Vendor is embed + fuse.js (never silent). GL-Rank is off until ≥50 pooled outcomes.
+- Test split is team-written only. Models never decide money or eligibility; `engine.ts` does.
+
+## Documents
+
+Real exports from proven libraries: Greenlight Check PDF (`@react-pdf/renderer`), budget/ledger `.xlsx` (`exceljs`), in-kind agreement / decision letter (`.docx`), Legislative Fund deck (`pptxgenjs`), calendar (`.ics`). Credits on `/sources`.
+
 ## Where rules live
 
 - **Data:** `src/data/rules.ts` (exact quote + section), `deadlines.ts`, `vendors.json`

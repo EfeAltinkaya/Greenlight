@@ -58,6 +58,30 @@ export default function SourcesPage() {
             ))}
           </ul>
         </section>
+
+        <section className="stack" style={{ gap: 16, marginTop: 32 }}>
+          <h2>Libraries</h2>
+          <p className="small muted">Proven public packages Greenlight uses for documents, matching, dates and models. Versions are pinned in package.json / ml/requirements.txt.</p>
+          <ul className="stack-sm" style={{ listStyle: "none", padding: 0 }}>
+            {[
+              ["@react-pdf/renderer", "https://github.com/diegomura/react-pdf", "Greenlight Check and ledger PDFs"],
+              ["exceljs", "https://github.com/exceljs/exceljs", "USG budget sheet .xlsx export"],
+              ["docx", "https://github.com/dolanmiu/docx", "In-kind agreement and decision letter Word files"],
+              ["pptxgenjs", "https://github.com/gitbrent/PptxGenJS", "Legislative Fund slide deck"],
+              ["ics", "https://github.com/adamgibbons/ics", "Event timeline calendar export"],
+              ["fuse.js", "https://github.com/krisk/Fuse", "Fuzzy vendor matching against the Vendor List"],
+              ["date-fns", "https://github.com/date-fns/date-fns", "Business-day helpers (deadlines still from USG sheet)"],
+              ["fast-check", "https://github.com/dubzzz/fast-check", "Property tests for money math"],
+              ["BAAI/bge-small-en-v1.5", "https://huggingface.co/BAAI/bge-small-en-v1.5", "Shared encoder for Greenlight Models (MIT)"],
+              ["@huggingface/transformers", "https://github.com/huggingface/transformers.js", "In-browser ONNX inference for model heads"],
+            ].map(([name, url, why]) => (
+              <li key={name} className="stack-xs" style={{ padding: "10px 0", borderTop: "1px solid var(--line-2)" }}>
+                <a className="link" href={url} target="_blank" rel="noreferrer"><strong>{name}</strong></a>
+                <span className="small muted">{why}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
       </main>
     </div>
   );

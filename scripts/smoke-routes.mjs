@@ -30,6 +30,9 @@ const ROUTES = [
   "/sponsor",
   "/sponsor/deals",
   "/sponsor/updates",
+  "/privacy",
+  "/sources",
+  "/models",
 ];
 
 const CRASH_MARKERS = [

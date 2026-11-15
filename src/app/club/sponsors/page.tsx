@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { AlertTriangle, Building2, Check, Copy, ExternalLink, HandCoins, Handshake, MessageSquareReply, Plus, Repeat, Search, Sparkles, Store, Trash2, Users } from "lucide-react";
+import { AlertTriangle, Building2, Check, Copy, Download, ExternalLink, HandCoins, Handshake, MessageSquareReply, Plus, Repeat, Search, Sparkles, Store, Trash2, Users } from "lucide-react";
+import { exportOutreachCsv } from "@/lib/export/outreachCsv";
 import { authFetch } from "@/lib/apiClient";
 import { buildPackages } from "@/lib/ai-shared";
 import { fmtDate, money, sponsorAsks, todayISO } from "@/lib/engine";
@@ -238,7 +239,27 @@ export default function Sponsors() {
 
       {tab === "outreach" && (
       <section className="stack-sm">
-        <div className="between"><h2>Outreach</h2><span className="small faint">{mine.length} companies</span></div>
+        <div className="between">
+          <h2>Outreach</h2>
+          <div className="row" style={{ gap: 8 }}>
+            <span className="small faint">{mine.length} companies</span>
+            {mine.length > 0 && (
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={() => {
+                  const blob = new Blob([exportOutreachCsv(mine)], { type: "text/csv" });
+                  const a = document.createElement("a");
+                  a.href = URL.createObjectURL(blob);
+                  a.download = `${club.name.replace(/\s+/g, "-").toLowerCase()}-outreach.csv`;
+                  a.click();
+                }}
+              >
+                <Download />Outreach CSV
+              </button>
+            )}
+          </div>
+        </div>
         {mine.length === 0 ? (
           <div className="card empty"><HandCoins /><strong>No companies yet</strong><span className="small">Add a company on the Companies tab to start tracking it.</span><button type="button" className="btn btn-primary" onClick={() => setTab("companies")}>Browse companies</button></div>
         ) : (
