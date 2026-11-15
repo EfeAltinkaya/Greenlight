@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { AlertTriangle, ArrowLeft, ArrowRight, Check, ChevronRight, CircleCheck, Download, FileCheck2, FileUp, MoveRight, Send, Sparkles, X } from "lucide-react";
 import { BOARDS, RULES, type BoardId } from "@/data/rules";
-import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, checkKey, requestItems, requestTotal, runChecks, score, sponsorAsks, UEPA_RE } from "@/lib/engine";
+import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, checkKey, requestItems, requestTotal, runChecks, score, sponsorAsks, todayISO, UEPA_RE } from "@/lib/engine";
 import { authFetch } from "@/lib/apiClient";
 import { putDoc } from "@/lib/docStore";
 import { store, useStore } from "@/lib/store";
@@ -16,6 +16,7 @@ import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, ty
 import { VerdictPill } from "@/components/VerdictPill";
 import { requestIdOf } from "@/lib/requestId";
 import { greenlightVerdict } from "@/lib/verdict";
+import { APP_FLOW } from "@/lib/workflow";
 
 type Step = StepId | "status" | "sponsors";
 const DRAFT_STEPS: { id: Step; title: string; sub: string }[] = [
@@ -27,6 +28,30 @@ const DRAFT_STEPS: { id: Step; title: string; sub: string }[] = [
 ];
 const DAY = 86_400_000;
 const subHash = (cb: () => void) => { window.addEventListener("hashchange", cb); return () => window.removeEventListener("hashchange", cb); };
+
+function nextWednesday(today: string) {
+  let d = today;
+  for (let i = 0; i < 8; i++) {
+    const wd = new Date(d + "T12:00:00").toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", weekday: "short" });
+    if (wd === "Wed") return d;
+    d = new Date(Date.parse(d + "T12:00:00Z") + DAY).toISOString().slice(0, 10);
+  }
+  return d;
+}
+
+function daysInStage(app: Application, today: string) {
+  const last = [...app.history].reverse().find((h) => h.status === app.status);
+  const anchor =
+    last?.at ??
+    (app.status === "draft" ? app.createdAt : app.submittedAt ?? app.createdAt);
+  return Math.max(0, Math.floor((Date.parse(today + "T12:00:00Z") - Date.parse(anchor + "T12:00:00Z")) / DAY));
+}
+
+function holderLabel(owner: (typeof APP_FLOW)[keyof typeof APP_FLOW]["owner"]) {
+  if (owner === "usg") return "USG";
+  if (owner === "club") return "Club";
+  return "System";
+}
 
 export default function Workspace() {
   const { id } = useParams<{ id: string }>();
@@ -467,6 +492,10 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
   const d = app.decision;
   const pe = app.postEvent ?? { photos: false, invoices: false, notes: "" };
   const canClose = pe.photos && pe.invoices;
+  const flow = APP_FLOW[app.status];
+  const today = todayISO();
+  const wed = nextWednesday(today);
+  const stageDays = daysInStage(app, today);
 
   function closeOut() {
     if (!canClose) return say("Confirm photos and final invoices first");
@@ -529,6 +558,28 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
           <p className="small muted">{app.postEvent?.submittedAt ? `Submitted ${fmtDate(app.postEvent.submittedAt)}.` : "This request is closed."}{app.postEvent?.notes ? ` ${app.postEvent.notes}` : ""}</p>
         </div>
       )}
+
+      <div className="card card-pad stack-sm">
+        <div className="stack-xs">
+          <span className="eyebrow">Current stage</span>
+          <h2 style={{ fontSize: 24, margin: 0 }}>{flow.label}</h2>
+        </div>
+        <dl className="grid cols-2 small" style={{ gap: "12px 20px", margin: 0 }}>
+          <div className="stack-xs">
+            <dt className="muted" style={{ margin: 0 }}>Who holds it</dt>
+            <dd style={{ margin: 0, fontWeight: 600 }}>{holderLabel(flow.owner)}</dd>
+          </div>
+          <div className="stack-xs">
+            <dt className="muted" style={{ margin: 0 }}>Time in this stage</dt>
+            <dd style={{ margin: 0, fontWeight: 600 }}>{stageDays} day{stageDays === 1 ? "" : "s"}</dd>
+          </div>
+          <div className="stack-xs" style={{ gridColumn: "1 / -1" }}>
+            <dt className="muted" style={{ margin: 0 }}>Next Wednesday submission window</dt>
+            <dd style={{ margin: 0, fontWeight: 600 }}>{fmtDate(wed, { weekday: "long", month: "short", day: "numeric" })} · 11:59 PM PT</dd>
+          </div>
+        </dl>
+        <p className="small muted" style={{ margin: 0 }}>USG does not publish a review time. Reviews can take hours or weeks.</p>
+      </div>
 
       <div className="card card-pad stack-sm">
         <h2>Timeline</h2>
