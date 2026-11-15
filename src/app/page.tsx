@@ -8,7 +8,7 @@ import { fmtDate } from "@/lib/engine";
 import { FIXES, STORY_TEXT, storyApp, storyState, type FixId } from "@/lib/landingStory";
 import { SPONSORS, SPONSOR_NOTE } from "@/data/sponsors";
 import { SOURCES, source } from "@/data/sources";
-import { FOUNDER_STORY, TEAM, TEAM_LINES } from "@/data/team";
+import { FOUNDER_STORY, TEAM, TEAM_PHOTO } from "@/data/team";
 import { BOARDS, GUIDELINES_URL } from "@/data/rules";
 import { DEADLINES_URL } from "@/data/deadlines";
 
@@ -210,13 +210,22 @@ export default function Home() {
         <section id="team" className="ed-band">
           <ScrollIn className="ed-wrap">
             <h2 className="ed-h2 big">Team</h2>
+            <figure className="ed-team-photo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={TEAM_PHOTO.src} alt={TEAM_PHOTO.alt} width={1024} height={609} />
+              <figcaption className="ed-fine">{TEAM_PHOTO.caption}</figcaption>
+            </figure>
             <ul className="ed-team">
               {TEAM.map((m) => (
                 <li key={m.name}>
-                  <span className="ed-mono" aria-hidden="true">{m.name[0]}</span>
-                  <b>{m.name}</b>
-                  <span className="faint">{m.role ?? "[role]"}</span>
-                  <span className="small muted">{TEAM_LINES[m.name] ?? "[line]"}</span>
+                  {m.link ? (
+                    <a className="ed-team-link" href={m.link} target="_blank" rel="noreferrer">
+                      <b>{m.name}</b>
+                      <span className="faint">LinkedIn</span>
+                    </a>
+                  ) : (
+                    <b>{m.name}</b>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,5 +1,5 @@
 // The team behind Greenlight, shown on the landing page.
-// Placeholders until each person confirms their own line: no invented roles, schools or links.
+// Photo order (left to right): Jainam, Nathan, Efe, Ashwin.
 
 export type TeamMember = {
   name: string;
@@ -9,19 +9,26 @@ export type TeamMember = {
   confirmed: boolean;
 };
 
+/** Left to right as in /team.jpg. */
 export const TEAM: TeamMember[] = [
-  { name: "Ashwin", role: "[role]", school: null, link: null, confirmed: false },
-  { name: "Efe", role: "[role]", school: null, link: null, confirmed: false },
-  { name: "Jainam", role: "[role]", school: null, link: null, confirmed: false },
-  { name: "Nathan", role: "[role]", school: null, link: null, confirmed: false },
+  { name: "Jainam", role: null, school: null, link: "https://www.linkedin.com/in/jainamtjain/", confirmed: true },
+  { name: "Nathan", role: null, school: null, link: "https://www.linkedin.com/in/nathan-choi-a88709430/", confirmed: true },
+  { name: "Efe", role: null, school: null, link: "https://www.linkedin.com/in/efe-altinkaya-731a34376/", confirmed: true },
+  { name: "Ashwin", role: null, school: null, link: "https://www.linkedin.com/in/ashwinkren/", confirmed: true },
 ];
+
+export const TEAM_PHOTO = {
+  src: "/team.jpg",
+  alt: "Greenlight team at the AI@USC Hackathon, left to right: Jainam, Nathan, Efe, Ashwin",
+  caption: "Left to right: Jainam, Nathan, Efe, Ashwin",
+};
 
 /** One-line placeholders until each person writes their own. */
 export const TEAM_LINES: Record<string, string> = {
-  Ashwin: "[line]",
-  Efe: "[line]",
-  Jainam: "[line]",
-  Nathan: "[line]",
+  Jainam: "",
+  Nathan: "",
+  Efe: "",
+  Ashwin: "",
 };
 
 /**

@@ -26,7 +26,7 @@ One app, two sides. Club officers describe an event in plain words; Greenlight f
 - Dev server note: CSS edits sometimes need a dev server restart to show up.
 
 ## TODO
-- Confirm the founder story wording with the team and, if we quote Hasan Askari directly anywhere, get his permission first. Fill in each member's role, school and link in `TEAM` once they confirm it.
+- Confirm the founder story wording with the team and, if we quote Hasan Askari directly anywhere, get his permission first. Roles and one-liners in `TEAM` are still open; LinkedIn links and the team photo are in.
 
 ## Decisions log
 - Nov 15: Slogan is "Your Highway to Capital"; brand mark is the Trojan helmet + stoplight lockup in `public/greenlight-logo.png`. (audit)
