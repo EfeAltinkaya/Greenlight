@@ -21,13 +21,17 @@ export type ClassificationHead = {
   task: "items" | "board" | "replies";
   ready?: boolean;
   stub?: boolean;
-  dim: number;
+  shipped?: boolean;
+  dim?: number;
   labels: string[];
   coef: number[][];
   intercept: number[];
-  baseModel: string;
-  license: string;
-  metrics?: HeadMetrics;
+  baseModel?: string;
+  encoder?: string;
+  pooling?: string;
+  license?: string;
+  version?: string;
+  metrics?: HeadMetrics & Record<string, unknown>;
   trainedAt?: string | null;
   limits?: string;
   does?: string;
@@ -108,9 +112,12 @@ export function isVendorHead(h: AnyHead): h is VendorHead {
   return h.task === "vendor";
 }
 
-/** Head is usable for live suggestions (training agent sets ready: true). */
+/** Head is usable for live suggestions (training agent sets ready / shipped). */
 export function headReady(h: AnyHead | null | undefined): boolean {
-  return Boolean(h && h.ready && !h.stub);
+  if (!h || h.stub) return false;
+  if (h.ready) return true;
+  if ("shipped" in h && (h as ClassificationHead).shipped) return true;
+  return false;
 }
 
 /**

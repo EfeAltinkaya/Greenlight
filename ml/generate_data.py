@@ -32,11 +32,12 @@ ITEM_LABELS = [
     "other",
 ]
 
+# Match BoardId in src/data/rules.ts (client routeBoard).
 BOARD_LABELS = [
-    "professional_academic",
+    "professional",
     "philanthropy",
-    "social_recreation_startup",
-    "performing_visual_arts",
+    "social",
+    "arts",
 ]
 
 REPLY_LABELS = [
@@ -614,7 +615,7 @@ ITEM_TRAIN_SYN: dict[str, list[str]] = {
 
 
 BOARD_TEST: dict[str, list[str]] = {
-    "professional_academic": [
+    "professional": [
         "Pre-law society hosting LSAT strategy workshop with alumni attorneys",
         "Consulting club case interview prep night for juniors",
         "Biomedical engineering research symposium with faculty posters",
@@ -638,7 +639,7 @@ BOARD_TEST: dict[str, list[str]] = {
         "Fundraiser gala supporting scholarship for first-gen students",
         "Community garden build with neighborhood nonprofit",
     ],
-    "social_recreation_startup": [
+    "social": [
         "New club kickoff social with games and free pizza",
         "Intramural soccer league registration night",
         "Startup pitch mixer for student founders",
@@ -650,7 +651,7 @@ BOARD_TEST: dict[str, list[str]] = {
         "Founder office hours for early-stage student startups",
         "Welcome week scavenger hunt across campus",
     ],
-    "performing_visual_arts": [
+    "arts": [
         "A cappella showcase in Bovard with ticketed seating",
         "Student film festival screening original shorts",
         "Dance company spring concert with live band",
@@ -665,7 +666,7 @@ BOARD_TEST: dict[str, list[str]] = {
 }
 
 BOARD_TRAIN_POOL: dict[str, dict[str, list[str]]] = {
-    "professional_academic": {
+    "professional": {
         "rules_doc": [
             "Board class: professional/academic programming and career prep",
             "Guidelines board: workshops, panels, academic competitions",
@@ -749,7 +750,7 @@ BOARD_TRAIN_POOL: dict[str, dict[str, list[str]]] = {
             "Synthetic: food pantry restock day",
         ],
     },
-    "social_recreation_startup": {
+    "social": {
         "rules_doc": [
             "Board class: social, recreation, and startup community",
             "Guidelines board: mixers, sports, founder events",
@@ -791,7 +792,7 @@ BOARD_TRAIN_POOL: dict[str, dict[str, list[str]]] = {
             "Synthetic: bike ride around Exposition Park",
         ],
     },
-    "performing_visual_arts": {
+    "arts": {
         "rules_doc": [
             "Board class: performing and visual arts",
             "Guidelines board: concerts, shows, galleries",

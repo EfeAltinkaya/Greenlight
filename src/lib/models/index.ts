@@ -63,6 +63,21 @@ const ITEM_DISPLAY: Record<string, string> = {
   subscription: "subscription",
   jewelry: "jewelry",
   balloons: "balloons",
+  // GL-Items model labels (pre-map display)
+  food_catered: "catered food",
+  food_raw: "raw food",
+  restaurant_meal: "restaurant meal",
+  merch_promotional: "promotional merch",
+  prize_or_gift_card: "prize or gift card",
+  durable_good: "durable good",
+  venue_or_staffing: "venue or staffing",
+  av_or_production: "AV or production",
+  decorations_rental: "decorations rental",
+  travel_air_or_hotel: "travel (air or hotel)",
+  ground_transport_rideshare_or_rental: "ground transport",
+  talent_or_performer_fee: "talent or performer fee",
+  supplies_single_use: "single-use supplies",
+  donation_to_charity: "donation to charity",
 };
 
 const BOARD_DISPLAY: Record<string, string> = {
@@ -97,17 +112,30 @@ export function mapItemLabel(label: string): ItemCategory | null {
     gift_card: "gift",
     gifts: "gift",
     gift_cards: "gift",
+    prize_or_gift_card: "gift",
     t_shirt: "tshirt",
     t_shirts: "tshirt",
     tee: "tshirt",
     tees: "tshirt",
     merch: "promo_merch",
+    merch_promotional: "promo_merch",
     swag: "promo_merch",
     catering: "food",
     catered: "food",
+    food_catered: "food",
+    food_raw: "raw_food",
+    restaurant_meal: "restaurant_dinner",
+    venue_or_staffing: "venue",
+    av_or_production: "rental",
+    decorations_rental: "rental",
+    travel_air_or_hotel: "airfare",
+    ground_transport_rideshare_or_rental: "rideshare",
+    talent_or_performer_fee: "performer",
     performer_fee: "performer",
     talent: "performer",
     dj: "performer",
+    supplies_single_use: "supplies",
+    donation_to_charity: "charity",
   };
   const mapped = (ITEM_SET.has(raw) ? raw : aliases[raw]) as ItemCategory | undefined;
   return mapped ?? null;
@@ -204,32 +232,73 @@ export async function classifyReply(text: string): Promise<ClassSuggestion | nul
 
 export type VendorSuggestion = { name: string; listed: boolean; score: number };
 
+type VendorEmbFile = {
+  vendors?: { name: string; supplierId?: string; embedding?: number[] }[];
+};
+
+let vendorEmbCache: Map<string, number[]> | null = null;
+
+async function loadVendorEmbeddings(): Promise<Map<string, number[]>> {
+  if (vendorEmbCache) return vendorEmbCache;
+  const map = new Map<string, number[]>();
+  try {
+    let raw: VendorEmbFile;
+    if (typeof window === "undefined") {
+      const { readFile } = await import(/* webpackIgnore: true */ "node:fs/promises");
+      const { join } = await import(/* webpackIgnore: true */ "node:path");
+      raw = JSON.parse(await readFile(join(process.cwd(), "public", "models", "vendors.emb.json"), "utf8")) as VendorEmbFile;
+    } else {
+      const r = await fetch("/models/vendors.emb.json", { cache: "force-cache" });
+      if (!r.ok) return map;
+      raw = (await r.json()) as VendorEmbFile;
+    }
+    for (const v of raw.vendors ?? []) {
+      if (v.name && v.embedding?.length) map.set(v.name, v.embedding);
+    }
+  } catch {
+    /* optional asset */
+  }
+  vendorEmbCache = map;
+  return map;
+}
+
 /**
  * Did-you-mean against USG vendors: 0.5 fuse string similarity + 0.5 cosine
- * on embeddings when the vendor head provides them. Threshold 0.55.
+ * on embeddings (head.vendors or /models/vendors.emb.json). Threshold 0.55.
  */
 export async function matchVendor(query: string): Promise<VendorSuggestion[] | null> {
   const q = query.trim();
   if (q.length < 2) return null;
   const head = await loadHead("vendor");
-  if (!head || !isVendorHead(head) || !headReady(head)) return null;
+  // Vendor suggestions can run when the emb index exists even if the head is still a stub.
+  const embIndex = await loadVendorEmbeddings();
+  const ready = headReady(head) || embIndex.size > 0;
+  if (!head || !isVendorHead(head) || !ready) return null;
+
+  const short = (n: string) => n.replace(/\s*[\[(].*$/, "").trim() || n;
 
   const listed = vendorData.vendors.map((v) => ({
-    name: v.name.replace(/\s*[\[(].*$/, "").trim() || v.name,
+    name: short(v.name),
+    fullName: v.name,
     listed: Boolean(v.active),
-    embedding: head.vendors.find((h) => h.name === v.name)?.embedding,
+    embedding: head.vendors.find((h) => h.name === v.name)?.embedding ?? embIndex.get(v.name),
   }));
 
   // Prefer head.vendors when the training agent populated them.
   const pool =
     head.vendors.length > 0
-      ? head.vendors.map((v) => ({ name: v.name, listed: v.listed, embedding: v.embedding }))
+      ? head.vendors.map((v) => ({
+          name: short(v.name),
+          fullName: v.name,
+          listed: v.listed,
+          embedding: v.embedding ?? embIndex.get(v.name),
+        }))
       : listed;
 
   const fuseWeight = head.fuseWeight ?? 0.5;
   const cosineWeight = head.cosineWeight ?? 0.5;
 
-  const fuse = new Fuse(pool, { keys: ["name"], includeScore: true, threshold: 0.5 });
+  const fuse = new Fuse(pool, { keys: ["name", "fullName"], includeScore: true, threshold: 0.5 });
   const fuseHits = fuse.search(q);
   const fuseMap = new Map<string, number>();
   for (const h of fuseHits) {

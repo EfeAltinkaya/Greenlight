@@ -29,7 +29,7 @@ One app, two sides. Club officers describe an event in plain words; Greenlight f
 
 ## Decisions log
 - Nov 15: Slogan is "Your Highway to Capital"; brand mark is the Trojan helmet + stoplight lockup in `public/greenlight-logo.png`. (audit)
-- Nov 15: Greenlight Models = one shared BAAI bge-small-en-v1.5 encoder + tiny logistic heads; they suggest only and never decide money or eligibility; test split is team-written only; honest framing on `/models`. (audit)
+- Nov 15: Greenlight Models — one shared encoder (BAAI / Xenova `bge-small-en-v1.5`), heads only (logistic JSON in `public/models/heads/`); models suggest and never decide; honest framing: "Greenlight Models are small classifiers we trained on USC club-funding data, on top of the open BAAI bge-small-en-v1.5 encoder (MIT license). They run in your browser, so request text never leaves your device for classification. They suggest; the rules engine and people decide."; test split is team-written only (never synthetic). Training lives in `ml/`. (audit)
 - Nov 15: Document exports use proven libraries (react-pdf, exceljs, docx, pptxgenjs, ics); vendor match uses fuse.js (confirmable, never silent); money math property-tested with fast-check. (audit)
 - Nov 15: Ledger is the spine (`LedgerLine` / `ledger.ts`); every sample club ships with a realistic multi-source ledger; new clubs get a $0 example event. (audit)
 - Nov 15: Campus-wide sponsor claims (one live ask per company, 21-day hold) enforced with a partial unique index in Supabase. (audit)

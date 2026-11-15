@@ -1,115 +1,121 @@
 text,label,source,split
-Career panel with alumni in consulting,professional,team_written,test
-Research symposium for undergrads,professional,team_written,test
-Resume workshop with recruiters,professional,team_written,test
-Tech talk by industry engineers,professional,team_written,test
-Case competition prep session,professional,team_written,test
-Academic conference on campus,professional,team_written,test
-Lab tour for STEM majors,professional,team_written,test
-Networking night with employers,professional,team_written,test
-Beach cleanup with local nonprofit,philanthropy,team_written,test
-Food drive packing event,philanthropy,team_written,test
-Habitat for Humanity build day,philanthropy,team_written,test
-Tutoring underserved middle schoolers,philanthropy,team_written,test
-Charity 5k for children's hospital,philanthropy,team_written,test
-Blood drive with Red Cross,philanthropy,team_written,test
-Community garden volunteer day,philanthropy,team_written,test
-Homeless shelter meal service,philanthropy,team_written,test
-Club mixer for new members,social,team_written,test
-Game night in the TCC,social,team_written,test
-Startup founder social,social,team_written,test
-Welcome week ice cream social,social,team_written,test
-Intramural sports kickoff,social,team_written,test
-Movie night on the lawn,social,team_written,test
-Student org fair booth social,social,team_written,test
-Casual networking picnic,social,team_written,test
-Spring dance showcase,arts,team_written,test
-Student art gallery opening,arts,team_written,test
-Orchestra concert in Bovard,arts,team_written,test
-Theater one-act festival,arts,team_written,test
-A cappella invitational,arts,team_written,test
-Film screening and talkback,arts,team_written,test
-Photography exhibition,arts,team_written,test
-Cultural dance performance,arts,team_written,test
-Events that advance professional careers,professional,rules_doc,train
-Academic research project showcase,professional,rules_doc,train
-Viterbi industry night,professional,fy26_report,train
-Marshall alumni careers evening,professional,fy26_report,train
-Robotics Build Night professional skills,professional,seed_app,train
-Mock interviews with alumni,professional,team_written,train
-Patent workshop for inventors,professional,team_written,train
-Data science meetup,professional,team_written,train
-Finance club speaker series,professional,team_written,train
-Community service projects,philanthropy,rules_doc,train
-Philanthropy fund service events,philanthropy,rules_doc,train
-Shoreline cleanup sample,philanthropy,seed_app,train
-Service trip packing party,philanthropy,fy26_report,train
-Clothing donation sorting,philanthropy,team_written,train
-Senior center visit day,philanthropy,team_written,train
-Park restoration volunteer,philanthropy,team_written,train
-Literacy tutoring Saturday,philanthropy,team_written,train
-Social and recreational events,social,rules_doc,train
-Startup-oriented club gatherings,social,rules_doc,train
-Dance social sample,social,seed_app,train
-Recreation fund mixers,social,fy26_report,train
-Trivia night for members,social,team_written,train
-Potluck for apartment residents,social,team_written,train
-Board game tournament,social,team_written,train
-Sunset hike meetup,social,team_written,train
-Performing and visual arts events,arts,rules_doc,train
-Arts fund showcases,arts,rules_doc,train
-Southside Dance Collective spring show,arts,seed_app,train
-Visual arts exhibition FY26,arts,fy26_report,train
-Jazz ensemble concert,arts,team_written,train
-Improv comedy night,arts,team_written,train
-Ballet workshop showing,arts,team_written,train
-Sculpture garden opening,arts,team_written,train
-Pre-med panel with doctors,professional,synthetic,train
-Law school admissions talk,professional,synthetic,train
-Startup pitch practice with mentors,professional,synthetic,train
-Engineering design review night,professional,synthetic,train
-Consulting club case night,professional,synthetic,train
-Research poster session,professional,synthetic,train
-Internship prep bootcamp,professional,synthetic,train
-Women in STEM mentoring dinner,professional,synthetic,train
-Product management workshop,professional,synthetic,train
-Cybersecurity career fair booth,professional,synthetic,train
-Architecture portfolio review,professional,synthetic,train
-Accounting CPA pathway night,professional,synthetic,train
-UX research methods workshop,professional,synthetic,train
-Animal shelter walk,philanthropy,synthetic,train
-Disaster relief kit packing,philanthropy,synthetic,train
-Refugee welcome dinner service,philanthropy,synthetic,train
-Tree planting in LA,philanthropy,synthetic,train
-Soup kitchen shift,philanthropy,synthetic,train
-Mentoring foster youth,philanthropy,synthetic,train
-Hospital volunteer appreciation,philanthropy,synthetic,train
-School supply drive,philanthropy,synthetic,train
-Neighborhood mural cleanup,philanthropy,synthetic,train
-Disability sports volunteer,philanthropy,synthetic,train
-Environmental education booth,philanthropy,synthetic,train
-Civic engagement canvassing training,philanthropy,synthetic,train
-Nonprofit fundraising gala support,philanthropy,synthetic,train
-Community health fair staffing,philanthropy,synthetic,train
-Karaoke night,social,synthetic,train
-Club birthday celebration,social,synthetic,train
-End of semester hangout,social,synthetic,train
-Coffee chat with freshmen,social,synthetic,train
-Dodgeball social,social,synthetic,train
-Paint night casual,social,synthetic,train
-Escape room team building,social,synthetic,train
-Brunch meetup off campus,social,synthetic,train
-Holiday cookie exchange,social,synthetic,train
-Campus scavenger hunt,social,synthetic,train
-Open mic casual night,social,synthetic,train
-Sports watch party,social,synthetic,train
-Friendship bracelet workshop,social,synthetic,train
-Study break carnival,social,synthetic,train
-Poetry slam finals,arts,synthetic,train
-Student-directed play,arts,synthetic,train
-Choir holiday concert,arts,synthetic,train
-Fashion design runway,arts,synthetic,train
-Animation short festival,arts,synthetic,train
-Drum circle performance,arts,synthetic,train
-Classical guitar recital,arts,synthetic,train
-Mural unveiling ceremony,arts,synthetic,train
+Pre-law society hosting LSAT strategy workshop with alumni attorneys,professional,team_written,test
+Consulting club case interview prep night for juniors,professional,team_written,test
+Biomedical engineering research symposium with faculty posters,professional,team_written,test
+Finance society Bloomberg terminal training series,professional,team_written,test
+Women in STEM mentorship matching for lab placements,professional,team_written,test
+Debate team coaching clinic before regional tournament,professional,team_written,test
+Data science club Kaggle study group on campus,professional,team_written,test
+Academic decathlon practice funded as training event,professional,team_written,test
+Career panel with recruiters from Big Four firms,professional,team_written,test
+Graduate school application essay workshop,professional,team_written,test
+Board class: professional/academic programming and career prep,professional,rules_doc,train
+"Guidelines board: workshops, panels, academic competitions",professional,rules_doc,train
+Professional development events for majors,professional,rules_doc,train
+Academic society training and symposiums,professional,rules_doc,train
+Career readiness programming under academic board,professional,rules_doc,train
+Research poster nights and study workshops,professional,rules_doc,train
+Seed: consulting case prep night,professional,seed_app,train
+Seed: pre-med panel with alumni,professional,seed_app,train
+Seed: finance training on terminals,professional,seed_app,train
+Demo: debate coaching clinic,professional,seed_app,train
+Sample: LSAT strategy session,professional,seed_app,train
+FY26: professional boards hosted career panels,professional,fy26_report,train
+FY26: academic workshop attendance strong,professional,fy26_report,train
+FY26: research symposium funding notes,professional,fy26_report,train
+FY26: mentorship matching events,professional,fy26_report,train
+Officer notes: this is a career skills board event,professional,team_written,train
+Team: academic prep night not a social mixer,professional,team_written,train
+Team: professional society workshop classification,professional,team_written,train
+Synthetic: resume workshop for juniors,professional,synthetic,train
+Synthetic: industry speaker academic panel,professional,synthetic,train
+Charity 5K raising funds for LA food insecurity programs,philanthropy,team_written,test
+Volunteer day packing meals for Skid Row outreach,philanthropy,team_written,test
+Benefit concert proceeds directed to children's hospital,philanthropy,team_written,test
+Blood drive organized with Red Cross on Leavey Lawn,philanthropy,team_written,test
+Coat drive collection for winter shelter partners,philanthropy,team_written,test
+Service trip planning meeting for Habitat build weekend,philanthropy,team_written,test
+Awareness walk for mental health nonprofit partner,philanthropy,team_written,test
+Toy drive sorting night before December delivery,philanthropy,team_written,test
+Fundraiser gala supporting scholarship for first-gen students,philanthropy,team_written,test
+Community garden build with neighborhood nonprofit,philanthropy,team_written,test
+Board class: philanthropy and community service,philanthropy,rules_doc,train
+Guidelines board: charity fundraisers and service,philanthropy,rules_doc,train
+Service events benefiting external nonprofits,philanthropy,rules_doc,train
+Philanthropic drives and awareness walks,philanthropy,rules_doc,train
+Volunteer programming with community partners,philanthropy,rules_doc,train
+Benefit events raising money for causes,philanthropy,rules_doc,train
+Seed: charity 5K fundraiser,philanthropy,seed_app,train
+Seed: meal packing volunteer day,philanthropy,seed_app,train
+Seed: blood drive with Red Cross,philanthropy,seed_app,train
+Demo: coat drive sorting night,philanthropy,seed_app,train
+Sample: benefit concert for hospital,philanthropy,seed_app,train
+FY26: philanthropy boards led service days,philanthropy,fy26_report,train
+FY26: charity walk participation,philanthropy,fy26_report,train
+FY26: donation drive logistics,philanthropy,fy26_report,train
+FY26: nonprofit partner events,philanthropy,fy26_report,train
+Officer notes: service board charity focus,philanthropy,team_written,train
+Team: fundraiser for external nonprofit,philanthropy,team_written,train
+Team: volunteer day not a social-only event,philanthropy,team_written,train
+Synthetic: park cleanup with nonprofit,philanthropy,synthetic,train
+Synthetic: donation sorting warehouse night,philanthropy,synthetic,train
+New club kickoff social with games and free pizza,social,team_written,test
+Intramural soccer league registration night,social,team_written,test
+Startup pitch mixer for student founders,social,team_written,test
+Casual board game night in the residential lounge,social,team_written,test
+Hiking day trip signup for Griffith Observatory trail,social,team_written,test
+Hackathon social hour before coding begins,social,team_written,test
+Club fair booth focused on meeting new friends,social,team_written,test
+Rec league basketball scrimmage and pizza after,social,team_written,test
+Founder office hours for early-stage student startups,social,team_written,test
+Welcome week scavenger hunt across campus,social,team_written,test
+"Board class: social, recreation, and startup community",social,rules_doc,train
+"Guidelines board: mixers, sports, founder events",social,rules_doc,train
+Social recreation programming for members,social,rules_doc,train
+Startup and entrepreneurship social hubs,social,rules_doc,train
+Intramural and casual recreation events,social,rules_doc,train
+New-club social kickoffs and mixers,social,rules_doc,train
+Seed: new member pizza social,social,seed_app,train
+Seed: intramural league night,social,seed_app,train
+Seed: founder pitch mixer,social,seed_app,train
+Demo: board game lounge night,social,seed_app,train
+Sample: hiking day trip signup,social,seed_app,train
+FY26: social boards hosted mixers,social,fy26_report,train
+FY26: recreation league participation,social,fy26_report,train
+FY26: startup mixer attendance,social,fy26_report,train
+FY26: welcome week socials,social,fy26_report,train
+Officer notes: pure social recreation event,social,team_written,train
+Team: startup mixer under social/startup board,social,team_written,train
+Team: intramural night classification,social,team_written,train
+Synthetic: karaoke social in lounge,social,synthetic,train
+Synthetic: pickup volleyball afternoon,social,synthetic,train
+A cappella showcase in Bovard with ticketed seating,arts,team_written,test
+Student film festival screening original shorts,arts,team_written,test
+Dance company spring concert with live band,arts,team_written,test
+Gallery opening for undergraduate photography,arts,team_written,test
+Theater department collaboration on one-act plays,arts,team_written,test
+Jazz ensemble night at the outdoor amphitheater,arts,team_written,test
+Fashion design runway featuring student collections,arts,team_written,test
+Poetry slam with featured spoken-word artists,arts,team_written,test
+Orchestra chamber recital in music school hall,arts,team_written,test
+Visual arts mural painting live demo for passersby,arts,team_written,test
+Board class: performing and visual arts,arts,rules_doc,train
+"Guidelines board: concerts, shows, galleries",arts,rules_doc,train
+Arts performances and exhibitions,arts,rules_doc,train
+"Dance, music, theater programming",arts,rules_doc,train
+Visual arts shows and creative showcases,arts,rules_doc,train
+Student arts festivals and recitals,arts,rules_doc,train
+Seed: a cappella showcase,arts,seed_app,train
+Seed: student film festival,arts,seed_app,train
+Seed: dance spring concert,arts,seed_app,train
+Demo: photography gallery opening,arts,seed_app,train
+Sample: jazz ensemble night,arts,seed_app,train
+FY26: arts boards staged concerts,arts,fy26_report,train
+FY26: gallery openings funded,arts,fy26_report,train
+FY26: theater one-acts attendance,arts,fy26_report,train
+FY26: fashion runway show notes,arts,fy26_report,train
+Officer notes: performing arts showcase,arts,team_written,train
+Team: visual arts exhibition event,arts,team_written,train
+Team: concert night arts board,arts,team_written,train
+Synthetic: choir winter concert,arts,synthetic,train
+Synthetic: improv comedy night,arts,synthetic,train

@@ -9,14 +9,13 @@ Writes:
   ml/reports/{task}_preds.json
 
 Ships a real head only if macro F1 beats majority (and keyword for items);
-otherwise writes a stub head (`shipped: false`) that index.ts can skip.
+otherwise writes a stub head (`ready: false`, `stub: true`) that index.ts skips.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -40,8 +39,37 @@ REPO = ROOT.parent
 HEADS = REPO / "public" / "models" / "heads"
 REPORTS = ROOT / "reports"
 VERSION = "1.0.0"
+ENCODER_BROWSER = "Xenova/bge-small-en-v1.5"
+LICENSE = "MIT"
 
-# Keyword baselines for items (simple lexical priors)
+CARD = {
+    "items": {
+        "does": "Guesses which budget line category a description fits (GL-Items).",
+        "neverDoes": "Decide money, change rules, or submit an application.",
+        "limits": "Suggests a budget line category only. Never approves, denies, or awards money.",
+        "reportWrong": "Click Not right on a suggestion, or email the Greenlight team with the text and the correct category.",
+    },
+    "board": {
+        "does": "Ranks which USG funding board best matches an event description.",
+        "neverDoes": "Decide money or lock the board without an officer.",
+        "limits": "Suggests a funding board from the event description. Officers confirm before submit.",
+        "reportWrong": "Click Not right on a suggestion, or email the Greenlight team with the text and the correct board.",
+    },
+    "replies": {
+        "does": "Classifies a pasted sponsor reply (interested, needs more info, declined, OOO, referral, bounce, unsubscribe).",
+        "neverDoes": "Send email, commit a sponsor, or decide funding.",
+        "limits": "Labels inbound sponsor email tone. Officers confirm the next step.",
+        "reportWrong": "Click Not right on a suggestion, or email the Greenlight team with the reply and the correct label.",
+    },
+}
+
+FRAMING = (
+    "Greenlight Models are small classifiers we trained on USC club-funding data, "
+    "on top of the open BAAI bge-small-en-v1.5 encoder (MIT license). They run in your "
+    "browser, so request text never leaves your device for classification. They suggest; "
+    "the rules engine and people decide."
+)
+
 ITEM_KEYWORDS: dict[str, list[str]] = {
     "food_catered": ["cater", "buffet", "boxed lunch", "tray"],
     "food_raw": ["grocery", "raw", "ingredient", "costco", "uncooked", "diy"],
@@ -69,13 +97,11 @@ def keyword_predict(texts: list[str], labels: list[str]) -> list[str]:
     preds = []
     for text in texts:
         t = text.lower()
-        best_label = default
-        best_hits = 0
+        best_label, best_hits = default, 0
         for lab in labels:
             hits = sum(1 for kw in ITEM_KEYWORDS.get(lab, []) if kw in t)
             if hits > best_hits:
-                best_hits = hits
-                best_label = lab
+                best_hits, best_label = hits, lab
         preds.append(best_label if best_hits > 0 else default)
     return preds
 
@@ -84,70 +110,24 @@ def majority_baseline(y_train: np.ndarray, y_test: np.ndarray) -> tuple[float, f
     values, counts = np.unique(y_train, return_counts=True)
     maj = values[counts.argmax()]
     preds = np.full_like(y_test, maj)
-    acc = accuracy_score(y_test, preds)
-    macro = f1_score(y_test, preds, average="macro", zero_division=0)
-    return float(acc), float(macro), str(maj)
+    return (
+        float(accuracy_score(y_test, preds)),
+        float(f1_score(y_test, preds, average="macro", zero_division=0)),
+        str(maj),
+    )
 
 
-def stub_head(task: str, labels: list[str], metrics: dict, reason: str) -> dict:
-    n = len(labels)
-    return {
-        "task": task,
-        "labels": labels,
-        "coef": [[0.0] * 384 for _ in range(n)],
-        "intercept": [0.0] * n,
-        "pooling": "mean",
-        "encoder": "Xenova/bge-small-en-v1.5",
-        "version": VERSION,
-        "trainedAt": datetime.now(timezone.utc).isoformat(),
-        "shipped": False,
-        "stub": True,
-        "stubReason": reason,
-        "metrics": metrics,
-    }
-
-
-def real_head(
-    task: str,
-    labels: list[str],
-    coef: np.ndarray,
-    intercept: np.ndarray,
-    metrics: dict,
-) -> dict:
-    return {
-        "task": task,
-        "labels": labels,
-        "coef": coef.tolist(),
-        "intercept": intercept.tolist(),
-        "pooling": "mean",
-        "encoder": "Xenova/bge-small-en-v1.5",
-        "version": VERSION,
-        "trainedAt": datetime.now(timezone.utc).isoformat(),
-        "shipped": True,
-        "stub": False,
-        "metrics": metrics,
-    }
-
-
-def worst_errors(
-    texts: list[str],
-    y_true: list[str],
-    y_pred: list[str],
-    probs: np.ndarray,
-    labels: list[str],
-    k: int = 10,
-) -> list[dict]:
+def worst_errors(texts, y_true, y_pred, probs, labels, k=10):
     rows = []
     for i, (text, truth, pred) in enumerate(zip(texts, y_true, y_pred)):
         if truth == pred:
             continue
-        conf = float(probs[i].max())
         rows.append(
             {
                 "text": text,
                 "true": truth,
                 "pred": pred,
-                "confidence": conf,
+                "confidence": float(probs[i].max()),
                 "true_prob": float(probs[i][labels.index(truth)]) if truth in labels else 0.0,
             }
         )
@@ -155,19 +135,90 @@ def worst_errors(
     return rows[:k]
 
 
+def build_head(
+    *,
+    task: str,
+    labels: list[str],
+    coef: np.ndarray | None,
+    intercept: np.ndarray | None,
+    metrics: dict,
+    ship: bool,
+    stub_reason: str | None,
+    fixtures: list[dict],
+) -> dict:
+    n, dim = len(labels), 384
+    card = CARD[task]
+    if ship and coef is not None and intercept is not None:
+        return {
+            "task": task,
+            "ready": True,
+            "stub": False,
+            "dim": dim,
+            "labels": labels,
+            "coef": coef.astype(float).tolist(),
+            "intercept": intercept.astype(float).tolist(),
+            "pooling": "mean",
+            "encoder": ENCODER_BROWSER,
+            "baseModel": ENCODER_BROWSER,
+            "license": LICENSE,
+            "version": VERSION,
+            "trainedAt": datetime.now(timezone.utc).isoformat(),
+            "metrics": {
+                "accuracy": metrics["accuracy"],
+                "macroF1": metrics["macroF1"],
+                "nTrain": metrics["nTrain"],
+                "note": None,
+            },
+            "framing": FRAMING,
+            "limits": card["limits"],
+            "does": card["does"],
+            "neverDoes": card["neverDoes"],
+            "reportWrong": card["reportWrong"],
+            "fixtures": fixtures,
+        }
+    # Stub: zero head that index.ts skips via ready=false / stub=true
+    return {
+        "task": task,
+        "ready": False,
+        "stub": True,
+        "dim": dim,
+        "labels": labels,
+        "coef": [[0.0] * dim for _ in range(n)],
+        "intercept": [0.0] * n,
+        "pooling": "mean",
+        "encoder": ENCODER_BROWSER,
+        "baseModel": ENCODER_BROWSER,
+        "license": LICENSE,
+        "version": VERSION,
+        "trainedAt": datetime.now(timezone.utc).isoformat(),
+        "metrics": {
+            "accuracy": metrics.get("accuracy"),
+            "macroF1": metrics.get("macroF1"),
+            "nTrain": metrics.get("nTrain", 0),
+            "note": stub_reason or "Stub head; did not beat baseline.",
+        },
+        "framing": FRAMING,
+        "limits": card["limits"],
+        "does": card["does"],
+        "neverDoes": card["neverDoes"],
+        "reportWrong": card["reportWrong"],
+        "fixtures": fixtures,
+        "stubReason": stub_reason,
+    }
+
+
 def train_task(task: str) -> dict:
     t0 = time.time()
     sys.path.insert(0, str(ROOT))
-    from embed import embed_and_cache, encoder_mode, encode  # noqa: WPS433
+    from embed import embed_and_cache, encoder_mode  # noqa: WPS433
 
     df = pd.read_csv(ROOT / "data" / f"{task}.csv")
     texts = df["text"].astype(str).tolist()
     X = embed_and_cache(texts, name=task)
     mode = encoder_mode()
 
-    train_mask = df["split"].values == "train"
-    test_mask = df["split"].values == "test"
-    # Enforce team_written-only test
+    train_mask = df["split"].to_numpy() == "train"
+    test_mask = df["split"].to_numpy() == "test"
     assert (df.loc[test_mask, "source"] == "team_written").all()
     assert not (df.loc[test_mask, "source"] == "synthetic").any()
 
@@ -187,9 +238,8 @@ def train_task(task: str) -> dict:
         solver="lbfgs",
     )
 
-    # 5-fold CV on train (stratified when possible)
-    n_splits = min(5, int(np.min(np.bincount(y_train))))
-    n_splits = max(2, n_splits)
+    min_class = int(np.min(np.bincount(y_train)))
+    n_splits = max(2, min(5, min_class))
     cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
     cv_scores = cross_val_score(clf, X_train, y_train, cv=cv, scoring="f1_macro")
 
@@ -249,7 +299,7 @@ def train_task(task: str) -> dict:
 
     errors = worst_errors(texts_test, y_test_labels, list(y_pred), probs, labels, k=10)
 
-    # Preds for parity test — use full dataset texts with predicted probs
+    # Preds for JS parity: include embeddings so Node tests don't use embedFallback
     all_probs = clf.predict_proba(X)
     preds_out = []
     for i, text in enumerate(texts):
@@ -258,33 +308,73 @@ def train_task(task: str) -> dict:
             {
                 "text": text,
                 "label": str(df.iloc[i]["label"]),
+                "embedding": X[i].astype(float).tolist(),
                 "probs": {labels[j]: float(p[j]) for j in range(len(labels))},
             }
         )
+
+    # Fixtures: first test example per label (with embedding) for offline demos
+    fixtures = []
+    seen = set()
+    for i, row in df[test_mask].iterrows():
+        lab = str(row["label"])
+        if lab in seen:
+            continue
+        seen.add(lab)
+        idx = int(i)
+        fixtures.append(
+            {
+                "text": str(row["text"]),
+                "label": lab,
+                "embedding": X[idx].astype(float).tolist(),
+            }
+        )
+        if len(fixtures) >= len(labels):
+            break
 
     HEADS.mkdir(parents=True, exist_ok=True)
     REPORTS.mkdir(parents=True, exist_ok=True)
 
     if ship:
-        # sklearn coef_ shape (n_classes, n_features); intercept_ (n_classes,)
-        head = real_head(task, labels, clf.coef_.astype(float), clf.intercept_.astype(float), metrics)
         reason_line = f"Shipped: macro F1 {macro_f1:.3f} beats majority {maj_f1:.3f}" + (
             f" and keyword {kw_f1:.3f}" if kw_f1 is not None else ""
         )
+        head = build_head(
+            task=task,
+            labels=labels,
+            coef=clf.coef_,
+            intercept=clf.intercept_,
+            metrics=metrics,
+            ship=True,
+            stub_reason=None,
+            fixtures=fixtures,
+        )
     else:
         reason = (
-            f"macro F1 {macro_f1:.3f} did not beat "
-            f"majority {maj_f1:.3f}"
+            f"macro F1 {macro_f1:.3f} did not beat majority {maj_f1:.3f}"
             + (f" and/or keyword {kw_f1:.3f}" if kw_f1 is not None else "")
         )
-        head = stub_head(task, labels, metrics, reason)
         reason_line = f"NOT shipped (stub): {reason}"
+        head = build_head(
+            task=task,
+            labels=labels,
+            coef=None,
+            intercept=None,
+            metrics=metrics,
+            ship=False,
+            stub_reason=reason,
+            fixtures=fixtures,
+        )
 
     (HEADS / f"{task}.json").write_text(json.dumps(head) + "\n", encoding="utf-8")
-    (REPORTS / f"{task}_preds.json").write_text(json.dumps(preds_out, indent=2) + "\n", encoding="utf-8")
+    (REPORTS / f"{task}_preds.json").write_text(
+        json.dumps(preds_out) + "\n", encoding="utf-8"
+    )
 
-    # Markdown report
-    cm_rows = ["| true \\ pred | " + " | ".join(labels) + " |", "| --- | " + " | ".join(["---"] * len(labels)) + " |"]
+    cm_rows = [
+        "| true \\ pred | " + " | ".join(labels) + " |",
+        "| --- | " + " | ".join(["---"] * len(labels)) + " |",
+    ]
     for i, lab in enumerate(labels):
         cm_rows.append("| " + lab + " | " + " | ".join(str(int(x)) for x in cm[i]) + " |")
 
@@ -300,23 +390,18 @@ def train_task(task: str) -> dict:
     err_lines = ["| text | true | pred | confidence |", "| --- | --- | --- | ---: |"]
     for e in errors:
         clipped = e["text"].replace("|", "/")[:80]
-        err_lines.append(f"| {clipped} | {e['true']} | {e['pred']} | {e['confidence']:.3f} |")
-
-    framing = (
-        "Greenlight Models are small classifiers we trained on USC club-funding data, "
-        "on top of the open BAAI bge-small-en-v1.5 encoder (MIT license). They run in your "
-        "browser, so request text never leaves your device for classification. They suggest; "
-        "the rules engine and people decide."
-    )
+        err_lines.append(
+            f"| {clipped} | {e['true']} | {e['pred']} | {e['confidence']:.3f} |"
+        )
 
     report = f"""# GL-{task.title()} head report
 
-{framing}
+{FRAMING}
 
 ## Summary
 
 - **Task:** `{task}`
-- **Encoder mode:** `{mode}` (`BAAI/bge-small-en-v1.5` mean-pool + L2; browser encoder `Xenova/bge-small-en-v1.5`)
+- **Encoder mode:** `{mode}` (`BAAI/bge-small-en-v1.5` mean-pool + L2; browser encoder `{ENCODER_BROWSER}`)
 - **Train / test:** {metrics['nTrain']} / {metrics['nTest']} (test = team_written only)
 - **Accuracy:** {acc:.3f}
 - **Macro F1:** {macro_f1:.3f}
@@ -341,9 +426,7 @@ def train_task(task: str) -> dict:
     report += "\n## 10 worst errors (high-confidence mistakes on test)\n\n"
     report += "\n".join(err_lines) if errors else "_No errors on test set._"
     report += "\n\n## sklearn classification report\n\n```\n"
-    report += classification_report(
-        y_test, y_pred_idx, target_names=labels, zero_division=0
-    )
+    report += classification_report(y_test, y_pred_idx, target_names=labels, zero_division=0)
     report += "```\n"
 
     (REPORTS / f"{task}.md").write_text(report, encoding="utf-8")
