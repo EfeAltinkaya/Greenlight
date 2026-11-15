@@ -5,8 +5,9 @@ import type { Check as CheckT, CheckLevel, Status } from "@/lib/types";
 
 export function Mark({ size = "md" }: { size?: "md" | "lg" }) {
   return (
-    <span className="mark" style={size === "lg" ? { fontSize: 22 } : undefined}>
-      <Stoplight />
+    <span className={"mark" + (size === "lg" ? " mark-lg" : "")}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- a small static logo; next/image adds nothing here */}
+      <img src="/logo-icon.png" alt="" className="mark-icon" />
       Greenlight
     </span>
   );
