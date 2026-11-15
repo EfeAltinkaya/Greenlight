@@ -25,9 +25,14 @@ One app, two sides. Club officers describe an event in plain words; Greenlight f
 - Dev server note: CSS edits sometimes need a dev server restart to show up.
 
 ## TODO
-- Confirm the founder story ("Why it's called Greenlight", `FOUNDER_STORY` in `src/data/team.ts`) with the team; the current text is a placeholder. Fill in each member's role, school and link in `TEAM` once they confirm it.
+- Confirm the founder story wording with the team and, if we quote Hasan Askari directly anywhere, get his permission first. Fill in each member's role, school and link in `TEAM` once they confirm it.
 
 ## Decisions log
+- Nov 15: Ledger is the spine (`LedgerLine` / `ledger.ts`); every sample club ships with a realistic multi-source ledger; new clubs get a $0 example event. (audit)
+- Nov 15: Campus-wide sponsor claims (one live ask per company, 21-day hold) enforced with a partial unique index in Supabase. (audit)
+- Nov 15: Sponsor ties only from verified URLs (Career Connections 2026-27, AI@USC, Viterbi top employers, Career Center recruiters); gradadmission partners page is not used for sponsor ties. (audit)
+- Nov 15: Voice rules: no em dashes, no buzzwords; say who does what; empty states teach one next action. (audit)
+- Nov 15: Landing concept is "Follow one event's money" with a stoplight progressing red to green; no stock photos or Step 1/2/3 icon cards. (audit)
 - Nov 14: Cache Components turned off; every screen is an interactive client page, and it blocked `useParams` without Suspense. (Efe)
 - Nov 14: localStorage demo mode kept; real accounts via Supabase when env vars exist. (Efe)
 - Nov 14: Sponsors pay vendors directly, never the club (Campus Activities in-kind rule). (Efe)

@@ -10,18 +10,28 @@ export type TeamMember = {
 };
 
 export const TEAM: TeamMember[] = [
-  { name: "Ashwin", role: null, school: null, link: null, confirmed: false },
-  { name: "Efe", role: null, school: null, link: null, confirmed: false },
-  { name: "Jainam", role: null, school: null, link: null, confirmed: false },
-  { name: "Nathan", role: null, school: null, link: null, confirmed: false },
+  { name: "Ashwin", role: "[role]", school: null, link: null, confirmed: false },
+  { name: "Efe", role: "[role]", school: null, link: null, confirmed: false },
+  { name: "Jainam", role: "[role]", school: null, link: null, confirmed: false },
+  { name: "Nathan", role: "[role]", school: null, link: null, confirmed: false },
 ];
 
-/** "Why it's called Greenlight" on the landing page. Replace with the team's confirmed founder copy. */
+/** One-line placeholders until each person writes their own. */
+export const TEAM_LINES: Record<string, string> = {
+  Ashwin: "[line]",
+  Efe: "[line]",
+  Jainam: "[line]",
+  Nathan: "[line]",
+};
+
+/**
+ * "Why it's called Greenlight" on the landing page.
+ * This is our paraphrase of a talk ("told a story"), not a quotation.
+ * Do not put words in Musk's or Askari's mouth.
+ */
 export const FOUNDER_STORY = {
   confirmed: false,
   paragraphs: [
-    "In film, a greenlight is the yes that lets a project get made. On the street, it means go.",
-    "Club officers at USC spend their evenings on budget sheets, vendor lists and deadline tables instead of on the event itself. Most of the red lights they hit are rules nobody told them about until it was too late.",
-    "We wanted every officer to see what a reviewer would see before they press submit: each line checked, each rule quoted, nothing left to guess. When every light is green, the only thing left is the event.",
+    "At the AI@USC kickoff, Hasan Askari, co-founder and Managing Partner of K1 Investment Management, told a story Elon Musk likes to tell about driving from SpaceX in Hawthorne to Malibu: imagine hitting every light green. How far would you get, and how much more would you attempt, if nothing stopped you? We had spent the morning talking to the people who move money for USC clubs. Clubs were stopping at red lights they could not see: a caterer that is not on a list, a deadline that passed two weeks before they knew it existed, an item that cannot be funded, a sponsor nobody had asked. Greenlight is our attempt to turn those lights green before a club reaches them.",
   ],
 };

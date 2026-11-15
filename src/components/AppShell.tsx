@@ -171,6 +171,12 @@ export function AppShell({ role, children }: { role: Role; children: React.React
         </div>
       </aside>
       <div style={{ minWidth: 0 }}>
+        {!session.user && (
+          <div className="demo-banner" role="status">
+            <span>Demo data. Nothing is sent to USG.</span>
+            <Link href="/login" className="link" style={{ color: "inherit", fontWeight: 700 }}>Exit demo</Link>
+          </div>
+        )}
         <div className="mobile-bar">
           <Link href="/"><Mark /></Link>
           <button className="btn btn-sm" onClick={() => setOpen(true)} aria-label="Open menu"><Menu />Menu</button>
