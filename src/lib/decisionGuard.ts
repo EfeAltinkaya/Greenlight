@@ -53,9 +53,29 @@ export function awardError(outcome: Outcome, amount: number, app: Application, c
   if (amount > requested) return `Can't be more than the ${money(requested)} requested.`;
   if (amount > left) return `Can't be more than the ${money(left)} this club has left of its $8,000 for the year (Section 6).`;
   const excluded = excludedLines(app, checks).reduce((s, x) => s + x.total, 0);
-  if (outcome === "approved" && excluded > 0) return `${money(excluded)} of this request fails a rule. Choose Fund part, which leaves those lines out.`;
+  if (outcome === "approved" && excluded > 0) return `${money(excluded)} of this request fails a rule. Choose Fund part, or Approve once fixed with conditions.`;
   if (outcome === "partial" && amount >= requested) return "That is the full request. Choose Approve instead.";
   return null;
+}
+
+/** Allow a full approve when the reviewer is using Approve once fixed (conditions cover the open fails). */
+export function awardErrorWithConditions(
+  outcome: Outcome,
+  amount: number,
+  app: Application,
+  club: Club,
+  checks: Check[],
+  conditions: string[],
+): string | null {
+  if (conditions.length > 0 && outcome !== "denied") {
+    const requested = requestTotal(app);
+    const left = Math.max(0, RULES.annualCap.limit - club.receivedThisYear);
+    if (!Number.isFinite(amount) || amount <= 0) return "Enter an amount above $0, or choose Deny.";
+    if (amount > requested) return `Can't be more than the ${money(requested)} requested.`;
+    if (amount > left) return `Can't be more than the ${money(left)} this club has left of its $8,000 for the year (Section 6).`;
+    return null;
+  }
+  return awardError(outcome, amount, app, club, checks);
 }
 
 export type DecisionFacts = {
@@ -67,10 +87,12 @@ export type DecisionFacts = {
   reason: ReasonId;
   excluded: Excluded[];
   notes: string[]; // reviewer notes, each already carrying its section
+  /** Approve-once-fixed conditions the club must complete. */
+  conditions?: string[];
 };
 
-export function decisionFacts(app: Application, club: Club, checks: Check[], outcome: Outcome, amount: number, reason: ReasonId, notes: string[]): DecisionFacts {
-  return { clubName: club.name, eventTitle: app.event.title, outcome, amount: outcome === "denied" ? 0 : amount, requested: requestTotal(app), reason, excluded: outcome === "denied" ? [] : excludedLines(app, checks), notes };
+export function decisionFacts(app: Application, club: Club, checks: Check[], outcome: Outcome, amount: number, reason: ReasonId, notes: string[], conditions: string[] = []): DecisionFacts {
+  return { clubName: club.name, eventTitle: app.event.title, outcome, amount: outcome === "denied" ? 0 : amount, requested: requestTotal(app), reason, excluded: outcome === "denied" ? [] : excludedLines(app, checks), notes, conditions };
 }
 
 const reasonText = (id: ReasonId) => {
@@ -90,6 +112,10 @@ export function decisionEmailText(f: DecisionFacts): string {
   if (f.excluded.length) {
     lines.push("", "Not funded:");
     for (const x of f.excluded) lines.push(`- ${x.label} (${money(x.total)}): ${x.why} (${x.section})`);
+  }
+  if (f.conditions?.length) {
+    lines.push("", "Approved once these fixes are done:");
+    for (const c of f.conditions) lines.push(`- ${c}`);
   }
   if (f.notes.length) {
     lines.push("", "Notes from the reviewer:");

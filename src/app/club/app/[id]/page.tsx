@@ -14,6 +14,7 @@ import { Reveal } from "@/components/Motion";
 import { SponsorPanel } from "@/components/SponsorPanel";
 import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, type StepId } from "@/components/ui";
 import { VerdictPill } from "@/components/VerdictPill";
+import { MessageThread } from "@/components/MessageThread";
 import { requestIdOf } from "@/lib/requestId";
 import { greenlightVerdict } from "@/lib/verdict";
 import { APP_FLOW } from "@/lib/workflow";
@@ -255,7 +256,7 @@ export default function Workspace() {
             })}
           </ol>
           {app.fixRequest.note && <p className="small muted">Note from USG: {app.fixRequest.note}</p>}
-          <span className="tiny faint">Fix each one, then press Submit on the last step to send it back. Sent {fmtDate(app.fixRequest.at, { month: "short", day: "numeric" })}; USG gives 2 business days.</span>
+          <span className="tiny faint">Fix each one, then press Submit on the last step to send it back. Sent {fmtDate(app.fixRequest.at, { month: "short", day: "numeric" })}. Greenlight shows a 2-business-day window; the FAQ says 3.</span>
         </section>
       )}
 
@@ -510,8 +511,33 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
     <section className="stack">
       {d && (
         <div className="card card-pad stack-sm" style={{ borderTop: `4px solid ${d.outcome === "denied" ? "var(--fail)" : "var(--gold)"}` }}>
-          <span className="eyebrow">{d.outcome === "denied" ? "Decision" : "Funded"}</span>
-          <h2 style={{ fontSize: 28 }}>{d.outcome === "denied" ? "USG denied this request" : `USG awarded ${money(d.amount)}`}</h2>
+          <span className="eyebrow">{d.outcome === "denied" ? "Decision" : d.pendingFixes ? "Approved, pending these fixes" : "Funded"}</span>
+          <h2 style={{ fontSize: 28 }}>
+            {d.outcome === "denied"
+              ? "USG denied this request"
+              : d.pendingFixes
+                ? `Approved, pending these fixes · ${money(d.amount)}`
+                : `USG awarded ${money(d.amount)}`}
+          </h2>
+          {d.pendingFixes && (d.conditions?.length ?? 0) > 0 && (
+            <div className="inset stack-sm" style={{ padding: 12 }}>
+              <strong className="small">Complete these so USG can release the award</strong>
+              <ol className="small" style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 6 }}>
+                {d.conditions!.map((c, i) => <li key={i}>{c}</li>)}
+              </ol>
+              <button
+                className="btn btn-sm"
+                style={{ justifySelf: "start" }}
+                onClick={() => {
+                  store.addMessage(app.id, "club", `We completed the approve-once-fixed conditions: ${d.conditions!.join("; ")}`);
+                  store.audit(app.id, { by: "club", action: "conditions_done", detail: d.conditions!.join("; ") });
+                  say("Told USG the fixes are done. They will clear the pending flag.");
+                }}
+              >
+                Tell USG the fixes are done
+              </button>
+            </div>
+          )}
           <div className="email small muted">{d.email}</div>
           {d.emailed === false && <p className="tiny faint">Saved in Greenlight (email delivery was not configured for this send).</p>}
           <div className="row">
@@ -527,6 +553,7 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
           </div>
         </div>
       )}
+      <MessageThread app={app} by="club" />
 
       {app.status === "post_event_due" && (
         <div className="card card-pad stack" style={{ borderTop: "4px solid var(--gold)" }}>

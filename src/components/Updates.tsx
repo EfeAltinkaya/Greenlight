@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Bell, Mail } from "lucide-react";
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import { useSession } from "@/lib/session";
+import { RequestMailAttach } from "@/components/RequestMailAttach";
 
 /** Every notice the workflow sent to this role, newest first. Opening the page marks them read. */
 export function Updates({ role }: { role: "club" | "usg" | "sponsor" }) {
@@ -39,6 +40,7 @@ export function Updates({ role }: { role: "club" | "usg" | "sponsor" }) {
           ))}
         </div>
       )}
+      {role === "club" && <RequestMailAttach />}
     </>
   );
 }

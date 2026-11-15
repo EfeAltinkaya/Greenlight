@@ -6,6 +6,7 @@
 import { useSyncExternalStore } from "react";
 import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS, SEED_DEALS, SEED_OFFERS, SEED_OUTREACH } from "./seed";
 import { autoAdvance, moveApp, moveDeal } from "./workflow";
+import { requestIdOf, subjectTag } from "./requestId";
 import type { Application, AuditEntry, Club, Deal, DealStage, Notice, Offer, Outreach, Status } from "./types";
 import type { Sponsor } from "@/data/sponsors";
 
@@ -110,6 +111,20 @@ export const store = {
   audit(id: string, entry: Omit<AuditEntry, "at"> & { at?: string }) {
     const at = entry.at ?? new Date().toISOString();
     this.patchApp(id, (a) => ({ audit: [...(a.audit ?? []), { at, by: entry.by, action: entry.action, detail: entry.detail }] }));
+  },
+  /** Append a club/USG message and notify the other side (subject includes [GL-26-XXXX]). */
+  addMessage(id: string, by: "club" | "usg", text: string) {
+    const s = load();
+    const a = s.apps.find((x) => x.id === id);
+    if (!a || !text.trim()) return;
+    const rid = requestIdOf(a);
+    const msg = { id: newId(), at: new Date().toISOString(), by, text: text.trim(), requestId: rid };
+    const next = { ...a, messages: [...(a.messages ?? []), msg] };
+    const to = by === "club" ? "usg" : "club";
+    const href = by === "club" ? `/usg/app/${a.id}` : `/club/app/${a.id}#status`;
+    const notice = { id: newId(), at: new Date().toISOString(), to: to as "club" | "usg", clubId: a.clubId, title: `${subjectTag(a)} New message on ${a.event.title}`, body: text.trim().slice(0, 240), href, read: false };
+    save(pushNotices({ ...s, apps: s.apps.map((x) => (x.id === id ? next : x)) }, [notice]));
+    writer?.("app", id, next, a.clubId);
   },
   /** Move an application through the workflow; notices go to the other side automatically. */
   moveApp(id: string, to: Status, by: "club" | "usg" | "system", note: string, patch: Partial<Application> = {}) {
