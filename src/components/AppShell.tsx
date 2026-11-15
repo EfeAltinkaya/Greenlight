@@ -46,6 +46,7 @@ export function AppShell({ role, children }: { role: Role; children: React.React
             { href: "/club/money", label: "Money tracker", Icon: Wallet, tour: "money" },
           ] },
           { title: "Help", items: [
+            { href: "/club/help", label: "Who to contact", Icon: CircleHelp, tour: "help" },
             { href: "/club/rules", label: "USG rules", Icon: BookOpen },
           ] },
         ]

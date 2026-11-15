@@ -185,7 +185,12 @@ export default function Workspace() {
             <h1>{app.event.title}</h1>
             <span className="muted">{club.name} · {app.event.date ? fmtDate(app.event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "No date yet"} · {app.event.location || "No location yet"}</span>
           </div>
-          <div className="row"><VerdictPill id={verdict.id} /><StatusPill s={app.status} />{!locked && <CountPills fail={s.fail} warn={s.warn} />}</div>
+          <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
+            <Link href={`/club/help?board=${app.event.board}&app=${app.id}&q=reviewers`} className="chip-btn" style={{ textDecoration: "none" }}>
+              Who reviews this
+            </Link>
+            <VerdictPill id={verdict.id} /><StatusPill s={app.status} />{!locked && <CountPills fail={s.fail} warn={s.warn} />}
+          </div>
         </div>
       </div>
 
