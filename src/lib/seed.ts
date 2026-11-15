@@ -23,6 +23,7 @@ const li = (p: Partial<LineItem> & Pick<LineItem, "item" | "total" | "category">
   orderBy: "",
   estimate: false,
   toSponsor: false,
+  vendorConfirmed: true, // sample clubs already checked their non-food vendors
   ...p,
 });
 

@@ -1,5 +1,5 @@
 "use client";
-import { AlertCircle, Check, CircleAlert, Info, Sparkles, X } from "lucide-react";
+import { AlertCircle, Check, CircleAlert, Info, Sparkles, X, AlertTriangle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { Check as CheckT, CheckLevel, Status } from "@/lib/types";
 
@@ -72,16 +72,18 @@ export function CountPills({ fail, warn, pass }: { fail: number; warn: number; p
 }
 
 export function useToast() {
-  const [msg, setMsg] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ text: string; error: boolean } | null>(null);
   useEffect(() => {
     if (!msg) return;
-    const t = setTimeout(() => setMsg(null), 2800);
+    const t = setTimeout(() => setMsg(null), msg.error ? 4500 : 2800);
     return () => clearTimeout(t);
   }, [msg]);
   const node = msg ? (
-    <div className="toast" role="status"><Check strokeWidth={3} />{msg}</div>
+    msg.error
+      ? <div className="toast toast-error" role="alert"><AlertTriangle strokeWidth={2.4} />{msg.text}</div>
+      : <div className="toast" role="status"><Check strokeWidth={3} />{msg.text}</div>
   ) : null;
-  return [node, useCallback((m: string) => setMsg(m), [])] as const;
+  return [node, useCallback((m: string, kind: "ok" | "error" = "ok") => setMsg({ text: m, error: kind === "error" }), [])] as const;
 }
 
 export function Spinner() {
@@ -103,7 +105,7 @@ export type StepId = "event" | "budget" | "documents" | "answers" | "submit";
 export function stepOf(c: CheckT): StepId {
   if (["food-docs", "uepa", "hotel-compare"].includes(c.ruleId)) return "documents";
   if (["food-why", "other-university-funding"].includes(c.ruleId)) return "answers";
-  if (c.itemId || ["over-4k", "venue-cap", "quote-needed", "quote-mismatch"].includes(c.ruleId) || c.ruleId.startsWith("ineligible")) return "budget";
+  if (c.itemId || ["over-4k", "venue-cap", "quote-needed", "quote-mismatch", "annual-cap", "semester-cap"].includes(c.ruleId) || c.ruleId.startsWith("ineligible")) return "budget";
   return "event";
 }
 

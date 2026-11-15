@@ -43,7 +43,7 @@ export default function Requests() {
         <div className="card empty"><Inbox /><strong>Nothing here</strong><Link href="/club/new" className="btn btn-primary">Start a request</Link></div>
       ) : (
         <div className="card table-wrap">
-          <table className="table">
+          <table className="table stackable">
             <thead><tr><th>Event</th><th>Date</th><th>Board</th><th className="r">Requested</th><th>Next step</th><th>Status</th></tr></thead>
             <tbody className="appear">
               {mine.map((a) => {
@@ -52,11 +52,11 @@ export default function Requests() {
                 return (
                   <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/club/app/${a.id}`); }}>
                     <td><Link href={`/club/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{a.event.location}{a.sample ? " · Sample" : ""}</span></Link></td>
-                    <td className="small num" style={{ whiteSpace: "nowrap" }}>{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
-                    <td className="small">{BOARDS[a.event.board].short}</td>
-                    <td className="r">{money(requestTotal(a))}</td>
-                    <td className="small">{a.status === "draft" || a.status === "needs_info" ? <CountPills fail={s.fail} warn={s.warn} /> : <span className="muted">{flow.label}</span>}</td>
-                    <td><StatusPill s={a.status} /></td>
+                    <td data-label="Date" className="small num" style={{ whiteSpace: "nowrap" }}>{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
+                    <td data-label="Board" className="small">{BOARDS[a.event.board].short}</td>
+                    <td data-label="Requested" className="r">{money(requestTotal(a))}</td>
+                    <td data-label="Next step" className="small">{a.status === "draft" || a.status === "needs_info" ? <CountPills fail={s.fail} warn={s.warn} /> : <span className="muted">{flow.label}</span>}</td>
+                    <td data-label="Status"><StatusPill s={a.status} /></td>
                   </tr>
                 );
               })}

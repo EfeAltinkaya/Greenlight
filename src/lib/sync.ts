@@ -13,8 +13,8 @@ import type { User } from "./session";
 let channel: ReturnType<SupabaseClient["channel"]> | null = null;
 let current: { client: SupabaseClient; user: User } | null = null;
 
-type ClubRow = { id: string; name: string; school: Club["school"]; startup_eligible: boolean; received_this_year: number; events_this_semester: number; audience: string[] };
-const toClub = (r: ClubRow): Club => ({ id: r.id, name: r.name, school: r.school, startupEligible: r.startup_eligible, receivedThisYear: Number(r.received_this_year), eventsThisSemester: r.events_this_semester });
+type ClubRow = { id: string; name: string; school: Club["school"]; startup_eligible: boolean; received_this_year: number; events_this_semester: number; audience: string[]; mission?: string | null };
+const toClub = (r: ClubRow): Club => ({ id: r.id, name: r.name, school: r.school, startupEligible: r.startup_eligible, receivedThisYear: Number(r.received_this_year), eventsThisSemester: r.events_this_semester, mission: r.mission ?? "" });
 
 async function loadAll() {
   if (!current) return;
@@ -49,15 +49,15 @@ function write(kind: string, id: string, data: unknown, clubId: string | null) {
   }
   if (kind === "club") {
     const c = data as Club & { audience?: string[] };
-    client.from("clubs").update({ received_this_year: c.receivedThisYear, events_this_semester: c.eventsThisSemester, audience: c.audience }).eq("id", id).then(logError);
+    client.from("clubs").update({ received_this_year: c.receivedThisYear, events_this_semester: c.eventsThisSemester, audience: c.audience, mission: c.mission ?? "" }).eq("id", id).then(logError);
     return;
   }
   if (data === null) {
     client.from("records").delete().eq("kind", kind).eq("id", id).then(logError);
     return;
   }
-  const d = data as { status?: string; stage?: string; sponsorName?: string };
-  client.from("records").upsert({ kind, id, club_id: kind === "offer" ? null : clubId, status: d.status ?? d.stage ?? null, sponsor: d.sponsorName ?? null, data, updated_at: new Date().toISOString() }).then(logError);
+  const d = data as { status?: string; stage?: string; sponsorName?: string; sponsorId?: string };
+  client.from("records").upsert({ kind, id, club_id: kind === "offer" ? null : clubId, status: d.status ?? d.stage ?? null, sponsor: d.sponsorName ?? d.sponsorId ?? null, data, updated_at: new Date().toISOString() }).then(logError);
 }
 
 function notify(n: Notice) {

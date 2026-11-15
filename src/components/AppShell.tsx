@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BarChart3, Bell, BookOpen, CalendarClock, CircleHelp, FilePlus2, Handshake, Inbox, Landmark, LayoutGrid, LogOut, Menu, ReceiptText, RotateCcw, Store, Wallet, X } from "lucide-react";
@@ -68,10 +69,16 @@ export function AppShell({ role, children }: { role: Role; children: React.React
           ];
 
   const active = (i: Item) => (i.match ? i.match(path) : path.startsWith(i.href));
+  const here = groups.flatMap((g) => g.items).find(active);
+  // Each page gets its own tab title; one request or deal is titled by its own name.
+  const detail = path.split("/");
+  const detailTitle = detail[2] === "app" ? apps.find((a) => a.id === detail[3])?.event.title : detail[2] === "deals" && detail[3] ? (deals ?? []).find((d) => d.id === detail[3])?.sponsorName : undefined;
+  const pageTitle = `${detailTitle ? (role === "usg" ? "Review: " : "") + detailTitle : here?.label ?? "Greenlight"} · Greenlight`;
   const roleLabel = role === "club" ? club.name : role === "usg" ? "USG Funding Department" : session.user?.org || "Sponsor";
 
   return (
     <div className="shell">
+      <title>{pageTitle}</title>
       <div className={"scrim" + (open ? " open" : "")} onClick={() => setOpen(false)} />
       <aside className={"side" + (open ? " open" : "")} aria-label="Navigation">
         <div className="between">
@@ -95,6 +102,7 @@ export function AppShell({ role, children }: { role: Role; children: React.React
               <div className="side-label">{g.title}</div>
               {g.items.map((i) => (
                 <Link key={i.href} href={i.href} className="side-link" data-tour={i.tour} aria-current={active(i) ? "page" : undefined}>
+                  {active(i) && <motion.span layoutId="side-active" className="side-active" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
                   <i.Icon />
                   {i.label}
                   {i.count ? <span className="count">{i.count}</span> : null}

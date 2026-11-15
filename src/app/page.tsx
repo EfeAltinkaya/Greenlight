@@ -3,9 +3,12 @@ import Link from "next/link";
 import { ArrowRight, BookOpenCheck, CalendarClock, FileSpreadsheet, HandCoins, Inbox, ListChecks, MailCheck, ShieldCheck } from "lucide-react";
 import { HeroPreview } from "@/components/HeroPreview";
 import { Mark } from "@/components/ui";
+import { NavActions, ScrollIn, StartRequest, TypedHeadline } from "@/components/Landing";
 import springfest from "../../public/photos/springfest-concert.jpg";
 import band from "../../public/photos/trojan-marching-band.jpg";
 import kaufman from "../../public/photos/kaufman-commencement.jpg";
+
+export const metadata = { title: "Greenlight · USG funding for USC clubs" };
 
 const PHOTOS = [
   { src: springfest, alt: "Crowd at an evening Springfest concert on the USC campus, with the Von KleinSmid Center tower behind the stage", caption: "Springfest concert on campus", credit: "Public domain, via Wikimedia Commons", href: "https://commons.wikimedia.org/wiki/File:USCSpringfest2005.JPG" },
@@ -25,9 +28,8 @@ export default function Home() {
             <a href="#sponsors">Sponsors</a>
             <Link href="/club/rules">Rules</Link>
           </nav>
-          <div className="row" style={{ marginLeft: "auto", gap: 8 }}>
-            <Link href="/usg" className="btn btn-ghost btn-sm hide-sm">USG reviewer</Link>
-            <Link href="/club" className="btn btn-primary btn-sm">Open the club desk</Link>
+          <div className="row nav-actions">
+            <NavActions />
           </div>
         </div>
       </header>
@@ -35,33 +37,33 @@ export default function Home() {
       <main>
         <section className="section hero">
           <span className="eyebrow">For USC clubs and the USG Funding Department</span>
-          <h1>A USG funding request, checked before you submit it.</h1>
+          <TypedHeadline text="A USG funding request, checked before you submit it." />
           <p className="lede">Describe your event and Greenlight fills in USG&apos;s budget sheet, finds your deadline and checks each line against the 2026-27 Funding Guidelines. Reviewers get the application with the checks already done.</p>
           <div className="row" style={{ justifyContent: "center", gap: 12 }}>
-            <Link href="/club/new" className="btn btn-primary btn-lg">Start a request<ArrowRight /></Link>
-            <Link href="/usg" className="btn btn-lg">See the reviewer side</Link>
+            <StartRequest />
+            <Link href="/club" className="btn btn-lg">Explore the tool first</Link>
           </div>
-          <div style={{ width: "100%", display: "grid", justifyItems: "center", marginTop: 32 }}>
+          <ScrollIn delay={0.2} style={{ width: "100%", display: "grid", justifyItems: "center", marginTop: 32 }}>
             <HeroPreview />
-          </div>
+          </ScrollIn>
         </section>
 
         <section className="band">
-          <div className="section section-tight grid cols-4 stats-band" style={{ gap: 32 }}>
-            <div className="stat"><b>$388K</b><span>is the Funding Department&apos;s FY27 budget, shared by more than 1,000 clubs.</span></div>
-            <div className="stat"><b>44%</b><span>of the 378 organizations that applied in 2023 got funding: 166 in all.</span></div>
+          <ScrollIn className="section section-tight grid cols-4 stats-band" style={{ gap: 32 }}>
+            <div className="stat"><b>$362K</b><span>across the four funding boards in FY26, shared by more than 1,000 clubs (USG FY26 Financial Report).</span></div>
+            <div className="stat"><b>44%</b><span>of the 378 organizations that applied in 2023 got funding: 166 in all (<a href="https://www.uscannenbergmedia.com/2023/04/29/usg-rejected-funding-for-established-student-organizations/" target="_blank" rel="noreferrer">Annenberg Media</a>).</span></div>
             <div className="stat"><b>2 days</b><span>to fix an incomplete application before USG denies it.</span></div>
-            <div className="stat"><b>5 reviews</b><span>for every request, from board director to Campus Activities staff.</span></div>
-          </div>
+            <div className="stat"><b>3 reviewers</b><span>on every fund (a director, an associate director and a delegate) check each application against the guidelines, whatever the amount.</span></div>
+          </ScrollIn>
         </section>
 
         <section className="section stack" style={{ gap: 40 }}>
-          <div className="stack-sm" style={{ maxWidth: 720 }}>
+          <ScrollIn className="stack-sm" style={{ maxWidth: 720 }}>
             <span className="eyebrow">What the money pays for</span>
             <h2 className="display-2">Concerts, showcases and ceremonies that students run.</h2>
             <p className="lede">In FY26 the Performing and Visual Arts board alone funded 4 concerts, 9 dance showcases and 9 other performances. Each one started as a funding application.</p>
-          </div>
-          <div className="photo-grid">
+          </ScrollIn>
+          <ScrollIn className="photo-grid" delay={0.1}>
             {PHOTOS.map((p, i) => (
               <figure key={p.caption} className={"photo" + (i === 0 ? " photo-wide" : "")}>
                 <Image src={p.src} alt={p.alt} placeholder="blur" sizes={i === 0 ? "(max-width: 760px) 100vw, 66vw" : "(max-width: 760px) 100vw, 33vw"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -71,11 +73,11 @@ export default function Home() {
                 </figcaption>
               </figure>
             ))}
-          </div>
+          </ScrollIn>
         </section>
 
         <section id="how" className="band">
-          <div className="section stack" style={{ gap: 48 }}>
+          <ScrollIn className="section stack" style={{ gap: 48 }}>
             <div className="stack-sm" style={{ maxWidth: 720 }}>
               <span className="eyebrow">How it works</span>
               <h2 className="display-2">From a few sentences to a complete application.</h2>
@@ -94,11 +96,11 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
+          </ScrollIn>
         </section>
 
         <section id="usg" className="band-dark">
-          <div className="section grid cols-2" style={{ gap: 56, alignItems: "center" }}>
+          <ScrollIn className="section grid cols-2" style={{ gap: 56, alignItems: "center" }}>
             <div className="stack" style={{ gap: 20 }}>
               <span className="eyebrow" style={{ color: "var(--gold)" }}>For the Funding Department</span>
               <h2 className="display-2">Applications arrive with the checks already done.</h2>
@@ -119,14 +121,14 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
+          </ScrollIn>
         </section>
 
-        <section id="sponsors" className="section grid cols-2" style={{ gap: 56, alignItems: "center" }}>
+        <ScrollIn id="sponsors" className="section grid cols-2" style={{ gap: 56, alignItems: "center" }}>
           <div className="stack" style={{ gap: 18 }}>
             <span className="eyebrow">Sponsors</span>
             <h2 className="display-2">Sponsors for the costs USG won&apos;t cover.</h2>
-            <p className="lede">Prizes, performers and food above $35 a person go on a sponsor list with a price for each. Greenlight ranks companies that hire from your majors, links to their recruiters and to USC alumni who work there, and drafts the email you send. Sponsors pay the vendor directly or give in kind, which is what Campus Activities allows.</p>
+            <p className="lede">Prizes, performers and food above $35 a person go on a sponsor list with a price for each. Greenlight ranks companies that hire from your majors, links to their recruiters and to USC alumni who work there, and drafts the email you send. Sponsors give in kind (the goods, or paying the vendor for them), so no money passes through the club. The Student Handbook allows in-kind corporate sponsorship for clubs; check anything offered in return with Campus Activities first.</p>
             <div><Link href="/club/sponsors" className="link">Open sponsors<ArrowRight /></Link></div>
           </div>
           <div className="card card-pad stack-sm">
@@ -137,13 +139,13 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </section>
+        </ScrollIn>
 
         <section className="band">
-          <div className="section section-tight between" style={{ gap: 24 }}>
+          <ScrollIn className="section section-tight between" style={{ gap: 24 }}>
             <div className="stack-xs"><h2 style={{ fontSize: 28 }}>Planning something this semester?</h2><p className="muted">Events in the first three weeks of February have a November 18 deadline.</p></div>
-            <Link href="/club/new" className="btn btn-primary btn-lg">Start a request<ArrowRight /></Link>
-          </div>
+            <StartRequest />
+          </ScrollIn>
         </section>
       </main>
 

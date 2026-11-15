@@ -38,7 +38,7 @@ export const BOARDS: Record<BoardId, { name: string; formName: string; short: st
   arts: {
     name: "Performing and Visual Arts Fund",
     formName: "Performing, Visual Arts, & Cultural Fund",
-    short: "Arts & Cultural",
+    short: "Performing & Visual Arts",
     quote:
       "shall provide funding for events geared towards the arts programmed by recognized student organizations to celebrate, highlight, or foster a sense of community",
     fy26Budget: 100000,
@@ -49,6 +49,14 @@ export const BOARDS: Record<BoardId, { name: string; formName: string; short: st
 export type Rule = { id: string; section: string; quote: string };
 
 export const RULES = {
+  // Not in the written 2026-27 guidelines we have. A USG Funding Department officer described it on Nov 14, 2026,
+  // so it is an amber check (never a block) until it is confirmed in writing.
+  semesterCap: {
+    id: "semester-cap",
+    section: "Stated by a USG Funding Department officer (Nov 14, 2026)",
+    quote: "Not in the written guidelines we have: a USG Funding Department officer told us clubs can receive up to $4,000 a semester ($8,000 a year).",
+    limit: 4000,
+  },
   annualCap: {
     id: "annual-cap",
     section: "Section 3",

@@ -124,7 +124,20 @@ export function needsNineWeeks(app: Application) {
 }
 
 let n = 0;
+/** A check's identity across runs: which rule, on which budget line. */
+export const checkKey = (c: Pick<Check, "ruleId" | "itemId">) => `${c.ruleId}:${c.itemId ?? ""}`;
 const mk = (c: Omit<Check, "id">): Check => ({ id: `${c.ruleId}${c.itemId ? ":" + c.itemId : ""}:${n++}`, ...c });
+
+/** Purchases whose vendor must be on USG's list but that Greenlight's (food-only) copy can't check. */
+export const VENDOR_CHECKED: string[] = ["printing", "promo_merch", "tshirt", "supplies", "rental", "other"];
+
+export const UEPA_RE = /^A\d{5,6}$/;
+
+/** Why an event needs the 9-week deadline, in words: travel, or which food vendors are not listed. */
+export function nineWeekReason(app: Application) {
+  const vendors = [...new Set(app.items.filter((i) => !i.toSponsor && i.category === "food" && i.vendor && matchVendor(i.vendor, "food").kind === "not_listed").map((i) => i.vendor))];
+  return [app.event.travel ? "the event involves travel" : "", vendors.length ? `${vendors.join(" and ")} ${vendors.length === 1 ? "is" : "are"} not on USG's Vendor List` : ""].filter(Boolean).join(", and ");
+}
 
 export function runChecks(app: Application, club: Club, today = todayISO()): Check[] {
   n = 0;
@@ -144,13 +157,17 @@ export function runChecks(app: Application, club: Club, today = todayISO()): Che
   else if (sent)
     out.push(mk({ ruleId: RULES.late.id, level: "pass", title: `Submitted on time (deadline ${fmtDate(dl.deadline)})`, detail: `Submitted ${fmtDate(sent)}, ${dl.daysLeft} day${dl.daysLeft === 1 ? "" : "s"} before the ${dl.uses === "nine" ? "9-week" : "6-week"} deadline.`, quote: RULES.late.quote, section: RULES.late.section }));
   else
-    out.push(mk({ ruleId: RULES.late.id, level: dl.daysLeft <= 7 ? "warn" : "pass", title: `Submit by ${fmtDate(dl.deadline)} (${dl.daysLeft} day${dl.daysLeft === 1 ? "" : "s"})`, detail: `${dl.uses === "nine" ? "9-week deadline (travel or a vendor not on the list)" : "6-week deadline (approved vendors)"}. Applications open Wednesdays, 8:00 AM to 11:59 PM.`, quote: RULES.late.quote, section: RULES.late.section }));
+    out.push(mk({ ruleId: RULES.late.id, level: dl.daysLeft <= 7 ? "warn" : "pass", title: `Submit by ${fmtDate(dl.deadline)} (${dl.daysLeft} day${dl.daysLeft === 1 ? "" : "s"})`, detail: `${dl.uses === "nine" ? "9-week deadline (travel or a vendor not on the list)" : "6-week deadline (approved vendors)"}. Applications are due Wednesdays at 11:59 PM.`, quote: RULES.late.quote, section: RULES.late.section }));
 
   // Annual cap and events per semester
   const left = RULES.annualCap.limit - club.receivedThisYear;
   if (total > left)
     out.push(mk({ ruleId: RULES.annualCap.id, level: "fail", title: `Request ${money(total)} is over the ${money(left)} left this year`, detail: `${club.name} has received ${money(club.receivedThisYear)} of its ${money(RULES.annualCap.limit)} yearly maximum.`, quote: RULES.annualCap.quote, section: RULES.annualCap.section }));
-  else out.push(mk({ ruleId: RULES.annualCap.id, level: "pass", title: `Within the yearly cap (${money(left - total)} left after this)`, detail: `${money(club.receivedThisYear)} received so far this year.`, quote: RULES.annualCap.quote, section: RULES.annualCap.section }));
+  else out.push(mk({ ruleId: RULES.annualCap.id, level: "pass", title: `Within the yearly cap: ${money(left)} left now · ${money(left - total)} after this request`, detail: `${money(club.receivedThisYear)} received so far this year.`, quote: RULES.annualCap.quote, section: RULES.annualCap.section }));
+  // $4,000 per semester (officer-stated, amber only). This year's awards so far all fall in the fall semester.
+  const semUsed = e.date && e.date < "2027-01-01" ? club.receivedThisYear : 0;
+  if (total + semUsed > RULES.semesterCap.limit)
+    out.push(mk({ ruleId: RULES.semesterCap.id, level: "warn", title: `Over $4,000 for the semester (${money(total + semUsed)} with this request)`, detail: `A USG Funding officer told us clubs can receive up to $4,000 a semester. ${semUsed ? `${money(semUsed)} is already awarded this semester. ` : ""}Confirm with USG, or plan the part over ${money(Math.max(0, RULES.semesterCap.limit - semUsed))} for sponsors.`, quote: RULES.semesterCap.quote, section: RULES.semesterCap.section }));
   if (club.eventsThisSemester >= RULES.eventsPerSemester.limit)
     out.push(mk({ ruleId: RULES.eventsPerSemester.id, level: "fail", title: "Already 4 USG-funded events this semester", detail: "USG funds up to 4 events per organization each semester.", quote: RULES.eventsPerSemester.quote, section: RULES.eventsPerSemester.section }));
 
@@ -196,7 +213,18 @@ export function runChecks(app: Application, club: Club, today = todayISO()): Che
       if (m.kind === "listed")
         out.push(mk({ ruleId: RULES.vendorList.id, level: m.usable ? (m.vendor.registration === "none" ? "warn" : "pass") : "fail", itemId: i.id, title: m.status.startsWith("On ") ? `${i.vendor} is on USG's Vendor List` : `${i.vendor}: ${m.status}`, detail: m.usable ? (m.vendor.registration === "approved" ? "Registration approved." : m.vendor.registration === "unknown" ? "Status not marked on the list. Confirm with USG if unsure." : "USG may need to confirm it accepts a purchase order.") : "Listed as inactive. Choose another vendor.", quote: RULES.vendorList.quote, section: RULES.vendorList.section }));
       else
-        out.push(mk({ ruleId: RULES.vendorList.id, level: "fail", itemId: i.id, title: `${i.vendor} is not on USG's Vendor List`, detail: `A vendor not on the list needs the 9-week deadline, and USG may refuse it. Listed caterers include ${cateringSuggestions().map((v) => v.name.replace(/\s*[\[(].*$/, "")).join(", ")}.`, quote: RULES.vendorList.quote, section: RULES.vendorList.section }));
+        out.push(mk({ ruleId: RULES.vendorList.id, level: "fail", itemId: i.id, title: `${i.vendor} is not on USG's Vendor List`, detail: `The guidelines say a vendor not on the list is not accepted; USG's FAQ allows a new vendor with the 9-week deadline. Safest fix: switch to a listed caterer, such as ${cateringSuggestions().map((v) => v.name.replace(/\s*[\[(].*$/, "")).join(", ")}.`, quote: RULES.vendorList.quote, section: RULES.vendorList.section }));
+    }
+    // Unlisted vendors are a top denial cause for every kind of purchase, not just food (a USG Funding officer's
+    // example was a printing service). Greenlight's copy of the Vendor List covers food vendors only, so for other
+    // purchases the club must confirm the vendor is approved before it can submit.
+    if (VENDOR_CHECKED.includes(i.category)) {
+      if (!i.vendor.trim())
+        out.push(mk({ ruleId: RULES.vendorList.id, level: "fail", itemId: i.id, title: `${i.item}: add the vendor`, detail: "USG pays approved vendors directly, so every purchase needs a named vendor from USG's Vendor List.", quote: RULES.vendorList.quote, section: RULES.vendorList.section }));
+      else if (!i.vendorConfirmed)
+        out.push(mk({ ruleId: RULES.vendorList.id, level: "fail", itemId: i.id, title: `Confirm ${i.vendor} is an approved USG vendor`, detail: "Unapproved vendors are one of the most common reasons USG can't fund a line. Check USG's Vendor List (or ask the Funding Department) before you submit, then confirm here.", quote: RULES.vendorList.quote, section: RULES.vendorList.section, fix: { label: "I checked: it's approved", action: "confirm-vendor" } }));
+      else
+        out.push(mk({ ruleId: RULES.vendorList.id, level: "pass", itemId: i.id, title: `${i.vendor}: you confirmed it's an approved vendor`, detail: "Confirmed by your club.", quote: RULES.vendorList.quote, section: RULES.vendorList.section }));
     }
     if (i.estimate)
       out.push(mk({ ruleId: "quote-needed", level: "warn", itemId: i.id, title: `${i.item}: price is an estimate`, detail: "Replace it with a real quote before you submit.", quote: "The full budget proposal for the event, including quotes for each individual expense", section: "Section 2" }));
@@ -257,7 +285,7 @@ export function runChecks(app: Application, club: Club, today = todayISO()): Che
   }
   const needsUepa = e.food || e.attendance >= 25 || items.length > 0;
   if (needsUepa && !e.travel)
-    out.push(mk({ ruleId: RULES.uepa.id, level: app.uepa ? (/^A\d{5,6}$/.test(app.uepa) ? "pass" : "warn") : "fail", title: app.uepa ? (/^A\d{5,6}$/.test(app.uepa) ? `UEPA ${app.uepa}` : "UEPA number looks wrong") : "UEPA number missing", detail: "It starts with an A and has 5 or 6 digits.", quote: RULES.uepa.quote, section: RULES.uepa.section }));
+    out.push(mk({ ruleId: RULES.uepa.id, level: app.uepa && UEPA_RE.test(app.uepa) ? "pass" : "fail", title: app.uepa ? (UEPA_RE.test(app.uepa) ? `UEPA ${app.uepa}` : "UEPA number format is wrong") : "UEPA number missing", detail: "Must start with A, then 5 or 6 digits (e.g. A12345). Required because this event has food, USG funds or 25+ people.", quote: RULES.uepa.quote, section: RULES.uepa.section }));
 
   // Board fit
   out.push(mk({ ruleId: "board", level: "info", title: `Board: ${BOARDS[e.board].name}`, detail: e.boardReason, quote: BOARDS[e.board].quote, section: "Section 4" }));

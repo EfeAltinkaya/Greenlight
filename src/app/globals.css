@@ -364,9 +364,12 @@ a.card:active, button.card:active { transform: translateY(0) scale(.99); }
 .side .side-link { color: rgba(255,240,236,.82); position: relative; }
 .side .side-link svg { color: rgba(255,240,236,.6); }
 .side .side-link:hover { background: rgba(255,255,255,.08); color: #fff; }
-.side .side-link[aria-current="page"] { background: rgba(255,255,255,.12); color: #fff; }
+.side .side-link[aria-current="page"] { background: transparent; color: #fff; }
 .side .side-link[aria-current="page"] svg { color: var(--gold); }
-.side .side-link[aria-current="page"]::before { content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 4px; border-radius: 0 4px 4px 0; background: var(--gold); }
+/* The active highlight is one element that slides between tabs (motion layoutId). */
+.side .side-active { position: absolute; inset: 0; border-radius: 10px; background: rgba(255,255,255,.12); z-index: 0; }
+.side .side-active::before { content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 4px; border-radius: 0 4px 4px 0; background: var(--gold); }
+.side .side-link > :not(.side-active) { position: relative; z-index: 1; }
 .side .side-link .count { color: var(--gold); }
 .side .role-switch { background: rgba(0,0,0,.22); }
 .side .role-switch a { color: rgba(255,240,236,.75); }
@@ -406,3 +409,81 @@ h3 { font-weight: 700; letter-spacing: -0.01em; }
 .contract { white-space: pre-wrap; font: 13.5px/1.6 var(--mono); background: #fbf9f6; border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; max-height: 420px; overflow: auto; }
 .moneybar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; gap: 2px; background: var(--line-2); }
 .moneybar span { display: block; min-width: 4px; }
+
+/* Inline field messages: always an icon plus words, never color alone. */
+.field-error, .field-warn { display: flex; gap: 6px; align-items: flex-start; margin: 0; line-height: 1.35; }
+.field-error { color: var(--fix); }
+.field-warn { color: var(--check); }
+.field-error svg, .field-warn svg { width: 15px; height: 15px; flex: none; margin-top: 2px; }
+.input[aria-invalid="true"], .select[aria-invalid="true"], .textarea[aria-invalid="true"] { border-color: var(--fix); box-shadow: 0 0 0 3px color-mix(in srgb, var(--fix) 15%, transparent); }
+
+/* Wide tables become one card per row on phones (label on the left, value on the right). */
+@media (max-width: 640px) {
+  .table.stackable thead { display: none; }
+  .table.stackable, .table.stackable tbody { display: block; }
+  .table.stackable tr { display: grid; gap: 6px; padding: 14px 16px; border-bottom: 1px solid var(--line-2); }
+  .table.stackable td { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0; border: 0; text-align: right; }
+  .table.stackable td:first-child { display: block; text-align: left; margin-bottom: 4px; }
+  .table.stackable td[data-label]::before { content: attr(data-label); color: var(--ink-3, #6b6259); font-size: 13px; text-align: left; }
+  .table-wrap:has(.stackable) { overflow-x: visible; }
+}
+
+/* Error toast: amber-red icon and words, never a success check. */
+.toast.toast-error { background: var(--fix); }
+.toast.toast-error svg { color: #fff; }
+
+/* Documents: the "I have it" tick sits inside the same row as the upload card. */
+.doc-row { display: flex; gap: 10px; align-items: stretch; }
+.doc-row .drop { flex: 1; min-width: 0; }
+.have-it { display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); cursor: pointer; white-space: nowrap; }
+@media (max-width: 600px) { .doc-row { flex-direction: column; } .have-it { padding: 8px 12px; align-self: flex-start; } }
+
+/* Request steps: full list on desktop, a compact "Step 2 of 5" bar on phones. */
+.steps-compact, .mobile-only { display: none; }
+@media (max-width: 1000px) {
+  .steps { display: none; }
+  .steps-compact { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); margin-bottom: 12px; }
+  details.mobile-only { display: block; margin-bottom: 12px; }
+  details.mobile-only summary { cursor: pointer; }
+  aside[aria-label="Checks"] { display: none; }
+}
+
+/* Outreach board: columns side by side on desktop, stacked on phones. */
+@media (max-width: 720px) { .pipeline { grid-template-columns: minmax(0, 1fr); overflow-x: visible; } }
+
+/* Landing top bar: bigger, darker text so the main actions are easy to find. */
+.site-nav-in { height: 72px; gap: 36px; }
+.site-nav-links { font-size: 16px; font-weight: 600; color: var(--ink); gap: 30px; }
+.site-nav-links a { padding: 6px 2px; border-bottom: 2px solid transparent; transition: border-color .15s, color .15s; }
+.site-nav-links a:hover { border-bottom-color: var(--cardinal); }
+.nav-actions { margin-left: auto; gap: 10px; flex-wrap: nowrap; }
+.nav-btn { height: 42px; padding: 0 18px; font-size: 15px; font-weight: 650; }
+@media (max-width: 760px) { .nav-actions .btn-ghost { display: none; } .nav-btn { height: 38px; padding: 0 14px; font-size: 14px; } }
+
+/* Typed hero headline: the invisible full sentence holds the space, the live text types over it. */
+.typed { display: grid; }
+.typed > span { grid-area: 1 / 1; }
+.typed-ghost { visibility: hidden; }
+.typed .caret { display: inline-block; width: .06em; height: .9em; margin-left: .04em; background: var(--cardinal); vertical-align: -.08em; animation: caret 1s steps(1) infinite; }
+.typed .caret.done { animation: caret 1s steps(1) 3 forwards; }
+@keyframes caret { 50% { opacity: 0; } 100% { opacity: 0; } }
+
+/* Sign in, create account, forgot password */
+.auth-page { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; }
+.auth-top { max-width: 1120px; width: 100%; margin: 0 auto; padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+.auth-top .link svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
+.auth-main { display: grid; align-content: center; justify-items: center; gap: 18px; padding: 24px 16px 64px; }
+.auth-card { width: 100%; max-width: 480px; padding: 32px; }
+.auth-h { font-size: 30px; letter-spacing: -0.03em; }
+.auth-tabs { width: 100%; }
+.auth-tabs button { flex: 1; height: 40px; font-size: 15px; }
+.pw { position: relative; display: block; }
+.pw .input { padding-right: 44px; width: 100%; }
+.pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 6px; cursor: pointer; color: var(--ink-3); display: grid; }
+.pw-toggle svg { width: 18px; height: 18px; }
+button.link { border: 0; background: none; padding: 0; cursor: pointer; }
+@media (max-width: 480px) { .auth-card { padding: 22px 18px; } }
+
+/* The fix list USG sent back, at the top of the club's request. */
+.fix-request { border-left: 4px solid var(--check); }
+.fix-request h2 { font-size: 18px; }
