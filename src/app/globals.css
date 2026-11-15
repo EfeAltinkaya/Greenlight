@@ -40,6 +40,17 @@
   color-scheme: light;
 }
 
+@keyframes skel-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+.skel {
+  display: block;
+  background: var(--line-2);
+  border-radius: 6px;
+  animation: skel-pulse 1.2s ease-in-out infinite;
+}
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {

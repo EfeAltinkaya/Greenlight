@@ -96,13 +96,29 @@ alter table public.records enable row level security;
 alter table public.notices enable row level security;
 alter table public.settings enable row level security;
 
+alter table public.clubs add column if not exists sample boolean not null default false;
+
+-- Club ids that have at least one officer profile (used by the client to hide empty test clubs).
+create or replace view public.club_officer_ids
+  with (security_invoker = false)
+  as select distinct club_id from public.profiles where club_id is not null and role = 'club';
+grant select on public.club_officer_ids to authenticated;
+
 drop policy if exists clubs_read on public.clubs;
-create policy clubs_read on public.clubs for select to authenticated using (true);
+-- Club officers see only their club; USG sees all; sponsors see clubs they have deals with or samples.
+create policy clubs_read on public.clubs for select to authenticated using (
+  id = my_club()
+  or my_role() = 'usg'
+  or sample = true
+  or (my_role() = 'sponsor' and exists (
+    select 1 from public.records r where r.kind = 'deal' and r.club_id = clubs.id and r.sponsor = my_org()
+  ))
+);
 drop policy if exists clubs_write on public.clubs;
 create policy clubs_write on public.clubs for update to authenticated using (id = my_club() or my_role() = 'usg');
 
 drop policy if exists profiles_read on public.profiles;
-create policy profiles_read on public.profiles for select to authenticated using (id = auth.uid());
+create policy profiles_read on public.profiles for select to authenticated using (id = auth.uid() or my_role() = 'usg');
 
 drop policy if exists records_read on public.records;
 create policy records_read on public.records for select to authenticated using (

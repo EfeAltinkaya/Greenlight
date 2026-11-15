@@ -13,6 +13,51 @@ export type Role = "club" | "usg" | "sponsor";
 type Item = { href: string; label: string; Icon: typeof Inbox; match?: (p: string) => boolean; count?: number; tour?: string };
 type Group = { title: string; items: Item[] };
 
+function ShellSkeleton() {
+  return (
+    <div className="shell" aria-busy="true" aria-label="Loading session">
+      <aside className="side" aria-hidden="true">
+        <div className="between">
+          <Mark />
+        </div>
+        <div className="side-who stack-xs">
+          <span className="skel" style={{ width: "70%", height: 10 }} />
+          <span className="skel" style={{ width: "50%", height: 14 }} />
+        </div>
+        <nav className="side-nav stack-sm">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span key={i} className="skel" style={{ height: 28, width: "100%", borderRadius: 8 }} />
+          ))}
+        </nav>
+      </aside>
+      <div style={{ minWidth: 0 }}>
+        <main className="main">
+          <div className="main-in stack" style={{ gap: 16 }}>
+            <span className="skel" style={{ height: 28, width: "40%", maxWidth: 280 }} />
+            <span className="skel" style={{ height: 120, width: "100%", borderRadius: 12 }} />
+            <span className="skel" style={{ height: 180, width: "100%", borderRadius: 12 }} />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function RoleBlocked({ role, userRole }: { role: Role; userRole: Role }) {
+  const label = role === "usg" ? "USG reviewers" : role === "sponsor" ? "sponsors" : "club officers";
+  const you = userRole === "usg" ? "USG reviewer" : userRole === "sponsor" ? "sponsor" : "club officer";
+  const href = userRole === "usg" ? "/usg" : userRole === "sponsor" ? "/sponsor" : "/club";
+  return (
+    <div className="card empty">
+      <strong>This side is for {label}.</strong>
+      <span className="muted">You are signed in as a {you}.</span>
+      <Link className="btn btn-primary" href={href}>
+        Go to your desk
+      </Link>
+    </div>
+  );
+}
+
 export function AppShell({ role, children }: { role: Role; children: React.ReactNode }) {
   const path = usePathname();
   const { apps, notices, deals } = useStore();
@@ -21,6 +66,15 @@ export function AppShell({ role, children }: { role: Role; children: React.React
   const ai = useAiStatus();
   const [open, setOpen] = useState(false);
   const [touring, setTouring] = useState(false);
+
+  // Wait for auth before showing demo chrome or signed-in chrome (avoids flash).
+  if (session.enabled && !session.ready) {
+    return <ShellSkeleton />;
+  }
+
+  const userRole = session.user?.role ?? null;
+  // Signed-in users can only open their own side (blocks club officers from /usg/insights).
+  const blockedSignedIn = Boolean(session.user && userRole !== role);
 
   const unread = (notices ?? []).filter((n) => !n.read && n.to === role && (role !== "club" || n.clubId === club.id)).length;
   const waiting = apps.filter((a) => ["submitted", "in_review"].includes(a.status)).length;
@@ -71,7 +125,6 @@ export function AppShell({ role, children }: { role: Role; children: React.React
 
   const active = (i: Item) => (i.match ? i.match(path) : path.startsWith(i.href));
   const here = groups.flatMap((g) => g.items).find(active);
-  // Each page gets its own tab title; one request or deal is titled by its own name.
   const detail = path.split("/");
   const detailTitle = detail[2] === "app" ? apps.find((a) => a.id === detail[3])?.event.title : detail[2] === "deals" && detail[3] ? (deals ?? []).find((d) => d.id === detail[3])?.sponsorName : undefined;
   const pageTitle = `${detailTitle ? (role === "usg" ? "Review: " : "") + detailTitle : here?.label ?? "Greenlight"} · Greenlight`;
@@ -130,9 +183,21 @@ export function AppShell({ role, children }: { role: Role; children: React.React
           <Link href="/"><Mark /></Link>
           <button className="btn btn-sm" onClick={() => setOpen(true)} aria-label="Open menu"><Menu />Menu</button>
         </div>
-        <main className="main"><div className="main-in">{session.user && session.user.role && session.user.role !== role ? (
-          <div className="card empty"><strong>This side is for {role === "usg" ? "USG reviewers" : role === "sponsor" ? "sponsors" : "club officers"}.</strong><span className="muted">You are signed in as a {session.user.role === "usg" ? "USG reviewer" : session.user.role === "sponsor" ? "sponsor" : "club officer"}.</span><Link className="btn btn-primary" href={session.user.role === "usg" ? "/usg" : session.user.role === "sponsor" ? "/sponsor" : "/club"}>Go to your desk</Link></div>
-        ) : children}</div></main>
+        <main className="main">
+          <div className="main-in">
+            {blockedSignedIn && userRole ? (
+              <RoleBlocked role={role} userRole={userRole} />
+            ) : blockedSignedIn ? (
+              <div className="card empty">
+                <strong>Finish setting up your account</strong>
+                <span className="muted">Your signed-in account has no role yet.</span>
+                <Link className="btn btn-primary" href="/login">Go to login</Link>
+              </div>
+            ) : (
+              children
+            )}
+          </div>
+        </main>
       </div>
       {touring && <Tour role={role} onClose={() => setTouring(false)} />}
     </div>

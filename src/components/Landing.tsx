@@ -38,15 +38,23 @@ export function TypedHeadline({ text }: { text: string }) {
 /** A section that rises into place the first time it scrolls into view. */
 export function ScrollIn({ children, delay = 0, className, id, style }: { children: React.ReactNode; delay?: number; className?: string; id?: string; style?: React.CSSProperties }) {
   const reduce = useReducedMotion();
+  // Reduced motion: never hide text behind opacity 0.
+  if (reduce) {
+    return (
+      <div id={id} className={className} style={style}>
+        {children}
+      </div>
+    );
+  }
   return (
     <motion.div
       id={id}
       className={className}
       style={style}
-      initial={reduce ? false : { opacity: 0, y: 36 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      transition={{ duration: 0.7, ease: EASE, delay }}
+      viewport={{ once: true, amount: 0.15, margin: "0px 0px 20% 0px" }}
+      transition={{ duration: 0.55, ease: EASE, delay }}
     >
       {children}
     </motion.div>

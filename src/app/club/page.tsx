@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, CalendarClock, CircleDollarSign, FilePlus2, Handshake, Inbox, Landmark, PartyPopper, TriangleAlert } from "lucide-react";
 import { BOARDS, RULES } from "@/data/rules";
 import { fmtDate, money, requestTotal, runChecks, score, todayISO } from "@/lib/engine";
+import { switchableClubs } from "@/lib/clubs";
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import type { Application } from "@/lib/types";
 import { CountPills, StatusPill, stepOf } from "@/components/ui";
@@ -86,7 +87,7 @@ export default function ClubOverview() {
           <label className="row small muted" style={{ gap: 8 }}>
             Acting for
             <select className="select" style={{ width: "auto", padding: "5px 10px", fontSize: 13 }} value={club.id} onChange={(e) => store.setClub(e.target.value)} aria-label="Club">
-              {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {switchableClubs(clubs).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </label>
           )}

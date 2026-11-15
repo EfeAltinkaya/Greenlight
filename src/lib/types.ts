@@ -12,6 +12,10 @@ export type Club = {
   eventsThisSemester: number;
   /** One line the club writes once; used to draft the mission answer. */
   mission?: string;
+  /** Demo / seed club; never a real officer account. */
+  sample?: boolean;
+  /** At least one profile is linked to this club (from Supabase). */
+  hasOfficers?: boolean;
 };
 
 export type EventInfo = {

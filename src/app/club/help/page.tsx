@@ -33,14 +33,17 @@ type QuestionId = (typeof QUESTIONS)[number]["id"];
 const BOARD_QUESTIONS: Set<QuestionId> = new Set(["vendor", "incomplete", "eligible", "deadline", "reviewers"]);
 
 function useSearch() {
-  return useSyncExternalStore(
+  // Snapshot must be a stable primitive: a new URLSearchParams every read
+  // fails Object.is and triggers React error #185 (maximum update depth).
+  const search = useSyncExternalStore(
     (cb) => {
       window.addEventListener("popstate", cb);
       return () => window.removeEventListener("popstate", cb);
     },
-    () => new URLSearchParams(window.location.search),
-    () => new URLSearchParams(),
+    () => window.location.search,
+    () => "",
   );
+  return useMemo(() => new URLSearchParams(search), [search]);
 }
 
 function fmtNext(p: Person) {

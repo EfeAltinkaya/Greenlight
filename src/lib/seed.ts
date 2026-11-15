@@ -5,11 +5,11 @@ import type { Application, Club, Deal, LineItem, Offer, Outreach } from "./types
 export const DEMO_CLUB_ID = "builders";
 
 export const SEED_CLUBS: Club[] = [
-  { id: "builders", name: "Trojan Builders Society", school: "Viterbi", startupEligible: false, receivedThisYear: 3500, eventsThisSemester: 1 },
-  { id: "dance", name: "Southside Dance Collective", school: "Other", startupEligible: false, receivedThisYear: 4500, eventsThisSemester: 2 },
-  { id: "shore", name: "Shoreline Service Club", school: "Dornsife", startupEligible: false, receivedThisYear: 600, eventsThisSemester: 1 },
-  { id: "fintech", name: "Marshall Fintech Circle", school: "Marshall", startupEligible: false, receivedThisYear: 0, eventsThisSemester: 0 },
-  { id: "chess", name: "Knight Moves Chess Club", school: "Other", startupEligible: true, receivedThisYear: 0, eventsThisSemester: 0 },
+  { id: "builders", name: "Trojan Builders Society", school: "Viterbi", startupEligible: false, receivedThisYear: 3500, eventsThisSemester: 1, sample: true, hasOfficers: true },
+  { id: "dance", name: "Southside Dance Collective", school: "Other", startupEligible: false, receivedThisYear: 4500, eventsThisSemester: 2, sample: true, hasOfficers: true },
+  { id: "shore", name: "Shoreline Service Club", school: "Dornsife", startupEligible: false, receivedThisYear: 600, eventsThisSemester: 1, sample: true, hasOfficers: true },
+  { id: "fintech", name: "Marshall Fintech Circle", school: "Marshall", startupEligible: false, receivedThisYear: 0, eventsThisSemester: 0, sample: true, hasOfficers: true },
+  { id: "chess", name: "Knight Moves Chess Club", school: "Other", startupEligible: true, receivedThisYear: 0, eventsThisSemester: 0, sample: true, hasOfficers: true },
 ];
 
 let k = 0;

@@ -4,6 +4,7 @@
 // which records history and creates the notices the other side receives.
 // Persistence: the browser cache below, mirrored to Supabase by sync.ts when a user is signed in.
 import { useSyncExternalStore } from "react";
+import { isSeedClub } from "./clubs";
 import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS, SEED_DEALS, SEED_OFFERS, SEED_OUTREACH } from "./seed";
 import { autoAdvance, moveApp, moveDeal } from "./workflow";
 import { requestIdOf, subjectTag } from "./requestId";
@@ -41,6 +42,14 @@ function load(): State {
     state = raw ? (JSON.parse(raw) as State) : structuredClone(SERVER);
   } catch {
     state = structuredClone(SERVER);
+  }
+  // Drop officer-less test clubs left in localStorage after a signed-in sync.
+  const cleaned = (state!.clubs ?? []).filter((c) => isSeedClub(c) || c.hasOfficers === true || c.sample === true);
+  if (cleaned.length && cleaned.length !== state!.clubs.length) {
+    const currentClub = cleaned.some((c) => c.id === state!.currentClub) ? state!.currentClub : DEMO_CLUB_ID;
+    state = { ...state!, clubs: cleaned, currentClub };
+  } else if (!cleaned.length) {
+    state = { ...state!, clubs: structuredClone(SEED_CLUBS), currentClub: DEMO_CLUB_ID };
   }
   // Time-based steps nobody has to click.
   let changed = false;
