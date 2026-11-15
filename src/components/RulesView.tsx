@@ -83,6 +83,17 @@ export function RulesView() {
       </section>
 
       <section className="card card-pad stack-sm">
+        <div className="stack-xs">
+          <span className="eyebrow">Unconfirmed guidance</span>
+          <h2>Not in the written guidelines yet</h2>
+        </div>
+        <ul className="small muted" style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 8 }}>
+          <li>The idea that the $8,000 yearly cap splits to about $4,000 per semester is unconfirmed. The written guidelines only say $8,000 per year. Greenlight shows an amber check only; it never blocks on a per-semester split.</li>
+          <li>USG does not publish a review time. Reviews can take hours or weeks. Greenlight never promises or estimates a USG decision date.</li>
+        </ul>
+      </section>
+
+      <section className="card card-pad stack-sm">
         <div className="row" style={{ gap: 12 }}><span className="icon-tile gold"><TriangleAlert /></span><div className="stack-xs"><h2>Where USG&apos;s own documents disagree</h2><span className="small muted">Found while turning the rules into code. Greenlight follows the guidelines and flags the difference.</span></div></div>
         <div className="table-wrap">
           <table className="table">

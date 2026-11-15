@@ -53,7 +53,7 @@ export default function Home() {
             <div className="stat"><b>$362K</b><span>across the four funding boards in FY26, shared by more than 1,000 clubs (USG FY26 Financial Report).</span></div>
             <div className="stat"><b>44%</b><span>of the 378 organizations that applied in 2023 got funding: 166 in all (<a href="https://www.uscannenbergmedia.com/2023/04/29/usg-rejected-funding-for-established-student-organizations/" target="_blank" rel="noreferrer">Annenberg Media</a>).</span></div>
             <div className="stat"><b>2 days</b><span>to fix an incomplete application before USG denies it.</span></div>
-            <div className="stat"><b>3 reviewers</b><span>on every fund (a director, an associate director and a delegate) check each application against the guidelines, whatever the amount.</span></div>
+            <div className="stat"><b>4 boards</b><span>each with a director and an associate director, plus shared funding delegates. Every request is checked the same way, whatever the amount.</span></div>
           </ScrollIn>
         </section>
 
@@ -104,7 +104,7 @@ export default function Home() {
             <div className="stack" style={{ gap: 20 }}>
               <span className="eyebrow" style={{ color: "var(--gold)" }}>For the Funding Department</span>
               <h2 className="display-2">Applications arrive with the checks already done.</h2>
-              <p className="lede">The queue shows which rules each request breaks, whether it came in on time and how much is left on each board. The AI writes a note for each check and a draft of the decision email. The reviewer accepts or rewrites each note and decides the amount.</p>
+              <p className="lede">Built around how reviewers work: check against the guidelines, email minor fixes, fund what matches. The queue shows which rules each request breaks, whether it came in on time and how much is left on each board. The AI writes a note for each check and a draft of the decision email. The reviewer accepts or rewrites each note and decides the amount.</p>
               <div><Link href="/usg" className="btn btn-lg" style={{ background: "var(--gold)", borderColor: "var(--gold)", color: "#111" }}>Open the review queue<ArrowRight /></Link></div>
             </div>
             <div className="grid cols-2" style={{ gap: 14 }}>

@@ -137,7 +137,7 @@ export default function Insights() {
       <section className="card card-pad stack">
         <div className="stack-xs">
           <h2>Board burn forecast</h2>
-          <span className="small muted">Greenlight awards vs each board&apos;s FY26 budget. The tick is 50% — past it before fall ends, the CFO may close the board. Pace uses the open queue (cleared over ~4 review weeks) and average award so far.</span>
+          <span className="small muted">Greenlight awards vs each board&apos;s FY26 budget. The tick is 50%: past it before fall ends, the CFO may close the board. Pace uses the open queue (cleared over ~4 review weeks) and average award so far.</span>
         </div>
         <div className="grid cols-2" style={{ gap: 20 }}>
           {(Object.keys(BOARDS) as BoardId[]).map((b) => {
