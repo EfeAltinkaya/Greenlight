@@ -6,7 +6,7 @@ import { authConfigured, requireUser, unauthorized } from "@/lib/server/auth";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const resendKey = process.env.RESEND_API_KEY;
-const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://greenlight-lac-tau.vercel.app";
+const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://greenlightusc.site";
 
 export async function POST(req: Request) {
   const user = await requireUser(req);
