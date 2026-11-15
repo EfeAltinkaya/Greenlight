@@ -3,12 +3,13 @@
 // the USG queue on the same machine. The shape matches the database tables in the spec, so this
 // file is the only one to change when we move to Supabase.
 import { useSyncExternalStore } from "react";
-import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS } from "./seed";
-import type { Application, Club, Status } from "./types";
+import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS, SEED_OUTREACH } from "./seed";
+import type { Application, Club, Outreach, Status } from "./types";
+import type { Sponsor } from "@/data/sponsors";
 
-type State = { clubs: Club[]; apps: Application[]; currentClub?: string };
-const KEY = "greenlight:v2";
-const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS, currentClub: DEMO_CLUB_ID };
+type State = { clubs: Club[]; apps: Application[]; currentClub?: string; outreach?: Outreach[]; customSponsors?: Sponsor[]; audience?: Record<string, string[]> };
+const KEY = "greenlight:v3";
+const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS, currentClub: DEMO_CLUB_ID, outreach: SEED_OUTREACH };
 
 let state: State | null = null;
 const listeners = new Set<() => void>();
@@ -73,6 +74,26 @@ export const store = {
   },
   setClub(id: string) {
     save({ ...load(), currentClub: id });
+  },
+  addOutreach(o: Outreach) {
+    const s = load();
+    save({ ...s, outreach: [o, ...(s.outreach ?? [])] });
+  },
+  patchOutreach(id: string, patch: Partial<Outreach>) {
+    const s = load();
+    save({ ...s, outreach: (s.outreach ?? []).map((o) => (o.id === id ? { ...o, ...patch, updatedAt: new Date().toISOString().slice(0, 10) } : o)) });
+  },
+  removeOutreach(id: string) {
+    const s = load();
+    save({ ...s, outreach: (s.outreach ?? []).filter((o) => o.id !== id) });
+  },
+  addSponsor(sp: Sponsor) {
+    const s = load();
+    save({ ...s, customSponsors: [...(s.customSponsors ?? []), sp] });
+  },
+  setAudience(clubId: string, majors: string[]) {
+    const s = load();
+    save({ ...s, audience: { ...(s.audience ?? {}), [clubId]: majors } });
   },
   reset() {
     save(structuredClone(SERVER));

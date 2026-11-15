@@ -6,8 +6,17 @@ import type { Check as CheckT, CheckLevel, Status } from "@/lib/types";
 export function Mark({ size = "md" }: { size?: "md" | "lg" }) {
   return (
     <span className="mark" style={size === "lg" ? { fontSize: 22 } : undefined}>
-      <span className="mark-glyph" aria-hidden="true"><Check strokeWidth={3} /></span>
+      <Stoplight />
       Greenlight
+    </span>
+  );
+}
+
+/** The logo: a small traffic light with the green lamp lit. */
+export function Stoplight({ state = "go", big }: { state?: "stop" | "go"; big?: boolean }) {
+  return (
+    <span className={"stoplight" + (big ? " big" : "")} data-state={state} aria-hidden="true">
+      <i /><i /><i />
     </span>
   );
 }

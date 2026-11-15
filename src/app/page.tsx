@@ -1,7 +1,17 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpenCheck, CalendarClock, FileSpreadsheet, HandCoins, Inbox, ListChecks, MailCheck, ShieldCheck } from "lucide-react";
 import { HeroPreview } from "@/components/HeroPreview";
 import { Mark } from "@/components/ui";
+import springfest from "../../public/photos/springfest-concert.jpg";
+import band from "../../public/photos/trojan-marching-band.jpg";
+import kaufman from "../../public/photos/kaufman-commencement.jpg";
+
+const PHOTOS = [
+  { src: springfest, alt: "Crowd at an evening Springfest concert on the USC campus, with the Von KleinSmid Center tower behind the stage", caption: "Springfest concert on campus", credit: "Public domain, via Wikimedia Commons", href: "https://commons.wikimedia.org/wiki/File:USCSpringfest2005.JPG" },
+  { src: band, alt: "The USC Trojan Marching Band in cardinal and gold uniforms marching with sousaphones", caption: "Trojan Marching Band at the 2017 Rose Parade", credit: "Prayitno, CC BY 2.0, via Wikimedia Commons", href: "https://commons.wikimedia.org/wiki/File:USC_Trojan_Marching_Band_(33256755245).jpg" },
+  { src: kaufman, alt: "Graduates dancing down the aisle at the USC Kaufman School of Dance commencement while families film on their phones", caption: "Kaufman School of Dance commencement, 2024", credit: "USC Kaufman, public domain, via Wikimedia Commons", href: "https://commons.wikimedia.org/wiki/File:USC-Kaufman_Commencement_2024_-_53769677396.jpg" },
+];
 
 export default function Home() {
   return (
@@ -25,8 +35,8 @@ export default function Home() {
       <main>
         <section className="section hero">
           <span className="eyebrow">For USC clubs and the USG Funding Department</span>
-          <h1>Get your club funded the first time.</h1>
-          <p className="lede">Greenlight checks every line of a USG funding request against the 2026–27 guidelines before you submit, and hands reviewers an application that is already checked.</p>
+          <h1>A USG funding request, checked before you submit it.</h1>
+          <p className="lede">Describe your event and Greenlight fills in USG&apos;s budget sheet, finds your deadline and checks each line against the 2026-27 Funding Guidelines. Reviewers get the application with the checks already done.</p>
           <div className="row" style={{ justifyContent: "center", gap: 12 }}>
             <Link href="/club/new" className="btn btn-primary btn-lg">Start a request<ArrowRight /></Link>
             <Link href="/usg" className="btn btn-lg">See the reviewer side</Link>
@@ -37,32 +47,53 @@ export default function Home() {
         </section>
 
         <section className="band">
-          <div className="section section-tight grid cols-4" style={{ gap: 32 }}>
-            <div className="stat"><b>$388K</b><span>for the Funding Department in FY27, shared by more than 1,000 clubs.</span></div>
+          <div className="section section-tight grid cols-4 stats-band" style={{ gap: 32 }}>
+            <div className="stat"><b>$388K</b><span>is the Funding Department&apos;s FY27 budget, shared by more than 1,000 clubs.</span></div>
             <div className="stat"><b>44%</b><span>of the 378 organizations that applied in 2023 got funding: 166 in all.</span></div>
-            <div className="stat"><b>2 days</b><span>to fix an incomplete application before it is denied.</span></div>
-            <div className="stat"><b>5 reviews</b><span>every request passes through, from board director to Campus Activities.</span></div>
+            <div className="stat"><b>2 days</b><span>to fix an incomplete application before USG denies it.</span></div>
+            <div className="stat"><b>5 reviews</b><span>for every request, from board director to Campus Activities staff.</span></div>
           </div>
         </section>
 
-        <section id="how" className="section stack" style={{ gap: 56 }}>
+        <section className="section stack" style={{ gap: 40 }}>
           <div className="stack-sm" style={{ maxWidth: 720 }}>
-            <span className="eyebrow">How it works</span>
-            <h2 className="display-2">Describe the event. Fix what&apos;s red. Submit.</h2>
-            <p className="lede">The AI reads and writes. The rules are checked in code against USG&apos;s own text, so every number is exact and every flag cites its section.</p>
+            <span className="eyebrow">What the money pays for</span>
+            <h2 className="display-2">Concerts, showcases and ceremonies that students run.</h2>
+            <p className="lede">In FY26 the Performing and Visual Arts board alone funded 4 concerts, 9 dance showcases and 9 other performances. Each one started as a funding application.</p>
           </div>
-          <div className="grid cols-3" style={{ gap: 40 }}>
-            {[
-              { n: "1", Icon: FileSpreadsheet, t: "Write it like a text", d: "“Hackathon for 120 students on Feb 18, catering $5,400…” becomes USG's budget sheet, with the right funding board picked and explained." },
-              { n: "2", Icon: ListChecks, t: "See every problem, with the fix", d: "Food over $35 a person, a vendor not on USG's list, gift cards, a missing UEPA. One click caps food, swaps the caterer or moves a line to sponsors." },
-              { n: "3", Icon: CalendarClock, t: "Never miss the Wednesday", d: "Your exact deadline from USG's own sheet, and a heads-up when moving the event one week buys you two more months." },
-            ].map(({ n, Icon, t, d }) => (
-              <div key={n} className="feature">
-                <span className="row" style={{ gap: 12 }}><span className="icon-tile"><Icon /></span><span className="step-n">Step {n}</span></span>
-                <h3 style={{ fontSize: 20 }}>{t}</h3>
-                <p className="muted">{d}</p>
-              </div>
+          <div className="photo-grid">
+            {PHOTOS.map((p, i) => (
+              <figure key={p.caption} className={"photo" + (i === 0 ? " photo-wide" : "")}>
+                <Image src={p.src} alt={p.alt} placeholder="blur" sizes={i === 0 ? "(max-width: 760px) 100vw, 66vw" : "(max-width: 760px) 100vw, 33vw"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <figcaption>
+                  <span>{p.caption}</span>
+                  <a href={p.href} target="_blank" rel="noreferrer">{p.credit}</a>
+                </figcaption>
+              </figure>
             ))}
+          </div>
+        </section>
+
+        <section id="how" className="band">
+          <div className="section stack" style={{ gap: 48 }}>
+            <div className="stack-sm" style={{ maxWidth: 720 }}>
+              <span className="eyebrow">How it works</span>
+              <h2 className="display-2">From a few sentences to a complete application.</h2>
+              <p className="lede">The AI reads your description and drafts the written answers. The rules are checked in code against USG&apos;s guidelines, and every flag quotes the section it comes from.</p>
+            </div>
+            <div className="grid cols-3" style={{ gap: 40 }}>
+              {[
+                { n: "1", Icon: FileSpreadsheet, t: "Describe the event", d: "Write what you are planning, with the date, the number of people and what each thing costs. Greenlight turns it into USG's budget sheet and picks the funding board." },
+                { n: "2", Icon: ListChecks, t: "Fix what the guidelines flag", d: "Food over $35 a person, a caterer that is not on USG's Vendor List, gift cards, a missing UEPA number. Most fixes take one click." },
+                { n: "3", Icon: CalendarClock, t: "Submit before your Wednesday", d: "Your deadline comes from USG's own deadline sheet. If moving the event a week later gives you more time, Greenlight shows that too." },
+              ].map(({ n, Icon, t, d }) => (
+                <div key={n} className="feature">
+                  <span className="row" style={{ gap: 12 }}><span className="icon-tile"><Icon /></span><span className="step-n">Step {n}</span></span>
+                  <h3 style={{ fontSize: 20 }}>{t}</h3>
+                  <p className="muted">{d}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -70,16 +101,16 @@ export default function Home() {
           <div className="section grid cols-2" style={{ gap: 56, alignItems: "center" }}>
             <div className="stack" style={{ gap: 20 }}>
               <span className="eyebrow" style={{ color: "var(--gold)" }}>For the Funding Department</span>
-              <h2 className="display-2">A queue where every application arrives checked.</h2>
-              <p className="lede">Reviewers see the rule problems, the money left on each board and an AI summary per check. They agree, disagree or edit; the AI drafts the decision email with the sections cited. A person decides every dollar.</p>
+              <h2 className="display-2">Applications arrive with the checks already done.</h2>
+              <p className="lede">The queue shows which rules each request breaks, whether it came in on time and how much is left on each board. The AI writes a note for each check and a draft of the decision email. The reviewer accepts or rewrites each note and decides the amount.</p>
               <div><Link href="/usg" className="btn btn-lg" style={{ background: "var(--gold)", borderColor: "var(--gold)", color: "#111" }}>Open the review queue<ArrowRight /></Link></div>
             </div>
             <div className="grid cols-2" style={{ gap: 14 }}>
               {[
-                { Icon: Inbox, t: "Pre-checked queue", d: "On time, complete, and which rules fail, before you open it." },
-                { Icon: ShieldCheck, t: "Humans decide", d: "AI comments are suggestions you accept, reject or rewrite." },
-                { Icon: MailCheck, t: "Reasons, written", d: "Every denial now needs a reason. The draft cites the guideline." },
-                { Icon: BookOpenCheck, t: "One rulebook", d: "We found five places where USG's own documents disagree." },
+                { Icon: Inbox, t: "Checked queue", d: "Late or on time, documents in or missing, rules broken, before anyone opens the file." },
+                { Icon: ShieldCheck, t: "Reviewers decide", d: "AI notes are suggestions. A person sets every amount and sends every email." },
+                { Icon: MailCheck, t: "Denial reasons", d: "USG now requires a reason for every denial. The draft cites the guideline section." },
+                { Icon: BookOpenCheck, t: "Conflicting documents", d: "USG's guidelines, FAQ and form disagree in five places. The rules page lists them." },
               ].map(({ Icon, t, d }) => (
                 <div key={t} className="stack-sm" style={{ background: "#1c1c1f", borderRadius: 16, padding: 20 }}>
                   <span className="icon-tile dark"><Icon /></span>
@@ -94,9 +125,9 @@ export default function Home() {
         <section id="sponsors" className="section grid cols-2" style={{ gap: 56, alignItems: "center" }}>
           <div className="stack" style={{ gap: 18 }}>
             <span className="eyebrow">Sponsors</span>
-            <h2 className="display-2">What USG can&apos;t fund, the Trojan network can.</h2>
-            <p className="lede">Prizes, performers and food above the limit become priced sponsor packages. Greenlight ranks companies that recruit at USC, explains each fit, and drafts the email you send yourself. Support is in kind, paid straight to the vendor, as Campus Activities requires.</p>
-            <div><Link href="/club/sponsors" className="link">Browse sponsors<ArrowRight /></Link></div>
+            <h2 className="display-2">Sponsors for the costs USG won&apos;t cover.</h2>
+            <p className="lede">Prizes, performers and food above $35 a person go on a sponsor list with a price for each. Greenlight ranks companies that hire from your majors, links to their recruiters and to USC alumni who work there, and drafts the email you send. Sponsors pay the vendor directly or give in kind, which is what Campus Activities allows.</p>
+            <div><Link href="/club/sponsors" className="link">Open sponsors<ArrowRight /></Link></div>
           </div>
           <div className="card card-pad stack-sm">
             {[["Catering above $35 per person", "$1,200", "5-minute talk, recruiting table"], ["Gift cards for winners", "$600", "Logo on the slides, recap mention"], ["Swag", "$600", "Logo on event materials"]].map(([a, b, c], i) => (
@@ -109,9 +140,9 @@ export default function Home() {
         </section>
 
         <section className="band">
-          <div className="section section-tight stack" style={{ justifyItems: "center", textAlign: "center", gap: 18 }}>
-            <h2 className="display-2" style={{ maxWidth: "18ch" }}>Your next event starts with one sentence.</h2>
-            <div className="row" style={{ justifyContent: "center" }}><Link href="/club/new" className="btn btn-primary btn-lg">Start a request<ArrowRight /></Link></div>
+          <div className="section section-tight between" style={{ gap: 24 }}>
+            <div className="stack-xs"><h2 style={{ fontSize: 28 }}>Planning something this semester?</h2><p className="muted">Events in the first three weeks of February have a November 18 deadline.</p></div>
+            <Link href="/club/new" className="btn btn-primary btn-lg">Start a request<ArrowRight /></Link>
           </div>
         </section>
       </main>
@@ -120,7 +151,7 @@ export default function Home() {
         <div className="footer-in">
           <Mark />
           <p>Built for the AI@USC Hackathon, November 2026. Not an official USC or USG service.</p>
-          <p>Sources: USG Funding Department <a href="https://docs.google.com/document/d/1noJFJ4SxrFGD1Zm-6EqUHpXSIOUuFIL-gIobWXcXCt0/edit" target="_blank" rel="noreferrer">2026-27 Guidelines</a>, FY26 Financial Report, FAQ and deadline sheet (usg.usc.edu/branches/funding); Daily Trojan and Annenberg Media reporting (2023-2026). Sample clubs and requests are made up.</p>
+          <p>Sources: USG Funding Department <a href="https://docs.google.com/document/d/1noJFJ4SxrFGD1Zm-6EqUHpXSIOUuFIL-gIobWXcXCt0/edit" target="_blank" rel="noreferrer">2026-27 Guidelines</a>, FY26 Financial Report, FAQ and deadline sheet (usg.usc.edu/branches/funding); Daily Trojan and Annenberg Media reporting (2023-2026). Photos from Wikimedia Commons, credited under each photo. Sample clubs and requests are made up.</p>
         </div>
       </footer>
     </div>

@@ -6,7 +6,8 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { claude, MODELS, hasKey } from "./claude";
 import { GUIDELINES_TEXT } from "@/data/guidelines";
 import { BOARDS, ITEM_CATEGORIES, INELIGIBLE, type BoardId } from "@/data/rules";
-import { SPONSORS } from "@/data/sponsors";
+import { SPONSORS, type Major, type Sponsor } from "@/data/sponsors";
+import { needsFrom, rankSponsors } from "./sponsorMatch";
 import type { Application, Check, EventInfo, LineItem, SponsorPackage, SponsorPick } from "./types";
 import { fmtDate, money } from "./engine";
 export { buildPackages } from "./ai-shared";
@@ -280,59 +281,85 @@ Only cite the reason and notes given here; do not bring in other rules or limits
   };
 }
 
-// ---------- 6. Sponsor match ----------
+// ---------- 6. Sponsor match and outreach emails ----------
+// Code ranks the companies (sponsorMatch.ts). The model only explains the top candidates and writes emails,
+// using the facts given, so it cannot invent a USC tie.
 
 const PickSchema = z.object({
   picks: z.array(z.object({ sponsorId: z.string(), reason: z.string().describe("One sentence using only the facts given"), packageTitle: z.string(), score: z.number().describe("0-100 fit") })),
-  email: z.object({ subject: z.string(), body: z.string() }),
 });
+const EmailSchema = z.object({ subject: z.string(), body: z.string() });
 
-export async function sponsorMatch(app: Application, clubName: string, packages: SponsorPackage[]): Promise<Out<{ picks: SponsorPick[]; email: { to: string; subject: string; body: string } }>> {
+type EmailInput = { sponsor: Sponsor; pkg: SponsorPackage; event: EventInfo; clubName: string; contactName?: string };
+
+export function outreachTemplate({ sponsor, pkg, event, clubName, contactName }: EmailInput) {
+  const when = event.date ? fmtDate(event.date, { month: "long", day: "numeric" }) : "an upcoming date";
+  return {
+    subject: `${clubName}: ${pkg.covers} for ${event.title} (${event.attendance} USC students)`,
+    body: `Hi ${contactName || `${sponsor.name} team`},\n\nI'm the outreach lead for ${clubName} at USC. On ${when} we're hosting ${event.title} for about ${event.attendance} students.${sponsor.tie ? ` We're reaching out because ${sponsor.tie.replace(/\s*\(.*\)$/, "").replace(/^\w/, (c) => c.toLowerCase())}.` : ""}\n\nWould ${sponsor.name} cover ${pkg.covers.toLowerCase()} (about ${money(pkg.amount)})? Payment would go straight to the vendor, or the support can be in kind.\n\nIn return: ${pkg.offer.join("; ").toLowerCase()}.\n\nCould we set up a 15-minute call this week?\n\nThank you,\n[Your name]\n${clubName}`,
+  };
+}
+
+export async function outreachEmail(input: EmailInput): Promise<Out<{ subject: string; body: string }>> {
+  if (hasKey()) {
+    try {
+      const { sponsor, pkg, event, clubName, contactName } = input;
+      const r = await parse(
+        MODELS.write,
+        EmailSchema,
+        `Write a short sponsorship email (under 150 words) from the outreach lead of ${clubName}, a USC student club, to ${contactName ? contactName + " at " : ""}${sponsor.name}.
+Facts you may use and nothing else:
+- Event: ${JSON.stringify({ title: event.title, date: event.date, location: event.location, attendance: event.attendance, description: event.description })}
+- The ask: ${pkg.covers}, about ${money(pkg.amount)}, paid directly to the vendor or given in kind (the club never receives cash).
+- What the company gets: ${pkg.offer.join("; ")}.
+- Company: ${sponsor.name}, ${sponsor.industry}, hires ${sponsor.hires.join(", ")}.${sponsor.tie ? ` USC tie: ${sponsor.tie}.` : " No known USC tie: do not claim one."}
+One specific ask, one call to action (a 15-minute call), plain and warm, no hype. Sign as [Your name], ${clubName}.`,
+        1200,
+      );
+      if (r) return { data: r, offline: false };
+    } catch (e) {
+      console.error("outreachEmail failed", e);
+    }
+  }
+  return { data: outreachTemplate(input), offline: true };
+}
+
+export async function sponsorMatch(app: Application, clubName: string, packages: SponsorPackage[], majors: Major[], extra: Sponsor[] = []): Promise<Out<{ picks: SponsorPick[]; email: { to: string; subject: string; body: string } | null }>> {
+  const pool = [...SPONSORS, ...extra];
+  const ranked = rankSponsors(pool, majors, needsFrom(packages.map((p) => p.covers))).slice(0, 8);
+  const pkg = packages[0];
+  let picks: SponsorPick[] = ranked.slice(0, 4).map((m) => ({ sponsorId: m.sponsor.id, name: m.sponsor.name, score: m.score, packageTitle: pkg?.title ?? "", reason: [m.sponsor.tie, m.reasons.filter((x) => x !== "USC tie on record").join(". ")].filter(Boolean).join(". ") + "." }));
+  let offline = true;
   if (hasKey() && packages.length) {
     try {
       const r = await parse(
         MODELS.write,
         PickSchema,
-        `Rank the 4 best sponsors for this club event from the list, then draft a short outreach email to the top one for one package.
-Only use facts in the list; do not claim any relationship that is not in "uscTie". The sponsor would pay a vendor directly or give in kind; the club never receives cash.
-Club: ${clubName}. Event: ${JSON.stringify({ title: app.event.title, type: app.event.type, date: app.event.date, attendance: app.event.attendance, description: app.event.description })}
-Packages: ${JSON.stringify(packages)}
-Sponsors: ${JSON.stringify(SPONSORS)}
-Email: under 150 words, from the club's outreach lead, specific ask, one clear call to action. Use [Your name] as the signature.`,
-        2500,
+        `These companies were pre-ranked for a USC club event. Pick the best 4, assign each the package it fits best, and give one sentence on why, using only the facts listed (never claim a USC tie that is not in "tie").
+Event: ${JSON.stringify({ title: app.event.title, type: app.event.type, attendance: app.event.attendance, description: app.event.description })}
+Audience majors: ${majors.join(", ") || "not given"}
+Packages: ${JSON.stringify(packages.map((p) => ({ title: p.title, amount: p.amount })))}
+Companies: ${JSON.stringify(ranked.map((m) => ({ id: m.sponsor.id, name: m.sponsor.name, industry: m.sponsor.industry, hires: m.sponsor.hires, canGive: m.sponsor.inKind, tie: m.sponsor.tie, codeScore: m.score })))}`,
+        1500,
       );
-      if (r) {
-        const picks = r.picks.filter((p) => SPONSORS.some((s) => s.id === p.sponsorId)).slice(0, 4).map((p) => ({ ...p, name: SPONSORS.find((s) => s.id === p.sponsorId)!.name }));
-        if (picks.length) return { data: { picks, email: { to: `${picks[0].name} university relations`, ...r.email } }, offline: false };
+      const valid = r?.picks.filter((p) => ranked.some((m) => m.sponsor.id === p.sponsorId) && packages.some((k) => k.title === p.packageTitle)).slice(0, 4);
+      if (valid?.length) {
+        picks = valid.map((p) => ({ ...p, name: pool.find((s) => s.id === p.sponsorId)!.name }));
+        offline = false;
       }
     } catch (e) {
       console.error("sponsorMatch failed", e);
     }
   }
-  // Offline: score by keyword overlap between the event and each company's industry and majors.
-  const words = `${app.event.title} ${app.event.type} ${app.event.description}`.toLowerCase();
-  const wantsTech = /hack|code|software|ai|data|robot|engineer|tech/.test(words);
-  const scored = SPONSORS.map((s) => {
-    let sc = s.uscTie ? 30 : 0;
-    if (wantsTech && /software|cloud|developer|ai|aerospace|defense|automotive/i.test(s.industry)) sc += 40;
-    if (packages.some((p) => s.inKind.some((k) => p.covers.toLowerCase().includes(k.split(" ")[0])))) sc += 15;
-    if (/food|lunch|cater/i.test(packages.map((p) => p.covers).join(" ")) && s.inKind.includes("food")) sc += 15;
-    return { s, sc };
-  }).sort((a, b) => b.sc - a.sc).slice(0, 4);
-  const pkg = packages[0];
-  const picks = scored.map(({ s, sc }) => ({ sponsorId: s.id, name: s.name, score: Math.min(sc, 99), packageTitle: pkg?.title ?? "", reason: [s.uscTie, `${s.industry}; hires ${s.hires.slice(0, 2).join(" and ")}`, s.la].filter(Boolean).join(". ") + "." }));
-  const top = picks[0];
-  return {
-    offline: true,
-    data: {
-      picks,
-      email: {
-        to: `${top?.name ?? "Sponsor"} university relations`,
-        subject: `Sponsoring ${app.event.title}, ${app.event.attendance} USC students`,
-        body: `Hi ${top?.name ?? ""} team,\n\n${clubName} is hosting ${app.event.title} on ${app.event.date ? fmtDate(app.event.date, { month: "long", day: "numeric" }) : "an upcoming date"} for about ${app.event.attendance} USC students. Would you cover ${pkg?.covers.toLowerCase() ?? "part of the event"} (about ${money(pkg?.amount ?? 0)}), paid directly to the vendor?\n\nIn return: ${pkg?.offer.join("; ").toLowerCase()}.\n\nCould we set up a 15-minute call this week?\n\nThank you,\n[Your name]\n${clubName}`,
-      },
-    },
-  };
+  const top = pool.find((s) => s.id === picks[0]?.sponsorId);
+  const topPkg = packages.find((p) => p.title === picks[0]?.packageTitle) ?? pkg;
+  let email: { to: string; subject: string; body: string } | null = null;
+  if (top && topPkg) {
+    const e = await outreachEmail({ sponsor: top, pkg: topPkg, event: app.event, clubName });
+    email = { to: `${top.name} university recruiting`, ...e.data };
+    offline = offline && e.offline;
+  }
+  return { offline, data: { picks, email } };
 }
 
 export const INELIGIBLE_LABELS = INELIGIBLE;

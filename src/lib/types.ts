@@ -106,3 +106,23 @@ export type Application = {
 export type SponsorPackage = { title: string; covers: string; amount: number; offer: string[] };
 export type SponsorPick = { sponsorId: string; name: string; reason: string; packageTitle: string; score: number };
 export type SponsorPlan = { packages: SponsorPackage[]; picks: SponsorPick[]; email: { to: string; subject: string; body: string } | null };
+
+export type OutreachStatus = "shortlist" | "emailed" | "replied" | "committed" | "declined";
+
+/** One company the club is working on for one request. People are typed in by the officer, never scraped. */
+export type Outreach = {
+  id: string;
+  clubId: string;
+  appId: string | null;
+  sponsorId: string;
+  packageTitle: string;
+  amount: number;
+  status: OutreachStatus;
+  contactName: string;
+  contactInfo: string;
+  notes: string;
+  committed: number;
+  followUp: string;
+  updatedAt: string;
+  email: { subject: string; body: string } | null;
+};

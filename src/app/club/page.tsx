@@ -16,7 +16,7 @@ function nextWednesday(today: string) {
 }
 
 export default function ClubOverview() {
-  const { clubs, apps } = useStore();
+  const { clubs, apps, outreach } = useStore();
   const club = useCurrentClub();
   const router = useRouter();
   const mine = apps.filter((a) => a.clubId === club.id);
@@ -24,14 +24,17 @@ export default function ClubOverview() {
   const left = RULES.annualCap.limit - club.receivedThisYear;
   const wed = nextWednesday(today);
 
-  const attention: { app: Application; text: string; tone: "fix" | "check" | "gold" }[] = [];
+  const attention: { key: string; href: string; title: string; text: string; tone: "fix" | "check" | "gold" }[] = [];
+  const push = (app: Application, text: string, tone: "fix" | "check" | "gold") => attention.push({ key: app.id, href: `/club/app/${app.id}`, title: app.event.title, text, tone });
   for (const a of mine) {
-    if (a.status === "needs_info") attention.push({ app: a, text: "USG returned it as incomplete. You have 2 business days to send the missing items.", tone: "fix" });
+    if (a.status === "needs_info") push(a, "USG returned it as incomplete. You have 2 business days to send the missing items.", "fix");
     else if (a.status === "draft") {
       const s = score(runChecks(a, club));
-      if (s.fail) attention.push({ app: a, text: `${s.fail} item${s.fail > 1 ? "s" : ""} to fix before you can submit.`, tone: "check" });
-    } else if ((a.status === "approved" || a.status === "partial") && a.event.date < today) attention.push({ app: a, text: "Post-event evaluation and final invoices are due within 3 business days of the event.", tone: "gold" });
+      if (s.fail) push(a, `${s.fail} item${s.fail > 1 ? "s" : ""} to fix before you can submit.`, "check");
+    } else if ((a.status === "approved" || a.status === "partial") && a.event.date < today) push(a, "Post-event evaluation and final invoices are due within 3 business days of the event.", "gold");
   }
+  const followUps = (outreach ?? []).filter((o) => o.clubId === club.id && o.followUp && o.followUp <= today && (o.status === "emailed" || o.status === "replied"));
+  if (followUps.length) attention.push({ key: "followups", href: "/club/sponsors", title: `Follow up with ${followUps.length} sponsor${followUps.length > 1 ? "s" : ""}`, text: "It has been a few days since your last email.", tone: "gold" });
 
   return (
     <>
@@ -76,11 +79,11 @@ export default function ClubOverview() {
         <section className="stack-sm">
           <h2>Needs your attention</h2>
           <div className="card">
-            {attention.map(({ app, text, tone }, i) => (
-              <Link key={app.id} href={`/club/app/${app.id}`} className="between" style={{ padding: "16px 20px", borderTop: i ? "1px solid var(--line-2)" : 0 }}>
+            {attention.map(({ key, href, title, text, tone }, i) => (
+              <Link key={key} href={href} className="between" style={{ padding: "16px 20px", borderTop: i ? "1px solid var(--line-2)" : 0 }}>
                 <div className="row" style={{ gap: 14, flexWrap: "nowrap" }}>
                   <span className={"icon-tile " + (tone === "gold" ? "gold" : "")} style={tone === "fix" ? { background: "var(--fix-tint)", color: "var(--fix)" } : undefined}><TriangleAlert /></span>
-                  <div className="stack-xs"><strong>{app.event.title}</strong><span className="small muted">{text}</span></div>
+                  <div className="stack-xs"><strong>{title}</strong><span className="small muted">{text}</span></div>
                 </div>
                 <ArrowRight style={{ width: 18, height: 18, color: "var(--ink-3)", flex: "none" }} />
               </Link>

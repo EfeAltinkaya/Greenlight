@@ -1,11 +1,11 @@
 // Example data so every screen has something real to show. All clubs and requests are made up
 // and marked as samples; no real student data.
-import type { Application, Club, LineItem } from "./types";
+import type { Application, Club, LineItem, Outreach } from "./types";
 
 export const DEMO_CLUB_ID = "builders";
 
 export const SEED_CLUBS: Club[] = [
-  { id: "builders", name: "Trojan Builders Society", school: "Viterbi", startupEligible: false, receivedThisYear: 2000, eventsThisSemester: 1 },
+  { id: "builders", name: "Trojan Builders Society", school: "Viterbi", startupEligible: false, receivedThisYear: 3500, eventsThisSemester: 1 },
   { id: "dance", name: "Southside Dance Collective", school: "Other", startupEligible: false, receivedThisYear: 4500, eventsThisSemester: 2 },
   { id: "shore", name: "Shoreline Service Club", school: "Dornsife", startupEligible: false, receivedThisYear: 600, eventsThisSemester: 1 },
   { id: "fintech", name: "Marshall Fintech Circle", school: "Marshall", startupEligible: false, receivedThisYear: 0, eventsThisSemester: 0 },
@@ -42,6 +42,26 @@ const base = (o: Partial<Application> & Pick<Application, "id" | "clubId" | "eve
 });
 
 export const SEED_APPS: Application[] = [
+  base({
+    id: "s-robotics",
+    clubId: "builders",
+    event: { title: "Robotics Build Night", type: "engineering workshop", date: "2026-12-03", location: "Ronald Tutor Hall", onCampus: true, attendance: 80, openToAll: true, ticketed: false, privateResidence: false, travel: false, international: false, food: true, description: "Hands-on night where teams build and race small robots, with mentors from local engineering companies.", board: "professional", boardReason: "Hands-on engineering skills fit the Professional/Academic board." },
+    items: [
+      li({ item: "Robot kits (single use)", vendor: "Amazon", total: 1200, category: "supplies", justification: "Parts each team uses during the build" }),
+      li({ item: "Dinner", vendor: "Panda Catering", quantity: 80, unitPrice: 35, total: 2800, category: "food", justification: "Dinner for an evening build session" }),
+      li({ item: "Prizes for the top three teams", vendor: "", total: 450, category: "gift", toSponsor: true }),
+      li({ item: "Club t-shirts for volunteers", vendor: "Campus Custom Tees", quantity: 30, unitPrice: 15, total: 450, category: "tshirt", toSponsor: true }),
+    ],
+    docs: { budget: true, quotes: true, esr: true, healthPermit: true, fbForm: true, cart: true, wishlist: true, inkind: false },
+    status: "partial",
+    submittedAt: "2026-10-14",
+    history: [
+      { at: "2026-10-14", status: "submitted", note: "Submitted to USG" },
+      { at: "2026-10-16", status: "in_review", note: "Opened by the Professional/Academic director" },
+      { at: "2026-10-21", status: "partial", note: "Partly funded: $3,500. Explanation emailed to the club." },
+    ],
+    decision: { outcome: "partial", amount: 3500, reasonCode: "over-4k", email: "Your request was partly funded: $3,500 of $4,000, covering dinner and most of the kits. Events over $4,000 are reviewed case by case (Section 3).", sentAt: "2026-10-21" },
+  }),
   base({
     id: "s-dance",
     clubId: "dance",
@@ -95,4 +115,9 @@ export const SEED_APPS: Application[] = [
       { at: "2026-11-12", status: "in_review", note: "Opened by the Social & Startup director" },
     ],
   }),
+];
+
+export const SEED_OUTREACH: Outreach[] = [
+  { id: "o1", clubId: "builders", appId: "s-robotics", sponsorId: "northrop", packageTitle: "Prizes for the top three teams", amount: 450, status: "emailed", contactName: "", contactInfo: "", notes: "Sample: emailed the university recruiting inbox.", committed: 0, followUp: "2026-11-12", updatedAt: "2026-11-07", email: null },
+  { id: "o2", clubId: "builders", appId: "s-robotics", sponsorId: "spacex", packageTitle: "Club t-shirts for volunteers", amount: 450, status: "shortlist", contactName: "", contactInfo: "", notes: "", committed: 0, followUp: "", updatedAt: "2026-11-07", email: null },
 ];

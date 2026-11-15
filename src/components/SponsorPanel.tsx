@@ -1,31 +1,45 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
-import { Copy, HandCoins, RefreshCw, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Copy, HandCoins, Plus, RefreshCw, Sparkles } from "lucide-react";
 import { buildPackages } from "@/lib/ai-shared";
-import { money } from "@/lib/engine";
-import { store } from "@/lib/store";
+import { money, todayISO } from "@/lib/engine";
+import { newId, store, useStore } from "@/lib/store";
 import type { Application, Club } from "@/lib/types";
-import { SPONSOR_NOTE } from "@/data/sponsors";
+import { SCHOOL_MAJORS, SPONSOR_NOTE, type Major } from "@/data/sponsors";
 import { AiTag, Spinner, useToast } from "./ui";
 
 export function SponsorPanel({ app, club, asks }: { app: Application; club: Club; asks: { itemId: string; label: string; amount: number; reason: string }[] }) {
+  const { audience, customSponsors, outreach } = useStore();
   const [busy, setBusy] = useState(false);
   const [offline, setOffline] = useState<boolean | null>(null);
   const [toast, say] = useToast();
   const plan = app.sponsorPlan;
   const total = asks.reduce((s, a) => s + a.amount, 0);
+  const majors = (audience?.[club.id] ?? SCHOOL_MAJORS[club.school] ?? []) as Major[];
+  const tracked = new Set((outreach ?? []).filter((o) => o.appId === app.id).map((o) => o.sponsorId));
 
   async function find() {
     setBusy(true);
     try {
       const packages = buildPackages(asks, app.event.attendance);
-      const r = await fetch("/api/sponsors", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club.name, packages }) });
+      const r = await fetch("/api/sponsors", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club.name, packages, majors, extra: customSponsors ?? [] }) });
       const j = await r.json();
       store.patchApp(app.id, { sponsorPlan: { packages, picks: j.data.picks, email: j.data.email } });
       setOffline(Boolean(j.offline));
     } finally {
       setBusy(false);
     }
+  }
+
+  function track(sponsorId: string, packageTitle: string, withEmail: boolean) {
+    const pkg = plan?.packages.find((p) => p.title === packageTitle) ?? plan?.packages[0];
+    store.addOutreach({
+      id: newId(), clubId: club.id, appId: app.id, sponsorId, packageTitle: pkg?.title ?? packageTitle, amount: pkg?.amount ?? 0,
+      status: "shortlist", contactName: "", contactInfo: "", notes: "", committed: 0, followUp: "", updatedAt: todayISO(),
+      email: withEmail && plan?.email ? { subject: plan.email.subject, body: plan.email.body } : null,
+    });
+    say("Added to your outreach list");
   }
 
   async function copy() {
@@ -61,9 +75,10 @@ export function SponsorPanel({ app, club, asks }: { app: Application; club: Club
             ))}
           </div>
         )}
-        {!plan && asks.length > 0 && (
-          <div><button className="btn btn-primary btn-lg" onClick={find} disabled={busy}>{busy ? <><Spinner />Matching sponsors</> : <><Sparkles />Find sponsors</>}</button></div>
-        )}
+        <div className="between">
+          <span className="small muted">Audience: {majors.length ? majors.join(", ") : "not set"} · <Link href="/club/sponsors" className="link">Change</Link></span>
+          {!plan && asks.length > 0 && <button className="btn btn-primary btn-lg" onClick={find} disabled={busy}>{busy ? <><Spinner />Matching sponsors</> : <><Sparkles />Find sponsors</>}</button>}
+        </div>
       </div>
 
       {plan && (
@@ -86,10 +101,11 @@ export function SponsorPanel({ app, club, asks }: { app: Application; club: Club
                 <div className="stack-xs" style={{ flex: 1 }}>
                   <div className="between"><strong>{p.name}</strong><span className="pill">{p.packageTitle}</span></div>
                   <span className="small muted">{p.reason}</span>
+                  <div>{tracked.has(p.sponsorId) ? <span className="pill pill-clear"><Check />In your outreach list</span> : <button className="btn btn-sm" onClick={() => track(p.sponsorId, p.packageTitle, i === 0)}><Plus />Add to outreach</button>}</div>
                 </div>
               </div>
             ))}
-            <span className="tiny faint">{SPONSOR_NOTE}</span>
+            <div className="between"><span className="tiny faint">{SPONSOR_NOTE}</span><Link href="/club/sponsors" className="link small">Open outreach<ArrowRight /></Link></div>
           </div>
           {plan.email && (
             <div className="card card-pad stack-sm">
