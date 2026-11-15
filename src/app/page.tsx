@@ -7,6 +7,8 @@ import springfest from "../../public/photos/springfest-concert.jpg";
 import band from "../../public/photos/trojan-marching-band.jpg";
 import kaufman from "../../public/photos/kaufman-commencement.jpg";
 
+export const metadata = { title: "Greenlight · USG funding for USC clubs" };
+
 const PHOTOS = [
   { src: springfest, alt: "Crowd at an evening Springfest concert on the USC campus, with the Von KleinSmid Center tower behind the stage", caption: "Springfest concert on campus", credit: "Public domain, via Wikimedia Commons", href: "https://commons.wikimedia.org/wiki/File:USCSpringfest2005.JPG" },
   { src: band, alt: "The USC Trojan Marching Band in cardinal and gold uniforms marching with sousaphones", caption: "Trojan Marching Band at the 2017 Rose Parade", credit: "Prayitno, CC BY 2.0, via Wikimedia Commons", href: "https://commons.wikimedia.org/wiki/File:USC_Trojan_Marching_Band_(33256755245).jpg" },
