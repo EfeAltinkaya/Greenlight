@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Check, ChevronRight, FileSignature, FileUp, PartyPopper, Send, Sparkles, X } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, Download, FileSignature, FileUp, PartyPopper, Send, Sparkles, X } from "lucide-react";
 import { authFetch } from "@/lib/apiClient";
 import { contractText } from "@/lib/contract";
+import { downloadAgreementDocx } from "@/lib/export/agreementDocx";
 import { fmtDate, money } from "@/lib/engine";
 import { store, useStore } from "@/lib/store";
 import { DEAL_FLOW, DEAL_STEPS } from "@/lib/workflow";
@@ -68,6 +69,22 @@ export function DealView({ id, as }: { id: string; as: "club" | "sponsor" }) {
             <section className="card card-pad stack-sm">
               <div className="between"><h2>Agreement</h2><span className="tiny faint">{deal.contract.clubSignedBy ? `Club: ${deal.contract.clubSignedBy}` : "Club has not signed"} · {deal.contract.sponsorSignedBy ? `Sponsor: ${deal.contract.sponsorSignedBy}` : "Sponsor has not signed"}</span></div>
               <div className="contract">{deal.contract.text}</div>
+              <div className="row">
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={async () => {
+                    try {
+                      await downloadAgreementDocx(deal, club?.name ?? "the Club", app?.event ?? null);
+                      say("Agreement downloaded as Word (.docx)");
+                    } catch {
+                      say("Could not build the Word file", "error");
+                    }
+                  }}
+                >
+                  <Download />Download .docx
+                </button>
+              </div>
               <p className="tiny faint">A standard template, not legal advice. Campus Activities approves in-kind donations.</p>
             </section>
           )}

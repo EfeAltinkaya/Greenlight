@@ -111,13 +111,29 @@ alter table public.records enable row level security;
 alter table public.notices enable row level security;
 alter table public.settings enable row level security;
 
+alter table public.clubs add column if not exists sample boolean not null default false;
+
+-- Club ids that have at least one officer profile (used by the client to hide empty test clubs).
+create or replace view public.club_officer_ids
+  with (security_invoker = false)
+  as select distinct club_id from public.profiles where club_id is not null and role = 'club';
+grant select on public.club_officer_ids to authenticated;
+
 drop policy if exists clubs_read on public.clubs;
-create policy clubs_read on public.clubs for select to authenticated using (true);
+-- Club officers see only their club; USG sees all; sponsors see clubs they have deals with or samples.
+create policy clubs_read on public.clubs for select to authenticated using (
+  id = my_club()
+  or my_role() = 'usg'
+  or sample = true
+  or (my_role() = 'sponsor' and exists (
+    select 1 from public.records r where r.kind = 'deal' and r.club_id = clubs.id and r.sponsor = my_org()
+  ))
+);
 drop policy if exists clubs_write on public.clubs;
 create policy clubs_write on public.clubs for update to authenticated using (id = my_club() or my_role() = 'usg');
 
 drop policy if exists profiles_read on public.profiles;
-create policy profiles_read on public.profiles for select to authenticated using (id = auth.uid());
+create policy profiles_read on public.profiles for select to authenticated using (id = auth.uid() or my_role() = 'usg');
 
 drop policy if exists records_read on public.records;
 create policy records_read on public.records for select to authenticated using (
@@ -191,3 +207,96 @@ create table if not exists public.gmail_tokens (
   updated_at timestamptz not null default now()
 );
 alter table public.gmail_tokens enable row level security;
+
+-- Append-only ledger events (hash-linked). History arrays in the client are views over this.
+create table if not exists public.ledger_lines (
+  id text primary key,
+  club_id text not null references public.clubs (id),
+  event_id text not null,
+  event_title text not null,
+  item text not null,
+  vendor text not null default '',
+  amount numeric not null default 0,
+  category text not null default '',
+  source text not null,
+  source_ref text,
+  status text not null,
+  evidence text,
+  sample boolean not null default false,
+  example boolean not null default false,
+  updated_at timestamptz not null default now(),
+  data jsonb not null default '{}'
+);
+alter table public.ledger_lines enable row level security;
+drop policy if exists ledger_lines_read on public.ledger_lines;
+create policy ledger_lines_read on public.ledger_lines for select to authenticated using (
+  club_id = my_club() or my_role() = 'usg'
+);
+drop policy if exists ledger_lines_write on public.ledger_lines;
+create policy ledger_lines_write on public.ledger_lines for all to authenticated using (club_id = my_club()) with check (club_id = my_club());
+
+create table if not exists public.ledger_events (
+  id text primary key,
+  at timestamptz not null default now(),
+  club_id text not null references public.clubs (id),
+  line_id text not null,
+  kind text not null,
+  detail text not null default '',
+  prev_hash text,
+  hash text not null
+);
+create unique index if not exists ledger_events_hash on public.ledger_events (hash);
+alter table public.ledger_events enable row level security;
+drop policy if exists ledger_events_read on public.ledger_events;
+create policy ledger_events_read on public.ledger_events for select to authenticated using (
+  club_id = my_club() or my_role() = 'usg'
+);
+drop policy if exists ledger_events_insert on public.ledger_events;
+create policy ledger_events_insert on public.ledger_events for insert to authenticated with check (club_id = my_club() or my_role() = 'usg');
+
+do $$ begin
+  begin alter publication supabase_realtime add table public.ledger_lines; exception when duplicate_object then null; end;
+  begin alter publication supabase_realtime add table public.ledger_events; exception when duplicate_object then null; end;
+end $$;
+
+-- Campus-wide sponsor claims: one live ask per company (21-day hold).
+create table if not exists public.campus_claims (
+  id text primary key,
+  company_id text not null,
+  company_name text not null,
+  club_id text not null references public.clubs (id),
+  club_name text not null,
+  event_date date,
+  event_title text,
+  held_until date not null,
+  status text not null check (status in ('held', 'released', 'replied')) default 'held',
+  created_at timestamptz not null default now()
+);
+-- At most one held claim per company across campus.
+create unique index if not exists campus_claims_one_live
+  on public.campus_claims (company_id) where (status = 'held');
+alter table public.campus_claims enable row level security;
+drop policy if exists campus_claims_read on public.campus_claims;
+create policy campus_claims_read on public.campus_claims for select to authenticated using (true);
+drop policy if exists campus_claims_write on public.campus_claims;
+create policy campus_claims_write on public.campus_claims for all to authenticated
+  using (club_id = my_club() or my_role() = 'usg')
+  with check (club_id = my_club() or my_role() = 'usg');
+
+-- Greenlight Models: officer corrections and confirmed labels for retraining.
+create table if not exists public.training_examples (
+  id text primary key,
+  task text not null check (task in ('items', 'board', 'replies', 'vendor')),
+  text text not null,
+  label text not null,
+  source text not null check (source in ('officer_correction', 'reviewer_decision', 'reply_confirmed')),
+  club_id_hash text,
+  created_at timestamptz not null default now()
+);
+alter table public.training_examples enable row level security;
+drop policy if exists training_examples_insert on public.training_examples;
+create policy training_examples_insert on public.training_examples for insert to authenticated
+  with check (true);
+drop policy if exists training_examples_read on public.training_examples;
+create policy training_examples_read on public.training_examples for select to authenticated
+  using (my_role() = 'usg');

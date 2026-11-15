@@ -1,5 +1,6 @@
 "use client";
 import { BOARDS, RULES, type BoardId } from "@/data/rules";
+import { visibleClubs } from "@/lib/clubs";
 import { fmtDate, money, requestTotal, runChecks, todayISO } from "@/lib/engine";
 import { useStore } from "@/lib/store";
 import type { Application, Status } from "@/lib/types";
@@ -77,7 +78,8 @@ function forecastWeeks(budget: number, awarded: number, pending: number, decided
 }
 
 export default function Insights() {
-  const { apps, clubs } = useStore();
+  const { apps, clubs: allClubs } = useStore();
+  const clubs = visibleClubs(allClubs);
   const today = todayISO();
   const sent = apps.filter((a) => a.status !== "draft");
   const decided = apps.filter((a) => a.decision);
@@ -248,7 +250,7 @@ export default function Insights() {
           <table className="table">
             <thead><tr><th>Club</th><th>School</th><th className="r">Received this year</th><th style={{ width: "34%" }}>Toward the $8,000 cap</th><th className="r">Events this semester</th></tr></thead>
             <tbody>
-              {[...clubs].sort((a, b) => b.receivedThisYear - a.receivedThisYear).map((c) => (
+              {[...clubs].filter((c) => c.hasOfficers !== false || c.sample).sort((a, b) => b.receivedThisYear - a.receivedThisYear).map((c) => (
                 <tr key={c.id}>
                   <td><strong>{c.name}</strong></td>
                   <td className="small">{c.school}</td>

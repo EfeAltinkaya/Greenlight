@@ -12,7 +12,7 @@ const client = new pg.Client({ connectionString: process.env.POSTGRES_URL_NON_PO
 await client.connect();
 for (const c of SEED_CLUBS) {
   await client.query(
-    "insert into clubs (id, name, school, startup_eligible, received_this_year, events_this_semester) values ($1,$2,$3,$4,$5,$6) on conflict (id) do update set name = excluded.name",
+    "insert into clubs (id, name, school, startup_eligible, received_this_year, events_this_semester, sample) values ($1,$2,$3,$4,$5,$6,true) on conflict (id) do update set name = excluded.name, sample = true",
     [c.id, c.name + " (sample)", c.school, c.startupEligible, c.receivedThisYear, c.eventsThisSemester],
   );
 }

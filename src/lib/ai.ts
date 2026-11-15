@@ -297,7 +297,7 @@ type EmailInput = { sponsor: Sponsor; pkg: SponsorPackage; event: EventInfo; clu
 export function outreachTemplate({ sponsor, pkg, event, clubName, contactName }: EmailInput) {
   const when = event.date ? fmtDate(event.date, { month: "long", day: "numeric" }) : "an upcoming date";
   return {
-    subject: `${event.title} at USC: ${pkg.covers}`,
+    subject: `${event.title} ask`,
     body: `Hi ${contactName || `${sponsor.name} team`},\n\nI'm the outreach lead for ${clubName} at USC. On ${when} we're hosting ${event.title} for about ${event.attendance} students.${sponsor.tie ? ` We're writing to ${sponsor.name} because ${sponsor.tie.replace(/\s*\(.*\)$/, "").replace(/^\w/, (c) => c.toLowerCase())}.` : ""}\n\nWould ${sponsor.name} cover ${pkg.covers.toLowerCase()} (about ${money(pkg.amount)})? Payment would go straight to the vendor, or the support can be in kind.\n\nIn return: ${pkg.offer.join("; ").toLowerCase()}.\n\nCould we set up a 15-minute call this week?\n\nThank you,\n[Your name]\n${clubName}`,
   };
 }

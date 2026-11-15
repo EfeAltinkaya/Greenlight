@@ -13,8 +13,19 @@ import type { User } from "./session";
 let channel: ReturnType<SupabaseClient["channel"]> | null = null;
 let current: { client: SupabaseClient; user: User } | null = null;
 
-type ClubRow = { id: string; name: string; school: Club["school"]; startup_eligible: boolean; received_this_year: number; events_this_semester: number; audience: string[]; mission?: string | null };
-const toClub = (r: ClubRow): Club => ({ id: r.id, name: r.name, school: r.school, startupEligible: r.startup_eligible, receivedThisYear: Number(r.received_this_year), eventsThisSemester: r.events_this_semester, mission: r.mission ?? "" });
+type ClubRow = { id: string; name: string; school: Club["school"]; startup_eligible: boolean; received_this_year: number; events_this_semester: number; audience: string[]; mission?: string | null; sample?: boolean | null };
+const SEED_IDS = new Set(["builders", "dance", "shore", "fintech", "chess"]);
+const toClub = (r: ClubRow, hasOfficers: boolean): Club => ({
+  id: r.id,
+  name: r.name,
+  school: r.school,
+  startupEligible: r.startup_eligible,
+  receivedThisYear: Number(r.received_this_year),
+  eventsThisSemester: r.events_this_semester,
+  mission: r.mission ?? "",
+  sample: Boolean(r.sample) || SEED_IDS.has(r.id) || /\(sample\)/i.test(r.name),
+  hasOfficers,
+});
 
 async function loadAll() {
   if (!current) return;
@@ -24,11 +35,32 @@ async function loadAll() {
     client.from("records").select("kind, data"),
     client.from("notices").select("*").order("created_at", { ascending: false }).limit(200),
   ]);
+  let officerList: { club_id: string }[] | null = null;
+  try {
+    const officerRows = await client.from("club_officer_ids").select("club_id");
+    if (!officerRows.error) officerList = (officerRows.data ?? []) as { club_id: string }[];
+  } catch {
+    officerList = null;
+  }
   const rows = (records.data ?? []) as { kind: string; data: unknown }[];
   const of = <T,>(k: string) => rows.filter((r) => r.kind === k).map((r) => r.data as T);
   const clubRows = (clubs.data ?? []) as ClubRow[];
+  // If the view is not applied yet, treat the signed-in club as having officers.
+  const officerSet = new Set(
+    officerList?.map((r) => r.club_id) ??
+      (user.clubId ? [user.clubId] : []),
+  );
+  // Club officers only keep their own club in the client store (plus nothing else).
+  // USG keeps clubs that have officers or are marked samples; drop empty test clubs.
+  const mapped = clubRows
+    .map((r) => toClub(r, officerSet.has(r.id) || (user.role === "club" && r.id === user.clubId)))
+    .filter((c) => {
+      if (user.role === "club") return c.id === user.clubId;
+      if (user.role === "usg") return c.hasOfficers || c.sample;
+      return true;
+    });
   hydrate({
-    clubs: clubRows.map(toClub),
+    clubs: mapped.length ? mapped : clubRows.map((r) => toClub(r, true)),
     currentClub: user.clubId ?? undefined,
     audience: Object.fromEntries(clubRows.map((c) => [c.id, c.audience ?? []])),
     apps: of<Application>("app"),
@@ -110,4 +142,6 @@ export function stopSync() {
   channel = null;
   current = null;
   attachSync(null, null);
+  // Drop live clubs (including empty test clubs) so demo mode returns to seed only.
+  store.reset();
 }

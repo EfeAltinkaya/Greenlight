@@ -1,28 +1,31 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { ArrowRight, Copy, ExternalLink, HandCoins, Landmark } from "lucide-react";
+import { ArrowRight, Copy, Download, ExternalLink, HandCoins, Landmark } from "lucide-react";
 import { eligibleSources, FUNDING_SOURCES } from "@/data/fundingSources";
 import { money, requestTotal, sponsorAsks, todayISO } from "@/lib/engine";
+import { downloadLegFundPptx } from "@/lib/export/legFundPptx";
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import type { AltRequest, Application } from "@/lib/types";
-import { useToast } from "@/components/ui";
+import { Spinner, useToast } from "@/components/ui";
 
 const draftFor = (a: Application, clubName: string, sourceName: string, amount: number) =>
   `Hello,\n\n${clubName} is requesting ${money(amount)} from ${sourceName} for ${a.event.title} on ${a.event.date}${a.event.location ? ` at ${a.event.location}` : ""}, for about ${a.event.attendance} students.\n\n${a.answers.description || a.event.description}\n\n${a.decision ? `USG's Funding Department ${a.decision.outcome === "denied" ? "was not able to fund this request" : `funded ${money(a.decision.amount)}`}, so we are asking for the remaining ${money(amount)}.` : ""}\n\nThe itemized budget and vendor quotes are attached.\n\nThank you,\n[Your name]\n${clubName}`;
 
 function useQueryApp() {
-  return useSyncExternalStore(
+  const search = useSyncExternalStore(
     (cb) => { window.addEventListener("popstate", cb); return () => window.removeEventListener("popstate", cb); },
-    () => new URLSearchParams(window.location.search).get("app") ?? "",
+    () => window.location.search,
     () => "",
   );
+  return useMemo(() => new URLSearchParams(search).get("app") ?? "", [search]);
 }
 
 export default function OtherFunding() {
   const { apps } = useStore();
   const club = useCurrentClub();
   const [toast, say] = useToast();
+  const [pptxBusy, setPptxBusy] = useState(false);
   const fromUrl = useQueryApp();
   const candidates = apps.filter((a) => a.clubId === club.id && (a.status === "denied" || a.status === "partial" || a.status === "needs_info" || a.status === "draft"));
   const [appId, setAppId] = useState("");
@@ -48,6 +51,36 @@ export default function OtherFunding() {
     const existing = list.find((r) => r.sourceId === sourceId);
     const next: AltRequest = existing ? { ...existing, status, updatedAt: todayISO() } : { sourceId, status, amount: need, draft: draftFor(app, club.name, name, need), updatedAt: todayISO() };
     store.patchApp(app.id, { altRequests: existing ? list.map((r) => (r.sourceId === sourceId ? next : r)) : [...list, next] });
+    if (status === "awarded" || status === "applied" || status === "drafted") {
+      const ledgerSource =
+        sourceId === "legislative-fund" ? "legislative"
+        : sourceId === "assemblies" ? "assembly"
+        : sourceId === "viterbi-sos" ? "viterbi_sos"
+        : sourceId === "vfb" ? "viterbi_vfb"
+        : sourceId === "marshall" ? "marshall"
+        : sourceId === "price" ? "price"
+        : sourceId === "gsg" ? "gsg"
+        : sourceId === "ignite" ? "ignitesc"
+        : "department";
+      const lines = (store.get().ledger ?? []).filter((l) => !(l.sourceRef === `alt-${app.id}-${sourceId}`));
+      lines.push({
+        id: `ll-alt-${app.id}-${sourceId}`,
+        clubId: club.id,
+        eventId: app.id,
+        eventTitle: app.event.title,
+        item: `Ask to ${name}`,
+        vendor: "",
+        amount: need,
+        category: "alt",
+        source: ledgerSource as import("@/lib/types").LedgerSource,
+        sourceRef: `alt-${app.id}-${sourceId}`,
+        status: status === "awarded" ? "approved" : status === "applied" ? "requested" : "planned",
+        evidence: null,
+        updatedAt: todayISO(),
+        history: [{ at: todayISO(), status: status === "awarded" ? "approved" : "requested", note: `${name} ${status}`, by: "club" }],
+      });
+      store.setLedger(lines);
+    }
     say(status === "drafted" ? `Draft ready for ${name}` : `Marked as ${status}`);
   }
 
@@ -57,7 +90,7 @@ export default function OtherFunding() {
       <div className="page-head">
         <div>
           <span className="eyebrow">USG funding</span>
-          <h1>Other funding</h1>
+          <h1>Other USC money</h1>
           <p className="lede">If USG says no or funds only part, stack other USC sources and sponsors for the gap. Only sources {club.name} qualifies for are listed first.</p>
         </div>
       </div>
@@ -109,16 +142,40 @@ export default function OtherFunding() {
             return (
               <div key={s.id} className="card card-pad stack-sm">
                 <div className="between" style={{ alignItems: "flex-start" }}>
-                  <div className="stack-xs"><h3>{s.name}</h3><span className="small muted">{s.who} · {s.lead}</span></div>
+                  <div className="stack-xs"><h3>{s.name}</h3></div>
                   {r && <span className={"pill " + (r.status === "awarded" ? "pill-clear" : r.status === "declined" ? "pill-fail" : "pill-gold")}>{r.status === "drafted" ? "Draft ready" : r.status === "applied" ? "Applied" : r.status === "awarded" ? `Awarded ${money(r.amount)}` : "Declined"}</span>}
                 </div>
-                <p className="small">{s.how}</p>
+                <p className="small"><strong>Eligible:</strong> {s.who}</p>
+                <p className="small"><strong>Deadline cadence:</strong> {s.lead}</p>
+                <p className="small"><strong>How:</strong> {s.how}</p>
                 {s.note && <p className="tiny faint">{s.note}</p>}
+                {s.id === "legislative-fund" && <p className="tiny faint">2026-27 guidelines not posted yet. Uses 2025-26 Legislative Branch Guidelines.</p>}
+                {s.id === "assemblies" && <p className="tiny faint">FY27 budget moved membership organizations to the Funding Department; confirm eligibility with the assembly.</p>}
                 {r?.draft && <textarea className="textarea email" style={{ minHeight: 180, fontSize: 13.5 }} value={r.draft} onChange={(e) => app && store.patchApp(app.id, { altRequests: (app.altRequests ?? []).map((x) => (x.sourceId === s.id ? { ...x, draft: e.target.value } : x)) })} aria-label={`Request to ${s.name}`} />}
                 <div className="row">
                   <a className="btn btn-sm" href={s.url} target="_blank" rel="noreferrer"><ExternalLink />Open {s.name.split(" (")[0]}</a>
                   {app && !r && <button className="btn btn-sm btn-primary" onClick={() => track(s.id, s.name, "drafted")}>Prepare request</button>}
                   {r?.draft && <button className="btn btn-sm" onClick={async () => { try { await navigator.clipboard.writeText(r.draft); say("Copied"); } catch { say("Select the text and copy it"); } }}><Copy />Copy</button>}
+                  {s.id === "legislative-fund" && app && (
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      disabled={pptxBusy}
+                      onClick={async () => {
+                        setPptxBusy(true);
+                        try {
+                          await downloadLegFundPptx(app, club, r?.amount || need || requestTotal(app));
+                          say("Legislative Fund deck downloaded. Edit every slide before you present.");
+                        } catch {
+                          say("Could not build the PowerPoint", "error");
+                        } finally {
+                          setPptxBusy(false);
+                        }
+                      }}
+                    >
+                      {pptxBusy ? <><Spinner />Building deck</> : <><Download />Slide deck (.pptx)</>}
+                    </button>
+                  )}
                   {r && r.status !== "awarded" && <button className="btn btn-sm btn-ghost" onClick={() => track(s.id, s.name, "applied")}>Mark applied</button>}
                   {r && r.status === "applied" && <><button className="btn btn-sm btn-ghost" onClick={() => track(s.id, s.name, "awarded")}>Mark awarded</button><button className="btn btn-sm btn-ghost" onClick={() => track(s.id, s.name, "declined")}>Mark declined</button></>}
                 </div>

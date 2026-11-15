@@ -1,0 +1,361 @@
+text,label,source,split
+Campus catering tray of chicken teriyaki for 80 attendees at Build Night,food_catered,team_written,test
+USG-approved caterer delivering boxed lunches to Tommy Trojan Lawn,food_catered,team_written,test
+On-site buffet setup by Casablanca Catering for club mixer,food_catered,team_written,test
+Catered sandwich platters and fruit for midterms study night,food_catered,team_written,test
+Hot dinner catering for Robotics showcase reception,food_catered,team_written,test
+Vendor-listed caterer providing taco bar for cultural night,food_catered,team_written,test
+Evening catering package with servers for officer retreat dinner,food_catered,team_written,test
+Catered breakfast pastries and coffee for career panel,food_catered,team_written,test
+Guidelines: catered food from USG Vendor List,food_catered,rules_doc,train
+Section food: plated catering for registered event,food_catered,rules_doc,train
+Catering invoice from approved campus vendor,food_catered,rules_doc,train
+Vendor-list catering for general body meeting,food_catered,rules_doc,train
+Seed app: catered trays for Robotics Build Night,food_catered,seed_app,train
+Demo club catering for 60 at showcase,food_catered,seed_app,train
+Sample request: campus caterer boxed meals,food_catered,seed_app,train
+FY26 report: catering spend for cultural night,food_catered,fy26_report,train
+FY26: approved caterer dinner trays,food_catered,fy26_report,train
+Synthetic: buffet catering for 100 students,food_catered,synthetic,train
+Synthetic: delivered catering trays with servers,food_catered,synthetic,train
+Synthetic: approved vendor catering package,food_catered,synthetic,train
+"Costco bulk rice, oil, and vegetables for club cook-off",food_raw,team_written,test
+Raw ingredients for DIY poke bowls at cultural workshop,food_raw,team_written,test
+"Grocery store flour, eggs, and sugar for bake sale prep",food_raw,team_written,test
+Uncooked pasta and sauce kits students assemble themselves,food_raw,team_written,test
+Whole chickens and produce purchased for club BBQ pit,food_raw,team_written,test
+Raw sushi rice and nori for member-run sushi night,food_raw,team_written,test
+Trader Joe's bulk snacks and fruit for study hall table,food_raw,team_written,test
+"Ingredient kits (tortillas, beans, cheese) for taco assembly",food_raw,team_written,test
+Guidelines: raw groceries clubs prepare themselves,food_raw,rules_doc,train
+Section food: uncooked ingredients purchased in bulk,food_raw,rules_doc,train
+Raw foodstuffs for member-cooked meal,food_raw,rules_doc,train
+Grocery ingredients without catering labor,food_raw,rules_doc,train
+Seed app: Costco ingredients for cook-off,food_raw,seed_app,train
+Demo: raw produce for member meal prep,food_raw,seed_app,train
+Sample: grocery list for DIY dinner,food_raw,seed_app,train
+FY26 report: grocery ingredients for cook night,food_raw,fy26_report,train
+FY26: raw food purchase summary,food_raw,fy26_report,train
+Synthetic: bulk raw groceries for DIY meal,food_raw,synthetic,train
+Synthetic: uncooked ingredients shopping list,food_raw,synthetic,train
+Synthetic: member-prepared food supplies,food_raw,synthetic,train
+Reserved table dinner at El Nopal for sponsor thank-you,restaurant_meal,team_written,test
+Restaurant tab for three officers meeting a recruiter,restaurant_meal,team_written,test
+Sit-down lunch at campus-adjacent Thai place after site visit,restaurant_meal,team_written,test
+Group meal invoice from Chipotle catering is actually dine-in bill,restaurant_meal,team_written,test
+Officer dinner receipt from downtown LA restaurant,restaurant_meal,team_written,test
+Post-competition team meal at a restaurant near the venue,restaurant_meal,team_written,test
+Brunch reservation deposit for alumni reunion meal,restaurant_meal,team_written,test
+Restaurant gift card used for team celebration dinner,restaurant_meal,team_written,test
+Guidelines: restaurant meals for officers or guests,restaurant_meal,rules_doc,train
+Section food: sit-down restaurant expenditure,restaurant_meal,rules_doc,train
+Restaurant dining rather than catering delivery,restaurant_meal,rules_doc,train
+Meal at an eating establishment off trays,restaurant_meal,rules_doc,train
+Seed app: officer restaurant meal with sponsor,restaurant_meal,seed_app,train
+Demo: sit-down lunch after site tour,restaurant_meal,seed_app,train
+Sample: team dinner at nearby restaurant,restaurant_meal,seed_app,train
+FY26 report: restaurant meals for guests,restaurant_meal,fy26_report,train
+FY26: dining receipts classified restaurant,restaurant_meal,fy26_report,train
+Synthetic: restaurant dinner invoice for officers,restaurant_meal,synthetic,train
+Synthetic: sit-down meal at local eatery,restaurant_meal,synthetic,train
+Synthetic: dine-in group restaurant bill,restaurant_meal,synthetic,train
+Custom club T-shirts with logo for new member giveaways,merch_promotional,team_written,test
+Embroidered tote bags handed out at involvement fair,merch_promotional,team_written,test
+Branded stickers and lanyards for recruitment week,merch_promotional,team_written,test
+Hoodies printed with event name for volunteers,merch_promotional,team_written,test
+Promotional pens and buttons with club URL,merch_promotional,team_written,test
+Event wristbands and branded water bottles for attendees,merch_promotional,team_written,test
+Logo patches sewn onto jackets for team identity,merch_promotional,team_written,test
+Custom snapbacks ordered for orientation booth,merch_promotional,team_written,test
+Guidelines: promotional merchandise with club branding,merch_promotional,rules_doc,train
+Section merch: giveaway apparel and swag,merch_promotional,rules_doc,train
+Branded promotional items for recruitment,merch_promotional,rules_doc,train
+Club logo merch distributed to members,merch_promotional,rules_doc,train
+Seed app: logo tees for new members,merch_promotional,seed_app,train
+Demo: tote bags for involvement fair,merch_promotional,seed_app,train
+Sample: branded stickers for outreach,merch_promotional,seed_app,train
+FY26 report: promotional apparel orders,merch_promotional,fy26_report,train
+FY26: swag spend under merch,merch_promotional,fy26_report,train
+Synthetic: custom logo shirts for giveaways,merch_promotional,synthetic,train
+Synthetic: branded promo totes and pens,merch_promotional,synthetic,train
+Synthetic: recruitment swag apparel order,merch_promotional,synthetic,train
+Amazon gift cards as hackathon category prizes,prize_or_gift_card,team_written,test
+$25 Target gift cards for trivia night winners,prize_or_gift_card,team_written,test
+Gift card raffle prizes for general body meeting,prize_or_gift_card,team_written,test
+Cash-equivalent Visa cards for pitch competition awards,prize_or_gift_card,team_written,test
+Starbucks cards as door prizes at open house,prize_or_gift_card,team_written,test
+Best costume gift card award at Halloween social,prize_or_gift_card,team_written,test
+First-place gift card for intramural tournament,prize_or_gift_card,team_written,test
+Raffle prize pack of retail gift cards for fundraiser,prize_or_gift_card,team_written,test
+Guidelines: prizes and gift cards as awards,prize_or_gift_card,rules_doc,train
+Section awards: retail gift cards to winners,prize_or_gift_card,rules_doc,train
+Prize gift cards for competition placers,prize_or_gift_card,rules_doc,train
+Raffle prizes funded as gift cards,prize_or_gift_card,rules_doc,train
+Seed app: hackathon Amazon gift cards,prize_or_gift_card,seed_app,train
+Demo: trivia night Target cards,prize_or_gift_card,seed_app,train
+Sample: raffle Starbucks cards,prize_or_gift_card,seed_app,train
+FY26 report: gift card prizes awarded,prize_or_gift_card,fy26_report,train
+FY26: competition prize cards,prize_or_gift_card,fy26_report,train
+Synthetic: gift cards as contest prizes,prize_or_gift_card,synthetic,train
+Synthetic: raffle prize retail cards,prize_or_gift_card,synthetic,train
+Synthetic: award gift cards for winners,prize_or_gift_card,synthetic,train
+Portable PA speaker kept by the club after the event,durable_good,team_written,test
+Folding tables purchased for ongoing club storage use,durable_good,team_written,test
+DSL camera body for multi-year media team inventory,durable_good,team_written,test
+Robotics microcontroller kits retained after workshop,durable_good,team_written,test
+Whiteboard easels stored in club locker between meetings,durable_good,team_written,test
+Power drill set for makerspace that the club owns,durable_good,team_written,test
+Outdoor canopy tent reused for every fair booth,durable_good,team_written,test
+"Microwave for club office, not single-event rental",durable_good,team_written,test
+Guidelines: durable goods retained by the organization,durable_good,rules_doc,train
+Section equipment: multi-use capital items,durable_good,rules_doc,train
+Equipment that outlives a single event,durable_good,rules_doc,train
+Club-owned durable inventory purchase,durable_good,rules_doc,train
+Seed app: PA speaker kept in club storage,durable_good,seed_app,train
+Demo: folding tables for multi-year use,durable_good,seed_app,train
+Sample: camera for media inventory,durable_good,seed_app,train
+FY26 report: equipment retained by clubs,durable_good,fy26_report,train
+FY26: durable goods purchases,durable_good,fy26_report,train
+Synthetic: equipment kept after the event,durable_good,synthetic,train
+Synthetic: multi-year club-owned gear,durable_good,synthetic,train
+Synthetic: capital item for storage locker,durable_good,synthetic,train
+Tommy Student Union room reservation fee for GFM,venue_or_staffing,team_written,test
+Facility staffing charge for after-hours building access,venue_or_staffing,team_written,test
+Auditorium rental and USC Event Services labor,venue_or_staffing,team_written,test
+Park permit and staffing for outdoor cultural festival,venue_or_staffing,team_written,test
+Security staffing required by venue for evening show,venue_or_staffing,team_written,test
+Classroom tech fee tied to reserved lecture hall,venue_or_staffing,team_written,test
+Grounds crew overtime for lawn event setup,venue_or_staffing,team_written,test
+Ballroom booking deposit through University Club,venue_or_staffing,team_written,test
+Guidelines: venue rental and required staffing fees,venue_or_staffing,rules_doc,train
+Section facilities: room charges and labor,venue_or_staffing,rules_doc,train
+Facility rental with event services staff,venue_or_staffing,rules_doc,train
+Venue and staffing line on USG sheet,venue_or_staffing,rules_doc,train
+Seed app: Student Union room fee,venue_or_staffing,seed_app,train
+Demo: Event Services staffing charge,venue_or_staffing,seed_app,train
+Sample: auditorium rental deposit,venue_or_staffing,seed_app,train
+FY26 report: venue and staffing fees,venue_or_staffing,fy26_report,train
+FY26: facility labor charges,venue_or_staffing,fy26_report,train
+Synthetic: room rental plus staffing fee,venue_or_staffing,synthetic,train
+Synthetic: facility booking with labor,venue_or_staffing,synthetic,train
+Synthetic: venue charge for evening access,venue_or_staffing,synthetic,train
+Stage lighting and soundboard rental for talent show,av_or_production,team_written,test
+Wireless mic package and mixer for panel discussion,av_or_production,team_written,test
+Live stream encoder and camera operator package,av_or_production,team_written,test
+Projection mapping setup for fashion showcase,av_or_production,team_written,test
+DJ booth production rental for dance social,av_or_production,team_written,test
+LED wall hire for pitch night presentations,av_or_production,team_written,test
+Fog machine and lighting cues for theater night,av_or_production,team_written,test
+Recording engineer fee for podcast live taping,av_or_production,team_written,test
+Guidelines: audiovisual and production rentals,av_or_production,rules_doc,train
+"Section AV: sound, lights, and staging tech",av_or_production,rules_doc,train
+Production package for stage events,av_or_production,rules_doc,train
+AV equipment hire for presentations,av_or_production,rules_doc,train
+Seed app: mic and mixer rental,av_or_production,seed_app,train
+Demo: stage lighting package,av_or_production,seed_app,train
+Sample: live stream production kit,av_or_production,seed_app,train
+FY26 report: AV production rentals,av_or_production,fy26_report,train
+FY26: sound and light packages,av_or_production,fy26_report,train
+Synthetic: sound and lighting production rental,av_or_production,synthetic,train
+Synthetic: AV tech package for stage show,av_or_production,synthetic,train
+Synthetic: mic mixer projector hire,av_or_production,synthetic,train
+Color poster run for involvement fair booth,printing,team_written,test
+Program booklets printed for concert night,printing,team_written,test
+Flyers for classroom announcements this week,printing,team_written,test
+Banner print for outdoor stage backdrop,printing,team_written,test
+Name badges and table tents for conference,printing,team_written,test
+Zine printing for literary magazine launch,printing,team_written,test
+Large-format map print for scavenger hunt,printing,team_written,test
+Business cards for officer networking kit,printing,team_written,test
+"Guidelines: printing of flyers, posters, programs",printing,rules_doc,train
+Section print: paper promotional materials,printing,rules_doc,train
+Printed collateral for event outreach,printing,rules_doc,train
+Print shop order for club materials,printing,rules_doc,train
+Seed app: fair posters print run,printing,seed_app,train
+Demo: concert program booklets,printing,seed_app,train
+Sample: classroom flyers,printing,seed_app,train
+FY26 report: printing and copy spend,printing,fy26_report,train
+FY26: poster and flyer print totals,printing,fy26_report,train
+Synthetic: printed posters and flyers,printing,synthetic,train
+Synthetic: program booklet print order,printing,synthetic,train
+Synthetic: banner and badge printing,printing,synthetic,train
+Balloon arch rental for welcome reception,decorations_rental,team_written,test
+Table centerpiece rental from party supplier,decorations_rental,team_written,test
+Backdrop and floral rental for awards night,decorations_rental,team_written,test
+String lights rental for courtyard social,decorations_rental,team_written,test
+Chair sashes and linen rental for formal,decorations_rental,team_written,test
+Photo booth props rental for alumni mixer,decorations_rental,team_written,test
+Themed décor package returned after cultural night,decorations_rental,team_written,test
+Pipe and drape rental for fashion runway,decorations_rental,team_written,test
+Guidelines: decorations rented and returned,decorations_rental,rules_doc,train
+Section décor: rental décor packages,decorations_rental,rules_doc,train
+Temporary decorations not owned by club,decorations_rental,rules_doc,train
+Décor rental for themed event,decorations_rental,rules_doc,train
+Seed app: balloon arch rental,decorations_rental,seed_app,train
+Demo: backdrop rental for awards,decorations_rental,seed_app,train
+Sample: linen and sash rental,decorations_rental,seed_app,train
+FY26 report: décor rental invoices,decorations_rental,fy26_report,train
+FY26: returned decoration packages,decorations_rental,fy26_report,train
+Synthetic: rented balloon and floral décor,decorations_rental,synthetic,train
+Synthetic: returned décor package after event,decorations_rental,synthetic,train
+Synthetic: linen and backdrop rental,decorations_rental,synthetic,train
+Round-trip flights for four delegates to nationals,travel_air_or_hotel,team_written,test
+Hotel rooms for two nights at conference hotel,travel_air_or_hotel,team_written,test
+Airfare deposit for speaker flying into LAX,travel_air_or_hotel,team_written,test
+Team lodging near competition venue in Austin,travel_air_or_hotel,team_written,test
+Southwest tickets for regional championship,travel_air_or_hotel,team_written,test
+Airbnb for officer travel to sister-school summit,travel_air_or_hotel,team_written,test
+Conference hotel block for USC delegation,travel_air_or_hotel,team_written,test
+Overnight lodging required by early morning heat,travel_air_or_hotel,team_written,test
+Guidelines: airfare and hotel lodging travel,travel_air_or_hotel,rules_doc,train
+Section travel: flights and overnight stays,travel_air_or_hotel,rules_doc,train
+Air travel and lodging for competition,travel_air_or_hotel,rules_doc,train
+Hotel and flight costs for delegates,travel_air_or_hotel,rules_doc,train
+Seed app: flights to nationals,travel_air_or_hotel,seed_app,train
+Demo: hotel for conference nights,travel_air_or_hotel,seed_app,train
+Sample: airfare for invited speaker,travel_air_or_hotel,seed_app,train
+FY26 report: airfare and hotel lines,travel_air_or_hotel,fy26_report,train
+FY26: lodging for conference travel,travel_air_or_hotel,fy26_report,train
+Synthetic: flights and hotel for nationals,travel_air_or_hotel,synthetic,train
+Synthetic: airfare plus lodging package,travel_air_or_hotel,synthetic,train
+Synthetic: overnight hotel for conference,travel_air_or_hotel,synthetic,train
+Uber XL to transport judges from hotel to campus,ground_transport_rideshare_or_rental,team_written,test
+Enterprise van rental for weekend competition trip,ground_transport_rideshare_or_rental,team_written,test
+Lyft receipts for speaker shuttle between venues,ground_transport_rideshare_or_rental,team_written,test
+Charter bus deposit for club day trip to SF,ground_transport_rideshare_or_rental,team_written,test
+Zipcar day rental for picking up catering trays,ground_transport_rideshare_or_rental,team_written,test
+Airport rideshare for visiting alumni speaker,ground_transport_rideshare_or_rental,team_written,test
+Minivan rental to haul décor to the park,ground_transport_rideshare_or_rental,team_written,test
+Shared rides for members to off-campus service site,ground_transport_rideshare_or_rental,team_written,test
+"Guidelines: ground transport, rideshare, vehicle rental",ground_transport_rideshare_or_rental,rules_doc,train
+Section travel: Uber/Lyft and van rentals,ground_transport_rideshare_or_rental,rules_doc,train
+Ground transportation between event sites,ground_transport_rideshare_or_rental,rules_doc,train
+Rideshare or rental car for club logistics,ground_transport_rideshare_or_rental,rules_doc,train
+Seed app: Uber for judge shuttle,ground_transport_rideshare_or_rental,seed_app,train
+Demo: van rental for trip,ground_transport_rideshare_or_rental,seed_app,train
+Sample: Lyft for speaker pickup,ground_transport_rideshare_or_rental,seed_app,train
+FY26 report: rideshare and van rentals,ground_transport_rideshare_or_rental,fy26_report,train
+FY26: ground transport totals,ground_transport_rideshare_or_rental,fy26_report,train
+Synthetic: Uber shuttle for guests,ground_transport_rideshare_or_rental,synthetic,train
+Synthetic: rental van for team travel,ground_transport_rideshare_or_rental,synthetic,train
+Synthetic: Lyft receipts for logistics,ground_transport_rideshare_or_rental,synthetic,train
+Honorarium for keynote speaker at career night,talent_or_performer_fee,team_written,test
+DJ performance fee for spring formal,talent_or_performer_fee,team_written,test
+Dance troupe booking fee for cultural showcase,talent_or_performer_fee,team_written,test
+Guest musician stipend for open mic headliner,talent_or_performer_fee,team_written,test
+Comedian appearance fee for comedy night,talent_or_performer_fee,team_written,test
+Workshop facilitator fee for design sprint,talent_or_performer_fee,team_written,test
+Poet honorarium for literary reading series,talent_or_performer_fee,team_written,test
+Band deposit for battle of the bands finale,talent_or_performer_fee,team_written,test
+"Guidelines: talent, performer, and speaker fees",talent_or_performer_fee,rules_doc,train
+Section talent: honoraria for performers,talent_or_performer_fee,rules_doc,train
+Paid performer or speaker appearance,talent_or_performer_fee,rules_doc,train
+Artist or facilitator fee line item,talent_or_performer_fee,rules_doc,train
+Seed app: keynote honorarium,talent_or_performer_fee,seed_app,train
+Demo: DJ fee for formal,talent_or_performer_fee,seed_app,train
+Sample: dance troupe booking,talent_or_performer_fee,seed_app,train
+FY26 report: performer honoraria,talent_or_performer_fee,fy26_report,train
+FY26: speaker fee disbursements,talent_or_performer_fee,fy26_report,train
+Synthetic: paid DJ or band performance fee,talent_or_performer_fee,synthetic,train
+Synthetic: speaker honorarium line,talent_or_performer_fee,synthetic,train
+Synthetic: artist booking deposit,talent_or_performer_fee,synthetic,train
+Annual Canva Pro subscription for design team,subscription,team_written,test
+Notion team workspace yearly plan,subscription,team_written,test
+Adobe Creative Cloud seat for media chair,subscription,team_written,test
+Zoom Pro annual renewal for hybrid meetings,subscription,team_written,test
+Domain and hosting subscription for club site,subscription,team_written,test
+Slack Pro plan billed yearly for officers,subscription,team_written,test
+Mailchimp monthly subscription for newsletters,subscription,team_written,test
+Figma Organization seat for product club,subscription,team_written,test
+Guidelines: software and service subscriptions,subscription,rules_doc,train
+Section ops: recurring digital subscriptions,subscription,rules_doc,train
+Annual SaaS plan for club operations,subscription,rules_doc,train
+Paid subscription renewals for tools,subscription,rules_doc,train
+Seed app: Canva Pro annual,subscription,seed_app,train
+Demo: Notion team plan,subscription,seed_app,train
+Sample: Adobe seat renewal,subscription,seed_app,train
+FY26 report: software subscriptions,subscription,fy26_report,train
+FY26: recurring tool renewals,subscription,fy26_report,train
+Synthetic: annual software subscription,subscription,synthetic,train
+Synthetic: SaaS renewal for club tools,subscription,synthetic,train
+Synthetic: paid cloud plan yearly,subscription,synthetic,train
+"Disposable plates, cups, and napkins for BBQ",supplies_single_use,team_written,test
+Name tag stickers and markers for check-in,supplies_single_use,team_written,test
+Single-use gloves and trash bags for cleanup,supplies_single_use,team_written,test
+Craft paper and glue sticks for one workshop,supplies_single_use,team_written,test
+Plastic utensils for outdoor picnic,supplies_single_use,team_written,test
+Event wristbands discarded after the night,supplies_single_use,team_written,test
+Paper tablecloths for bake sale tables,supplies_single_use,team_written,test
+Temporary chalk for sidewalk announcements,supplies_single_use,team_written,test
+Guidelines: single-use event supplies,supplies_single_use,rules_doc,train
+Section supplies: disposable consumables,supplies_single_use,rules_doc,train
+One-time use materials for an event,supplies_single_use,rules_doc,train
+Consumable supplies discarded after use,supplies_single_use,rules_doc,train
+Seed app: disposable plates for BBQ,supplies_single_use,seed_app,train
+Demo: name tag stickers,supplies_single_use,seed_app,train
+Sample: trash bags and gloves,supplies_single_use,seed_app,train
+FY26 report: disposable event supplies,supplies_single_use,fy26_report,train
+FY26: single-use consumables,supplies_single_use,fy26_report,train
+Synthetic: disposable cups and plates,supplies_single_use,synthetic,train
+Synthetic: one-time craft consumables,supplies_single_use,synthetic,train
+Synthetic: single-use check-in supplies,supplies_single_use,synthetic,train
+Wine bottles for 21+ alumni tasting (not USG-fundable),alcohol,team_written,test
+Beer keg deposit for graduate social (prohibited),alcohol,team_written,test
+Champagne toast budget for senior banquet,alcohol,team_written,test
+Bar package quote for formal afterparty,alcohol,team_written,test
+Alcohol catering add-on on venue contract,alcohol,team_written,test
+Liquor license fee for off-campus mixer,alcohol,team_written,test
+Wine and cheese reception line item,alcohol,team_written,test
+Cocktail ingredients listed on budget sheet,alcohol,team_written,test
+Guidelines: alcohol is not USG-fundable,alcohol,rules_doc,train
+Section prohibited: alcoholic beverages,alcohol,rules_doc,train
+Alcohol line items fail funding checks,alcohol,rules_doc,train
+"Beer, wine, or spirits on a budget",alcohol,rules_doc,train
+Seed app: wine for alumni tasting,alcohol,seed_app,train
+Demo: bar package on venue quote,alcohol,seed_app,train
+Sample: champagne toast line,alcohol,seed_app,train
+FY26 report: alcohol lines flagged,alcohol,fy26_report,train
+FY26: prohibited alcohol requests,alcohol,fy26_report,train
+Synthetic: beer or wine budget line,alcohol,synthetic,train
+Synthetic: alcohol catering add-on,alcohol,synthetic,train
+Synthetic: bar package for formal,alcohol,synthetic,train
+Cash donation to local food bank partner,donation_to_charity,team_written,test
+Charitable contribution to Children's Hospital LA,donation_to_charity,team_written,test
+Proceeds pledged as donation to Red Cross,donation_to_charity,team_written,test
+Direct donation line to Habitat for Humanity,donation_to_charity,team_written,test
+Nonprofit gift in lieu of speaker gift,donation_to_charity,team_written,test
+Scholarship donation to external foundation,donation_to_charity,team_written,test
+Charity check written from event surplus,donation_to_charity,team_written,test
+Fundraising remittance to partner NGO,donation_to_charity,team_written,test
+Guidelines: donations to external charities,donation_to_charity,rules_doc,train
+Section prohibited: charitable remittances,donation_to_charity,rules_doc,train
+Direct donation to a nonprofit partner,donation_to_charity,rules_doc,train
+Charity gift rather than event expense,donation_to_charity,rules_doc,train
+Seed app: donation to food bank,donation_to_charity,seed_app,train
+Demo: charity remittance line,donation_to_charity,seed_app,train
+Sample: nonprofit gift in budget,donation_to_charity,seed_app,train
+FY26 report: charity donations requested,donation_to_charity,fy26_report,train
+FY26: external donation lines,donation_to_charity,fy26_report,train
+Synthetic: cash gift to external charity,donation_to_charity,synthetic,train
+Synthetic: nonprofit donation remittance,donation_to_charity,synthetic,train
+Synthetic: charitable contribution line,donation_to_charity,synthetic,train
+Uncategorized miscellaneous contingency line,other,team_written,test
+Insurance rider not matching other categories,other,team_written,test
+Bank wire fee for international vendor,other,team_written,test
+Translator services for guest from abroad,other,team_written,test
+Petting zoo animal handler for kids day,other,team_written,test
+Custom ice sculpture not fitting décor rental,other,team_written,test
+Emergency rain plan ponchos surplus line,other,team_written,test
+Oddball storage unit month for set pieces,other,team_written,test
+Guidelines: miscellaneous uncategorized costs,other,rules_doc,train
+Section other: costs not fitting standard lines,other,rules_doc,train
+Catch-all category for unusual expenses,other,rules_doc,train
+Unclassified budget line pending review,other,rules_doc,train
+Seed app: wire fee miscellaneous,other,seed_app,train
+Demo: insurance rider other,other,seed_app,train
+Sample: translator services other,other,seed_app,train
+FY26 report: miscellaneous other costs,other,fy26_report,train
+FY26: uncategorized residual lines,other,fy26_report,train
+Synthetic: odd miscellaneous expense,other,synthetic,train
+Synthetic: unclassified contingency cost,other,synthetic,train
+Synthetic: residual uncategorized fee,other,synthetic,train

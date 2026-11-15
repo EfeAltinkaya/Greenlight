@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { announceNav } from "@/components/Motion";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CalendarClock, CircleDollarSign, FilePlus2, Handshake, Inbox, Landmark, PartyPopper, TriangleAlert } from "lucide-react";
+import { ArrowRight, CalendarClock, CircleDollarSign, FilePlus2, Inbox, PartyPopper, TriangleAlert } from "lucide-react";
 import { BOARDS, RULES } from "@/data/rules";
 import { fmtDate, money, requestTotal, runChecks, score, todayISO } from "@/lib/engine";
+import { switchableClubs } from "@/lib/clubs";
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import type { Application } from "@/lib/types";
 import { CountPills, StatusPill, stepOf } from "@/components/ui";
@@ -78,7 +79,7 @@ export default function ClubOverview() {
     <>
       <div className="page-head">
         <div>
-          <span className="eyebrow">Club desk</span>
+          <span className="eyebrow">Today</span>
           <h1>{club.name}</h1>
           {session.user ? (
             <span className="small muted">{session.user.joinCode ? <>Teammates join with code <strong className="code">{session.user.joinCode}</strong></> : "Signed in as " + session.user.email}</span>
@@ -86,20 +87,20 @@ export default function ClubOverview() {
           <label className="row small muted" style={{ gap: 8 }}>
             Acting for
             <select className="select" style={{ width: "auto", padding: "5px 10px", fontSize: 13 }} value={club.id} onChange={(e) => store.setClub(e.target.value)} aria-label="Club">
-              {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {switchableClubs(clubs).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </label>
           )}
         </div>
-        <Link href="/club/new" className="btn btn-primary btn-lg"><FilePlus2 />New request</Link>
+        <Link href="/club/new" className="btn btn-primary btn-lg"><FilePlus2 />Plan an event</Link>
       </div>
 
       <section className="grid cols-3">
         <div className="card card-pad stack-sm">
-          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><CircleDollarSign /></span><span className="muted small">USG money left this year</span></div>
+          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><CircleDollarSign /></span><span className="muted small">USG can still give {club.name.split(" ")[0]} {money(left)} this year</span></div>
           <div className="big-num">{money(left)}</div>
           <div className="meter" aria-hidden="true"><span style={{ width: `${(club.receivedThisYear / RULES.annualCap.limit) * 100}%` }} /></div>
-          <span className="tiny faint">{money(club.receivedThisYear)} of the {money(RULES.annualCap.limit)} yearly maximum used</span>
+          <span className="tiny faint">{4 - club.eventsThisSemester} of 4 funded events left this semester</span>
         </div>
         <div className="card card-pad stack-sm">
           <div className="row" style={{ gap: 12 }}><span className="icon-tile gold"><PartyPopper /></span><span className="muted small">USG-funded events this semester</span></div>
@@ -118,17 +119,12 @@ export default function ClubOverview() {
       </section>
 
       <section className="stack-sm">
-        <div className="between"><h2>Continue</h2><span className="small faint">{attention.length ? `${attention.filter((a) => a.owner === "Your turn").length} need you` : "You're caught up"}</span></div>
+        <div className="between"><h2>Needs you now</h2><span className="small faint">{attention.length ? `${attention.filter((a) => a.owner === "Your turn").length} need you` : "Nothing waiting"}</span></div>
         {attention.length === 0 ? (
           <div className="card empty">
             <Inbox />
-            <strong>Nothing waiting on you</strong>
-            <span className="small">Start a request, or check Updates if USG or a sponsor replies.</span>
-            <div className="row">
-              <Link href="/club/new" className="btn btn-primary">Start a request</Link>
-              <Link href="/club/sponsors" className="btn"><Handshake />Sponsors</Link>
-              <Link href="/club/funding" className="btn"><Landmark />Other funding</Link>
-            </div>
+            <strong>Nothing is waiting on you. Your next USG window is {fmtDate(wed, { weekday: "long", month: "short", day: "numeric" })} at 11:59 PM.</strong>
+            <Link href="/club/new" className="btn btn-primary">Plan an event</Link>
           </div>
         ) : (
           <div className="card">
@@ -149,21 +145,14 @@ export default function ClubOverview() {
         )}
       </section>
 
+      {mine.length > 0 && (
       <section className="stack-sm">
-        <div className="between"><h2>All requests</h2><span className="small faint">{mine.length} total</span></div>
-        {mine.length === 0 ? (
-          <div className="card empty">
-            <Inbox />
-            <strong>No requests yet</strong>
-            <span className="small">Describe your next event and Greenlight builds the USG application with you.</span>
-            <Link href="/club/new" className="btn btn-primary">Start a request</Link>
-          </div>
-        ) : (
+        <div className="between"><h2>Requests</h2><span className="small faint">{mine.length} total</span><Link href="/club/requests" className="link small">See all</Link></div>
           <div className="card table-wrap">
             <table className="table stackable">
               <thead><tr><th>Event</th><th>Date</th><th>Board</th><th className="r">Requested</th><th>Checks</th><th>Status</th></tr></thead>
               <tbody>
-                {mine.map((a) => {
+                {mine.slice(0, 5).map((a) => {
                   const s = score(runChecks(a, club));
                   return (
                     <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(continueHref(a, club.id)); }}>
@@ -179,8 +168,8 @@ export default function ClubOverview() {
               </tbody>
             </table>
           </div>
-        )}
       </section>
+      )}
     </>
   );
 }

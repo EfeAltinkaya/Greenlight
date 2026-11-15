@@ -39,6 +39,8 @@ const subscribeSearch = (cb: () => void) => {
   return () => window.removeEventListener("popstate", cb);
 };
 function useSearch() {
+  // Snapshot must be a stable primitive: a new URLSearchParams every read
+  // fails Object.is and triggers React error #185 (maximum update depth).
   const search = useSyncExternalStore(subscribeSearch, () => window.location.search, () => "");
   return useMemo(() => new URLSearchParams(search), [search]);
 }
@@ -183,8 +185,8 @@ export default function ClubHelp() {
       {toast}
       <div className="page-head">
         <div>
-          <span className="eyebrow">Help</span>
-          <h1>Who to contact</h1>
+          <span className="eyebrow">Ask a person</span>
+          <h1>Ask a person</h1>
           <p className="lede">
             Fall 2026 Funding Department roster as of {ROSTER_AS_OF}. Pick a question and your board; Greenlight drafts a short email with your request ID when you attach an application.
           </p>

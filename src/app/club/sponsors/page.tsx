@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { AlertTriangle, Building2, Check, Copy, ExternalLink, HandCoins, Handshake, MessageSquareReply, Plus, Repeat, Search, Sparkles, Store, Trash2, Users } from "lucide-react";
+import { AlertTriangle, Building2, Check, Copy, Download, ExternalLink, HandCoins, Handshake, MessageSquareReply, Plus, Repeat, Search, Sparkles, Store, Trash2, Users } from "lucide-react";
+import { exportOutreachCsv } from "@/lib/export/outreachCsv";
 import { authFetch } from "@/lib/apiClient";
 import { buildPackages } from "@/lib/ai-shared";
 import { fmtDate, money, sponsorAsks, todayISO } from "@/lib/engine";
@@ -11,8 +12,11 @@ import { newId, store, useCurrentClub, useStore } from "@/lib/store";
 import type { Outreach, OutreachStatus, SponsorPackage } from "@/lib/types";
 import { MAJORS, SCHOOL_MAJORS, SPONSORS, linkedInAlumni, linkedInRecruiters, universityPage, type Major, type Sponsor } from "@/data/sponsors";
 import { AiTag, Spinner, useToast } from "@/components/ui";
+import { ReplyModelHint } from "@/components/ReplyModelHint";
 import { Reveal } from "@/components/Motion";
 import { SponsorInbox } from "@/components/Inbox";
+import { DealsList } from "@/components/DealsList";
+import { ClubOffersPanel } from "@/components/ClubOffersPanel";
 import { followUpAllowed, outreachProblems } from "@/lib/outreachGuard";
 import { supabase } from "@/lib/session";
 
@@ -80,7 +84,9 @@ export default function Sponsors() {
       contactName: "", contactInfo: "", notes: "", committed: 0, followUp: "", updatedAt: today, email: null,
     });
     say(`${s.name} added to To contact`);
-    otherClubsTalking(s.id, club.id).then((n) => { if (n > 0) say(`Heads up: ${n} other USC club${n === 1 ? " is" : "s are"} already talking to ${s.name}. Coordinate before you email.`, "error"); });
+    otherClubsTalking(s.id, club.id).then((n) => {
+      if (n > 0) say(`Another USC club is talking to ${s.name}; ask USG's RSO Outreach Team or co-host.`, "error");
+    });
   }
 
   const [selected, setSelected] = useState<string | null>(null);
@@ -97,11 +103,13 @@ export default function Sponsors() {
     say(`${form.name.trim()} added to the company list`);
   }
 
-  const tab = useSyncExternalStore(
+  const tabSearch = useSyncExternalStore(
     (cb) => { window.addEventListener("popstate", cb); return () => window.removeEventListener("popstate", cb); },
-    () => new URLSearchParams(window.location.search).get("tab") ?? "find",
-    () => "find",
+    () => window.location.search,
+    () => "",
   );
+  const tabRaw = useMemo(() => new URLSearchParams(tabSearch).get("tab") ?? "companies", [tabSearch]);
+  const tab = tabRaw === "find" ? "companies" : tabRaw;
   const setTab = (t: string) => {
     const u = new URL(window.location.href);
     u.searchParams.set("tab", t);
@@ -114,32 +122,22 @@ export default function Sponsors() {
       {toast}
       <div className="page-head">
         <div>
-          <span className="eyebrow">Cover the gap · {club.name}</span>
+          <span className="eyebrow">{club.name}</span>
           <h1>Sponsors</h1>
-          <p className="lede">USG won&apos;t pay some lines. Pick a path. Find companies, browse inbound offers, or advance deals. Sponsors pay vendors directly, never the club.</p>
+          <p className="lede">USG cannot pay for prizes, performers, food over $35 a person and a few other things. These companies hire your members and have given to USC students before. Ask for one specific thing, paid to the vendor.</p>
         </div>
       </div>
 
       <div className="segmented" role="tablist" aria-label="Sponsor paths" style={{ alignSelf: "start" }}>
-        {([["find", "Find companies"], ["outreach", "Outreach"], ["offers", "Offers"], ["deals", "Deals"]] as const).map(([id, label]) => (
+        {([["companies", "Companies"], ["outreach", "Outreach"], ["offers", "Offers"], ["deals", "Deals"]] as const).map(([id, label]) => (
           <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</button>
         ))}
       </div>
 
-      {tab === "offers" && (
-        <section className="card card-pad stack-sm">
-          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><Store /></span><div className="stack-xs"><h2>Sponsor offers</h2><p className="small muted">Companies that posted what they will give and what they ask for. Request one to start a deal.</p></div></div>
-          <Link href="/club/offers" className="btn btn-primary" style={{ justifySelf: "start" }}>Open sponsor offers <ExternalLink /></Link>
-        </section>
-      )}
-      {tab === "deals" && (
-        <section className="card card-pad stack-sm">
-          <div className="row" style={{ gap: 12 }}><span className="icon-tile"><Handshake /></span><div className="stack-xs"><h2>Deals</h2><p className="small muted">Agreements in progress, from request through vendor payment and post-event recap.</p></div></div>
-          <Link href="/club/deals" className="btn btn-primary" style={{ justifySelf: "start" }}>Open deals <ExternalLink /></Link>
-        </section>
-      )}
+      {tab === "offers" && <ClubOffersPanel />}
+      {tab === "deals" && <DealsList as="club" embedded />}
 
-      {(tab === "find" || tab === "outreach") && (
+      {(tab === "companies" || tab === "outreach") && (
         <>
       <section className="grid cols-4 stats">
         <div className="card card-pad stack-xs"><span className="small muted">To raise</span><span className="big-num">{money(toRaise)}</span><span className="tiny faint">From {withAsks.length} request{withAsks.length === 1 ? "" : "s"}</span></div>
@@ -170,8 +168,8 @@ export default function Sponsors() {
           )}
         </div>
         <div className="card card-pad stack-sm">
-          <h2>Who comes to your events</h2>
-          <p className="small muted">Companies that hire these majors rank higher. Starts from your club&apos;s school; change it to match your members.</p>
+          <h2>Your members study</h2>
+          <p className="small muted">We start from your school. Change it to match who actually comes.</p>
           <div className="row" style={{ gap: 6 }}>
             {MAJORS.map((m) => {
               const on = majors.includes(m);
@@ -185,9 +183,10 @@ export default function Sponsors() {
         </div>
       </section>
 
+      {tab === "companies" && (
       <section className="stack-sm">
         <div className="between">
-          <h2>Best matches</h2>
+          <h2>Companies</h2>
           <p className="tiny faint learn-note">Ranked by fit to your event and by how likely each company is to answer. The reply chance learns from {evidence} outreach {evidence === 1 ? "result" : "results"} so far{pooled ? " across USC clubs" : " (sample data in demo mode)"}: every reply or silence you record makes the next ranking better.</p>
           <div className="row">
             <label className="card row" style={{ padding: "0 12px", gap: 8, flexWrap: "nowrap", borderRadius: 999 }}>
@@ -216,19 +215,15 @@ export default function Sponsors() {
         )}
 
         <div className="grid cols-3 appear" key={majors.join() + needs.join() + tieOnly + q}>
-          {shown.map(({ sponsor: s, score, reasons, parts, learned: l }) => {
+          {shown.map(({ sponsor: s, reasons, learned: l }) => {
             const tracked = mine.some((o) => o.sponsorId === s.id && o.appId === (target?.a.id ?? null));
             return (
               <div key={s.id} className="card card-pad stack-sm" style={{ alignContent: "start" }}>
-                <div className="between" style={{ flexWrap: "nowrap", alignItems: "flex-start" }}>
-                  <div className="row" style={{ gap: 12, flexWrap: "nowrap" }}><span className="icon-tile" style={{ width: 36, height: 36 }}><Building2 style={{ width: 18, height: 18 }} /></span><div className="stack-xs"><strong>{s.name}</strong><span className="tiny faint">{s.industry}</span></div></div>
-                  <span className="pill num" title={parts.map((p) => `+${p.points} ${p.why}`).join(", ") || "No match signals"}>{score}</span>
-                </div>
+                <div className="row" style={{ gap: 12, flexWrap: "nowrap" }}><span className="icon-tile" style={{ width: 36, height: 36 }}><Building2 style={{ width: 18, height: 18 }} /></span><div className="stack-xs"><strong>{s.name}</strong><span className="tiny faint">{s.industry}</span></div></div>
                 {l && <span className="tiny learned-line" title={`Reply chance is learned from outreach results: ${l.basis}. Ranking samples from it (Thompson sampling), so companies with little history still get tried.`}><span className="learned-dot" aria-hidden="true" />Reply chance about {Math.round(l.mean * 100)}% · {l.seen ? `${l.replies} of ${l.seen} replied` : l.basis === "no results yet" ? "no results yet, being tried" : "from similar companies"}</span>}
-                <span className="tiny faint">Score: {parts.length ? parts.map((p) => `+${p.points} ${p.why}`).join(" · ") : "no overlap with this event yet"}</span>
-                <div className="row" style={{ gap: 6 }}>{reasons.map((r) => <span key={r} className="pill" style={{ height: "auto", padding: "4px 8px", whiteSpace: "normal" }}>{r}</span>)}</div>
+                <p className="small muted" style={{ margin: 0 }}>{reasons.length ? reasons.join(" · ") : "No overlap with this event yet"}</p>
                 {s.tie && <a className="tiny wrap-any" style={{ color: "var(--gold-deep)", fontWeight: 600 }} href={s.tieSource ?? undefined} target="_blank" rel="noreferrer">{s.tie}<ExternalLink style={{ width: 11, height: 11, marginLeft: 3, verticalAlign: -1 }} /></a>}
-                <span className="tiny faint">{s.la}</span>
+                {s.la ? <span className="tiny faint">{s.la}</span> : null}
                 <div className="row" style={{ gap: 4 }}>
                   <a className="btn btn-sm btn-ghost" href={linkedInRecruiters(s.name)} target="_blank" rel="noreferrer"><Users />Recruiters</a>
                   <a className="btn btn-sm btn-ghost" href={linkedInAlumni(s.name)} target="_blank" rel="noreferrer"><Users />USC alumni</a>
@@ -241,11 +236,33 @@ export default function Sponsors() {
         {ranked.length > 9 && <div><button className="btn btn-sm" onClick={() => setShowAll((v) => !v)}>{showAll ? "Show fewer" : `Show all ${ranked.length}`}</button></div>}
         <p className="tiny faint">LinkedIn links open a search in your own browser. Greenlight does not collect people&apos;s data; you add the contact you choose.</p>
       </section>
+      )}
 
+      {tab === "outreach" && (
       <section className="stack-sm">
-        <div className="between"><h2>Outreach</h2><span className="small faint">{mine.length} companies</span></div>
+        <div className="between">
+          <h2>Outreach</h2>
+          <div className="row" style={{ gap: 8 }}>
+            <span className="small faint">{mine.length} companies</span>
+            {mine.length > 0 && (
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={() => {
+                  const blob = new Blob([exportOutreachCsv(mine)], { type: "text/csv" });
+                  const a = document.createElement("a");
+                  a.href = URL.createObjectURL(blob);
+                  a.download = `${club.name.replace(/\s+/g, "-").toLowerCase()}-outreach.csv`;
+                  a.click();
+                }}
+              >
+                <Download />Outreach CSV
+              </button>
+            )}
+          </div>
+        </div>
         {mine.length === 0 ? (
-          <div className="card empty"><HandCoins /><strong>No companies yet</strong><span className="small">Add a match above to start tracking it.</span></div>
+          <div className="card empty"><HandCoins /><strong>No companies yet</strong><span className="small">Add a company on the Companies tab to start tracking it.</span><button type="button" className="btn btn-primary" onClick={() => setTab("companies")}>Browse companies</button></div>
         ) : (
           <div className="pipeline">
             {STAGES.map((st) => {
@@ -262,6 +279,7 @@ export default function Sponsors() {
         )}
         {sel && <Reveal k={sel.id}><OutreachDetail o={sel} pool={pool} say={say} onClose={() => setSelected(null)} /></Reveal>}
       </section>
+      )}
         </>
       )}
     </>
@@ -295,6 +313,7 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
   const [extra, setExtra] = useState<{ kind: "follow-up" | "reply"; subject: string; body: string } | null>(null);
   const [theirs, setTheirs] = useState("");
   const [note, setNote] = useState("");
+  const [replyLabel, setReplyLabel] = useState<string | null>(null);
   const [others, setOthers] = useState(0);
   useEffect(() => { otherClubsTalking(o.sponsorId, o.clubId).then(setOthers); }, [o.sponsorId, o.clubId]);
   const [offline, setOffline] = useState<boolean | null>(null);
@@ -397,7 +416,15 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
           {o.status === "replied" && (
             <div className="inset stack-xs" style={{ padding: 12 }}>
               <strong className="small">Answer their reply</strong>
-              <textarea className="textarea" style={{ minHeight: 80, fontSize: 13.5 }} value={theirs} onChange={(e) => setTheirs(e.target.value)} placeholder="Paste what they wrote" aria-label="Their message" />
+              <textarea className="textarea" style={{ minHeight: 80, fontSize: 13.5 }} value={theirs} onChange={(e) => { setTheirs(e.target.value); setReplyLabel(null); }} placeholder="Paste what they wrote" aria-label="Their message" />
+              <ReplyModelHint
+                text={theirs}
+                onAcceptLabel={(label, display) => {
+                  setReplyLabel(label);
+                  if (!note.trim()) setNote(`(${display}) `);
+                }}
+              />
+              {replyLabel && <span className="tiny faint">Reply tagged as {replyLabel}</span>}
               <input className="input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Your answer in a few words, e.g. yes tues 3pm works, ask about their budget" aria-label="Your short answer" />
               <span className="tiny faint">Greenlight writes the full reply from your note and never adds a date, amount or promise you did not give.</span>
               <button className="btn btn-sm" style={{ justifySelf: "start" }} onClick={() => more("reply")} disabled={busy || !note.trim()}><MessageSquareReply />Write the reply</button>

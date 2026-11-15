@@ -10,17 +10,19 @@ import { putDoc } from "@/lib/docStore";
 import { store, useStore } from "@/lib/store";
 import type { Application, Check as CheckT, EventInfo, LineItem } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
+import { BoardModelHint } from "@/components/BoardModelHint";
 import { Reveal } from "@/components/Motion";
 import { SponsorPanel } from "@/components/SponsorPanel";
 import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, type StepId } from "@/components/ui";
 import { VerdictPill } from "@/components/VerdictPill";
+import { EventTimelineCard } from "@/components/EventTimeline";
 import { MessageThread } from "@/components/MessageThread";
 import { postEventAsChecks, postEventDueDate } from "@/lib/postEventCheck";
 import { requestIdOf } from "@/lib/requestId";
 import { greenlightVerdict } from "@/lib/verdict";
 import { APP_FLOW } from "@/lib/workflow";
 
-type Step = StepId | "status" | "sponsors";
+type Step = StepId | "status" | "sponsors" | "history";
 const DRAFT_STEPS: { id: Step; title: string; sub: string }[] = [
   { id: "event", title: "Event", sub: "Date, place, board" },
   { id: "budget", title: "Budget", sub: "USG's budget sheet" },
@@ -104,7 +106,12 @@ export default function Workspace() {
   };
 
   const steps: { id: Step; title: string; sub: string }[] = locked
-    ? [{ id: "status", title: "Status", sub: "Where it is now" }, ...(asks.length || app.decision ? [{ id: "sponsors" as Step, title: "Sponsors", sub: "Cover what USG won't" }] : []), ...DRAFT_STEPS.slice(0, 4).map((x) => ({ ...x, sub: "Read only" }))]
+    ? [
+        { id: "status", title: "Status", sub: "Where it is now" },
+        { id: "history", title: "History", sub: "Who did what, when" },
+        ...(asks.length || app.decision ? [{ id: "sponsors" as Step, title: "Sponsors", sub: "Cover what USG won't" }] : []),
+        ...DRAFT_STEPS.slice(0, 4).map((x) => ({ ...x, sub: "Read only" })),
+      ]
     : [...DRAFT_STEPS, ...(app.items.some((i) => i.toSponsor) ? [{ id: "sponsors" as Step, title: "Sponsors", sub: "Cover what USG won't" }] : [])];
 
   function fix(c: CheckT) {
@@ -309,6 +316,13 @@ export default function Workspace() {
                 <span className="small muted">{app.event.boardReason}</span>
                 {BOARDS[app.event.board].formName !== BOARDS[app.event.board].name && <span className="tiny faint">Called &quot;{BOARDS[app.event.board].formName}&quot; on USG&apos;s application form.</span>}
               </label>
+              {!locked && (
+                <BoardModelHint
+                  text={`${app.event.title}. ${app.event.description || app.event.type || ""}`}
+                  board={app.event.board}
+                  onPick={(b, reason) => setEvent({ board: b, boardReason: reason })}
+                />
+              )}
               <div className="grid cols-3" style={{ gap: 10 }}>
                 {([["onCampus", "On campus"], ["openToAll", "Open to all students"], ["food", "Food served"], ["travel", "Involves travel"], ["ticketed", "Sells tickets"], ["international", "International travel"]] as const).map(([k, label]) => (
                   <label key={k} className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
@@ -448,7 +462,9 @@ export default function Workspace() {
             </section>
           )}
 
-          {step === "status" && <StatusView app={app} onSponsors={() => go("sponsors")} say={say} />}
+          {(step === "event" || step === "status") && <EventTimelineCard app={app} club={club} needsNine={needsNine} />}
+          {step === "status" && <StatusView app={app} onSponsors={() => go("sponsors")} onHistory={() => go("history")} say={say} />}
+          {step === "history" && <HistoryView app={app} />}
           {step === "sponsors" && <SponsorPanel app={app} club={club} asks={asks} />}
 
           {next && step !== "submit" && (
@@ -460,7 +476,7 @@ export default function Workspace() {
         </Reveal>
 
         <aside className="sticky stack-sm" aria-label="Checks">
-          {step === "status" || step === "sponsors" ? (
+          {step === "status" || step === "sponsors" || step === "history" ? (
             <div className="card card-pad stack-sm">
               <h3>What happens next</h3>
               <ol className="small muted" style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 8 }}>
@@ -490,7 +506,7 @@ export default function Workspace() {
   );
 }
 
-function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: () => void; say: (m: string) => void }) {
+function StatusView({ app, onSponsors, onHistory, say }: { app: Application; onSponsors: () => void; onHistory: () => void; say: (m: string) => void }) {
   const d = app.decision;
   const pe = app.postEvent ?? { photos: false, invoices: false, notes: "" };
   const canClose = pe.photos && pe.invoices;
@@ -649,9 +665,12 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
       </div>
 
       <div className="card card-pad stack-sm">
-        <h2>Timeline</h2>
+        <div className="between">
+          <h2>Timeline</h2>
+          <button type="button" className="btn btn-sm btn-ghost" onClick={onHistory}>Open History</button>
+        </div>
         <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 0 }}>
-          {[...app.history].reverse().map((h, i) => (
+          {[...app.history].reverse().slice(0, 4).map((h, i) => (
             <li key={i} className="row" style={{ alignItems: "flex-start", gap: 14, padding: "12px 0", borderTop: i ? "1px solid var(--line-2)" : 0, flexWrap: "nowrap" }}>
               <span className="small faint num" style={{ width: 86, flex: "none" }}>{fmtDate(h.at, { month: "short", day: "numeric" })}</span>
               <span className="stack-xs"><span><StatusPill s={h.status} /></span><span className="small">{h.note}</span></span>
@@ -659,6 +678,60 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
           ))}
         </ol>
       </div>
+    </section>
+  );
+}
+
+function HistoryView({ app }: { app: Application }) {
+  const { ledger } = useStore();
+  const ledgerLines = (ledger ?? []).filter((l) => l.sourceRef === app.id || l.eventId === app.id);
+  type Row = { at: string; who: string; what: string; detail?: string };
+  const rows: Row[] = [];
+  for (const h of app.history) {
+    rows.push({ at: h.at, who: "Status", what: h.status.replace(/_/g, " "), detail: h.note });
+  }
+  for (const e of app.audit ?? []) {
+    rows.push({
+      at: e.at,
+      who: e.by === "usg" ? "USG" : e.by === "club" ? "Club" : "System",
+      what: e.action.replace(/_/g, " "),
+      detail: e.detail,
+    });
+  }
+  for (const l of ledgerLines) {
+    for (const h of l.history ?? []) {
+      rows.push({
+        at: h.at,
+        who: h.by === "usg" ? "USG" : h.by === "club" ? "Club" : "Ledger",
+        what: `${l.item}: ${h.status.replace(/_/g, " ")}`,
+        detail: h.note,
+      });
+    }
+  }
+  rows.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+
+  return (
+    <section className="card card-pad stack-sm">
+      <div className="stack-xs">
+        <span className="eyebrow">History</span>
+        <h2>Who did what, when</h2>
+        <p className="small muted">Status changes, audit actions, and ledger line updates for this request.</p>
+      </div>
+      {rows.length === 0 ? (
+        <p className="small muted">No history yet.</p>
+      ) : (
+        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 0 }}>
+          {rows.map((r, i) => (
+            <li key={i} className="row" style={{ alignItems: "flex-start", gap: 14, padding: "12px 0", borderTop: i ? "1px solid var(--line-2)" : 0, flexWrap: "nowrap" }}>
+              <span className="small faint num" style={{ width: 86, flex: "none" }}>{fmtDate(r.at, { month: "short", day: "numeric" })}</span>
+              <span className="stack-xs">
+                <span className="small"><strong>{r.who}</strong> · {r.what}</span>
+                {r.detail ? <span className="tiny faint">{r.detail}</span> : null}
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   );
 }

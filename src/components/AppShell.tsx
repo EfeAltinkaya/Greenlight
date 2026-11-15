@@ -15,6 +15,36 @@ type Group = { title: string; items: Item[] };
 
 const ROLE_NAME = { club: "club officer", usg: "USG reviewer", sponsor: "sponsor" } as const;
 
+function ShellSkeleton() {
+  return (
+    <div className="shell" aria-busy="true" aria-label="Loading session">
+      <aside className="side" aria-hidden="true">
+        <div className="between">
+          <Mark />
+        </div>
+        <div className="side-who stack-xs">
+          <span className="skel" style={{ width: "70%", height: 10 }} />
+          <span className="skel" style={{ width: "50%", height: 14 }} />
+        </div>
+        <nav className="side-nav stack-sm">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span key={i} className="skel" style={{ height: 28, width: "100%", borderRadius: 8 }} />
+          ))}
+        </nav>
+      </aside>
+      <div style={{ minWidth: 0 }}>
+        <main className="main">
+          <div className="main-in stack" style={{ gap: 16 }}>
+            <span className="skel" style={{ height: 28, width: "40%", maxWidth: 280 }} />
+            <span className="skel" style={{ height: 120, width: "100%", borderRadius: 12 }} />
+            <span className="skel" style={{ height: 180, width: "100%", borderRadius: 12 }} />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
 export function AppShell({ role, children }: { role: Role; children: React.ReactNode }) {
   const path = usePathname();
   const { apps, notices, deals } = useStore();
@@ -24,6 +54,15 @@ export function AppShell({ role, children }: { role: Role; children: React.React
   const [open, setOpen] = useState(false);
   const [touring, setTouring] = useState(false);
 
+  // Wait for auth before showing demo chrome or signed-in chrome (avoids flash).
+  if (session.enabled && !session.ready) {
+    return <ShellSkeleton />;
+  }
+
+  const userRole = session.user?.role ?? null;
+  // Signed-in users can only open their own side (blocks club officers from /usg/insights).
+  const blockedSignedIn = Boolean(session.user && userRole !== role);
+
   const unread = (notices ?? []).filter((n) => !n.read && n.to === role && (role !== "club" || n.clubId === club.id)).length;
   const waiting = apps.filter((a) => ["submitted", "in_review"].includes(a.status)).length;
   const myDeals = (deals ?? []).filter((d) => (role === "club" ? d.clubId === club.id : true) && d.stage !== "recap_sent" && d.stage !== "declined").length;
@@ -31,24 +70,16 @@ export function AppShell({ role, children }: { role: Role; children: React.React
   const groups: Group[] =
     role === "club"
       ? [
-          { title: "Start", items: [
-            { href: "/club", label: "Home", Icon: LayoutGrid, match: (p) => p === "/club", tour: "home" },
-            { href: "/club/updates", label: "Updates", Icon: Bell, count: unread, tour: "updates" },
-          ] },
-          { title: "USG funding", items: [
-            { href: "/club/new", label: "New request", Icon: FilePlus2, tour: "new" },
-            { href: "/club/requests", label: "My requests", Icon: Inbox, match: (p) => p.startsWith("/club/requests") || p.startsWith("/club/app"), tour: "requests" },
+          { title: "Journey", items: [
+            { href: "/club", label: "Today", Icon: LayoutGrid, match: (p) => p === "/club", tour: "home" },
+            { href: "/club/new", label: "Plan an event", Icon: FilePlus2, tour: "new" },
+            { href: "/club/requests", label: "Requests", Icon: Inbox, match: (p) => p.startsWith("/club/requests") || p.startsWith("/club/app"), tour: "requests" },
             { href: "/club/deadlines", label: "Deadlines", Icon: CalendarClock, tour: "deadlines" },
-            { href: "/club/funding", label: "Other funding", Icon: Landmark, tour: "funding" },
-          ] },
-          { title: "Cover the gap", items: [
+            { href: "/club/funding", label: "Other USC money", Icon: Landmark, tour: "funding" },
             { href: "/club/sponsors", label: "Sponsors", Icon: Handshake, count: myDeals, match: (p) => p.startsWith("/club/sponsors") || p.startsWith("/club/offers") || p.startsWith("/club/deals"), tour: "sponsors" },
-          ] },
-          { title: "Money", items: [
-            { href: "/club/money", label: "Money tracker", Icon: Wallet, tour: "money" },
-          ] },
-          { title: "Help", items: [
-            { href: "/club/help", label: "Who to contact", Icon: CircleHelp, tour: "help" },
+            { href: "/club/money", label: "Ledger", Icon: Wallet, tour: "money" },
+            { href: "/club/updates", label: "Updates", Icon: Bell, count: unread, tour: "updates" },
+            { href: "/club/help", label: "Ask a person", Icon: CircleHelp, tour: "help" },
             { href: "/club/rules", label: "USG rules", Icon: BookOpen },
           ] },
         ]
@@ -85,7 +116,6 @@ export function AppShell({ role, children }: { role: Role; children: React.React
   }, [canSwitch, role]);
   const active = (i: Item) => (i.match ? i.match(path) : path.startsWith(i.href));
   const here = groups.flatMap((g) => g.items).find(active);
-  // Each page gets its own tab title; one request or deal is titled by its own name.
   const detail = path.split("/");
   const detailTitle = detail[2] === "app" ? apps.find((a) => a.id === detail[3])?.event.title : detail[2] === "deals" && detail[3] ? (deals ?? []).find((d) => d.id === detail[3])?.sponsorName : undefined;
   const pageTitle = `${detailTitle ? (role === "usg" ? "Review: " : "") + detailTitle : here?.label ?? "Greenlight"} · Greenlight`;
@@ -143,6 +173,12 @@ export function AppShell({ role, children }: { role: Role; children: React.React
         </div>
       </aside>
       <div style={{ minWidth: 0 }}>
+        {!session.user && (
+          <div className="demo-banner" role="status">
+            <span>Demo data. Nothing is sent to USG.</span>
+            <Link href="/login" className="link" style={{ color: "inherit", fontWeight: 700 }}>Exit demo</Link>
+          </div>
+        )}
         <div className="mobile-bar">
           <Link href="/"><Mark /></Link>
           <div className="row" style={{ gap: 6 }}>
@@ -150,11 +186,33 @@ export function AppShell({ role, children }: { role: Role; children: React.React
             <button className="btn btn-sm" onClick={() => setOpen(true)} aria-label="Open menu"><Menu />Menu</button>
           </div>
         </div>
-        <main className="main"><div className="main-in">{switching ? (
-          <div className="card empty"><span className="spinner" aria-hidden="true" /><strong>Switching to {ROLE_NAME[role]}</strong><span className="muted">Loading what a {ROLE_NAME[role]} can see.</span></div>
-        ) : session.user && session.user.role && session.user.role !== role ? (
-          <div className="card empty"><strong>This side is for {role === "usg" ? "USG reviewers" : role === "sponsor" ? "sponsors" : "club officers"}.</strong><span className="muted">You are signed in as a {session.user.role === "usg" ? "USG reviewer" : session.user.role === "sponsor" ? "sponsor" : "club officer"}.</span><Link className="btn btn-primary" href={session.user.role === "usg" ? "/usg" : session.user.role === "sponsor" ? "/sponsor" : "/club"}>Go to your desk</Link></div>
-        ) : children}</div></main>
+        <main className="main">
+          <div className="main-in">
+            {switching ? (
+              <div className="card empty">
+                <span className="spinner" aria-hidden="true" />
+                <strong>Switching to {ROLE_NAME[role]}</strong>
+                <span className="muted">Loading what a {ROLE_NAME[role]} can see.</span>
+              </div>
+            ) : blockedSignedIn && userRole ? (
+              <div className="card empty">
+                <strong>This side is for {role === "usg" ? "USG reviewers" : role === "sponsor" ? "sponsors" : "club officers"}.</strong>
+                <span className="muted">You are signed in as a {ROLE_NAME[userRole]}.</span>
+                <Link className="btn btn-primary" href={userRole === "usg" ? "/usg" : userRole === "sponsor" ? "/sponsor" : "/club"}>
+                  Go to your desk
+                </Link>
+              </div>
+            ) : blockedSignedIn ? (
+              <div className="card empty">
+                <strong>Finish setting up your account</strong>
+                <span className="muted">Your signed-in account has no role yet.</span>
+                <Link className="btn btn-primary" href="/login">Go to login</Link>
+              </div>
+            ) : (
+              children
+            )}
+          </div>
+        </main>
       </div>
       {touring && <Tour role={role} onClose={() => setTouring(false)} />}
     </div>

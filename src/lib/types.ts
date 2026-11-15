@@ -12,6 +12,10 @@ export type Club = {
   eventsThisSemester: number;
   /** One line the club writes once; used to draft the mission answer. */
   mission?: string;
+  /** Demo / seed club; never a real officer account. */
+  sample?: boolean;
+  /** At least one profile is linked to this club (from Supabase). */
+  hasOfficers?: boolean;
 };
 
 export type EventInfo = {
@@ -229,6 +233,73 @@ export type FundingStackEntry = {
   status: "planning" | "applied" | "awarded" | "declined";
   amount: number;
   lineIds: string[];
+};
+
+/** Who is covering a ledger line. One line, one source. */
+export type LedgerSource =
+  | "usg"
+  | "legislative"
+  | "assembly"
+  | "department"
+  | "viterbi_sos"
+  | "viterbi_vfb"
+  | "marshall"
+  | "price"
+  | "gsg"
+  | "ignitesc"
+  | "sponsor_in_kind"
+  | "dues"
+  | "unfunded";
+
+export type LedgerStatus =
+  | "planned"
+  | "requested"
+  | "approved"
+  | "committed"
+  | "paid_to_vendor"
+  | "invoiced"
+  | "closed"
+  | "declined";
+
+export type LedgerHistoryEntry = {
+  at: string;
+  status: LedgerStatus;
+  note: string;
+  by: "club" | "usg" | "sponsor" | "system";
+};
+
+/** Single record of one budget line for one event under one funding source. */
+export type LedgerLine = {
+  id: string;
+  clubId: string;
+  eventId: string;
+  eventTitle: string;
+  item: string;
+  vendor: string;
+  amount: number;
+  category: string;
+  source: LedgerSource;
+  sourceRef: string | null;
+  status: LedgerStatus;
+  evidence: string | null;
+  updatedAt: string;
+  history: LedgerHistoryEntry[];
+  /** Demo / sample figures; never counted in a real club's totals when true and club is not sample. */
+  sample?: boolean;
+  /** Walkthrough rows for a brand-new club (zero dollars). */
+  example?: boolean;
+};
+
+/** Append-only ledger event (also mirrored to Supabase with prev_hash). */
+export type LedgerEvent = {
+  id: string;
+  at: string;
+  clubId: string;
+  lineId: string;
+  kind: string;
+  detail: string;
+  prevHash: string | null;
+  hash: string;
 };
 
 /** A request to another USC funding source after USG denies or partly funds. */

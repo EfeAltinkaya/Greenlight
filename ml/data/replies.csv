@@ -1,0 +1,141 @@
+text,label,source,split
+Thanks for reaching out — we'd love to support Build Night. Can we schedule a call?,interested,team_written,test
+This looks aligned with our campus goals. Count us interested for an in-kind ask.,interested,team_written,test
+Excited about Robotics Club. Let's talk sponsorship tiers next week.,interested,team_written,test
+"Yes, please send the one-pager. We are interested in catering support.",interested,team_written,test
+Great event concept. Our team wants to move forward with a vendor payment.,interested,team_written,test
+We're in — happy to cover the AV rental if you share the invoice.,interested,team_written,test
+Love this. Interested in a logo on your flyer and covering merch.,interested,team_written,test
+Thanks! Interested pending a quick internal approval this Friday.,interested,team_written,test
+Please add us as a sponsor option; we want to help with food costs.,interested,team_written,test
+Sounds perfect for our recruiting brand. Interested — send details.,interested,team_written,test
+Reply class: interested / positive sponsor intent,interested,rules_doc,train
+Positive response signaling willingness to fund,interested,rules_doc,train
+Sponsor expresses interest in supporting,interested,rules_doc,train
+"Seed reply: yes we're interested, send one-pager",interested,seed_app,train
+Demo: count us in for in-kind support,interested,seed_app,train
+Sample: excited to sponsor catering,interested,seed_app,train
+FY26: interested replies converted to deals,interested,fy26_report,train
+FY26: positive intent emails logged,interested,fy26_report,train
+Team label: clear interest to proceed,interested,team_written,train
+Synthetic: we'd love to help with AV costs,interested,synthetic,train
+Can you share expected attendance and the exact date before we decide?,needs_more_info,team_written,test
+We need a W-9 and vendor invoice copy to evaluate this.,needs_more_info,team_written,test
+Interesting — what recognition would our logo receive on site?,needs_more_info,team_written,test
+Please clarify whether this is in-kind only or if cash is requested.,needs_more_info,team_written,test
+Could you send last year's turnout numbers and a budget summary?,needs_more_info,team_written,test
+We need more on audience majors before routing to marketing.,needs_more_info,team_written,test
+"What is the deadline to confirm, and who signs the agreement?",needs_more_info,team_written,test
+Can you list the other sponsors already committed?,needs_more_info,team_written,test
+Please share a draft flyer and the venue confirmation.,needs_more_info,team_written,test
+Need details on how funds would be paid directly to the vendor.,needs_more_info,team_written,test
+Reply class: needs more information before deciding,needs_more_info,rules_doc,train
+"Questions about attendance, budget, or recognition",needs_more_info,rules_doc,train
+Conditional interest pending details,needs_more_info,rules_doc,train
+Seed reply: need attendance and date,needs_more_info,seed_app,train
+Demo: send W-9 and invoice please,needs_more_info,seed_app,train
+Sample: what recognition do we get?,needs_more_info,seed_app,train
+FY26: info-request replies common,needs_more_info,fy26_report,train
+FY26: clarifying questions before commit,needs_more_info,fy26_report,train
+Team label: asking clarifying questions,needs_more_info,team_written,train
+Synthetic: share budget breakdown please,needs_more_info,synthetic,train
+"Appreciate the note, but we cannot sponsor student events this semester.",declined,team_written,test
+Unfortunately this falls outside our 2026 campus budget.,declined,team_written,test
+We'll pass this year — please keep us in mind for spring.,declined,team_written,test
+Not a fit for our brand priorities; declining politely.,declined,team_written,test
+Our sponsorship slots are full through May. No for now.,declined,team_written,test
+We don't fund food-related asks. Declining this request.,declined,team_written,test
+"After review, we will not be able to support this event.",declined,team_written,test
+"Thanks for thinking of us, but the answer is no.",declined,team_written,test
+Budget freeze means we must decline all new campus asks.,declined,team_written,test
+This audience is too narrow for us; we'll sit out.,declined,team_written,test
+Reply class: declined / will not sponsor,declined,rules_doc,train
+Polite no or budget-based refusal,declined,rules_doc,train
+Negative decision on the ask,declined,rules_doc,train
+Seed reply: cannot sponsor this semester,declined,seed_app,train
+"Demo: outside our budget, declining",declined,seed_app,train
+Sample: sponsorship slots are full,declined,seed_app,train
+FY26: decline replies closed the claim,declined,fy26_report,train
+FY26: not a fit responses,declined,fy26_report,train
+Team label: clear decline,declined,team_written,train
+Synthetic: we'll pass this year,declined,synthetic,train
+I'm out of office until Nov 24 with limited email access.,out_of_office,team_written,test
+OOO: returning Monday. Your message will be unread until then.,out_of_office,team_written,test
+Automatic reply: parental leave through December.,out_of_office,team_written,test
+Out sick this week — please expect delays.,out_of_office,team_written,test
+Traveling for a conference; back online next Thursday.,out_of_office,team_written,test
+Vacation auto-reply: will respond after Nov 30.,out_of_office,team_written,test
+Currently OOO for USC holidays; limited monitoring.,out_of_office,team_written,test
+Away from inbox on a product offsite until Friday.,out_of_office,team_written,test
+Out of office with no email access in the field.,out_of_office,team_written,test
+"Auto-response: on leave, contact the team alias instead.",out_of_office,team_written,test
+Reply class: out of office auto-reply,out_of_office,rules_doc,train
+OOO messages with return dates,out_of_office,rules_doc,train
+Vacation or leave autoresponders,out_of_office,rules_doc,train
+Seed reply: OOO until next Monday,out_of_office,seed_app,train
+"Demo: traveling, limited email",out_of_office,seed_app,train
+Sample: on leave through December,out_of_office,seed_app,train
+FY26: OOO replies delayed follow-ups,out_of_office,fy26_report,train
+FY26: autoresponder volume,out_of_office,fy26_report,train
+Team label: out-of-office autoresponse,out_of_office,team_written,train
+"Synthetic: out sick, expect delays",out_of_office,synthetic,train
+Please loop in Jordan Lee on our campus team — they own this.,referral_to_someone_else,team_written,test
+I'm not the right contact; try sponsorships@example.com.,referral_to_someone_else,team_written,test
+"Forwarding you to our university relations manager, Priya.",referral_to_someone_else,team_written,test
+Can you reach out to Alex in recruiting? They handle clubs.,referral_to_someone_else,team_written,test
+Please contact our LA office lead instead of me.,referral_to_someone_else,team_written,test
+Redirecting: Marcus owns in-kind vendor payments.,referral_to_someone_else,team_written,test
+You'll want our CSR desk — I'll CC them here.,referral_to_someone_else,team_written,test
+Not my lane; the brand partnerships PM should reply.,referral_to_someone_else,team_written,test
+Ask our campus ambassador Maya; she screens these.,referral_to_someone_else,team_written,test
+"Please email the sponsorship queue, not my personal inbox.",referral_to_someone_else,team_written,test
+Reply class: referral to another contact,referral_to_someone_else,rules_doc,train
+Please contact a different owner,referral_to_someone_else,rules_doc,train
+Forwarding to campus / CSR / partnerships,referral_to_someone_else,rules_doc,train
+Seed reply: loop in Jordan on campus team,referral_to_someone_else,seed_app,train
+Demo: try sponsorships@ alias,referral_to_someone_else,seed_app,train
+Sample: Priya owns university relations,referral_to_someone_else,seed_app,train
+FY26: referral replies reassigned owners,referral_to_someone_else,fy26_report,train
+FY26: redirect to recruiting contacts,referral_to_someone_else,fy26_report,train
+Team label: points to another person,referral_to_someone_else,team_written,train
+Synthetic: email our LA office lead,referral_to_someone_else,synthetic,train
+"Delivery Status Notification: mailbox full, message bounced.",wrong_person_or_bounce,team_written,test
+This address is no longer valid. User unknown.,wrong_person_or_bounce,team_written,test
+I left the company last month — please remove me.,wrong_person_or_bounce,team_written,test
+Wrong person: I don't work on campus programs.,wrong_person_or_bounce,team_written,test
+Mailer-daemon: permanent failure for recipient.,wrong_person_or_bounce,team_written,test
+You've reached a personal Gmail; I never worked there.,wrong_person_or_bounce,team_written,test
+Undeliverable: recipient address rejected by server.,wrong_person_or_bounce,team_written,test
+I think you meant someone else on the marketing team.,wrong_person_or_bounce,team_written,test
+This inbox is deprecated; bounce will continue.,wrong_person_or_bounce,team_written,test
+No such employee in our directory — wrong contact.,wrong_person_or_bounce,team_written,test
+Reply class: wrong person or bounce,wrong_person_or_bounce,rules_doc,train
+Delivery failures and invalid addresses,wrong_person_or_bounce,rules_doc,train
+Recipient left company or never worked there,wrong_person_or_bounce,rules_doc,train
+Seed reply: mailbox full bounce,wrong_person_or_bounce,seed_app,train
+Demo: user unknown permanent failure,wrong_person_or_bounce,seed_app,train
+Sample: I left the company last month,wrong_person_or_bounce,seed_app,train
+FY26: bounce replies cleaned contacts,wrong_person_or_bounce,fy26_report,train
+FY26: wrong-person replies,wrong_person_or_bounce,fy26_report,train
+Team label: bounce or wrong recipient,wrong_person_or_bounce,team_written,train
+Synthetic: address no longer valid,wrong_person_or_bounce,synthetic,train
+Please remove me from future sponsorship emails.,unsubscribe,team_written,test
+Unsubscribe — I do not want club outreach.,unsubscribe,team_written,test
+Stop emailing this address about events.,unsubscribe,team_written,test
+Opt out of all student organization solicitations.,unsubscribe,team_written,test
+Take me off your sponsor mailing list immediately.,unsubscribe,team_written,test
+Do not contact me again regarding campus asks.,unsubscribe,team_written,test
+Unsubscribe request: no further Greenlight emails.,unsubscribe,team_written,test
+Please delete my contact from your CRM.,unsubscribe,team_written,test
+I revoke consent for sponsorship marketing messages.,unsubscribe,team_written,test
+Remove this email from any future blasts.,unsubscribe,team_written,test
+Reply class: unsubscribe / opt out,unsubscribe,rules_doc,train
+Requests to stop sponsorship email,unsubscribe,rules_doc,train
+Remove from mailing list,unsubscribe,rules_doc,train
+Seed reply: remove me from sponsor emails,unsubscribe,seed_app,train
+Demo: unsubscribe from club outreach,unsubscribe,seed_app,train
+Sample: stop emailing this address,unsubscribe,seed_app,train
+FY26: unsubscribe replies honored,unsubscribe,fy26_report,train
+FY26: opt-out volume,unsubscribe,fy26_report,train
+Team label: explicit unsubscribe,unsubscribe,team_written,train
+Synthetic: opt out of solicitations,unsubscribe,synthetic,train
