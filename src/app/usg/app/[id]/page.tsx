@@ -13,6 +13,9 @@ import { BudgetTable } from "@/components/BudgetTable";
 import { decisionSupport, type DecisionSupport } from "@/lib/decision";
 import { REASONS, awardError, decisionFacts, defaultOutcome, emailProblems, excludedLines, fixDeadline, suggestedAmount, type Outcome, type ReasonId } from "@/lib/decisionGuard";
 import { AiTag, LEVEL, Spinner, StatusPill, useToast } from "@/components/ui";
+import { VerdictPill } from "@/components/VerdictPill";
+import { requestIdOf } from "@/lib/requestId";
+import { greenlightVerdict } from "@/lib/verdict";
 
 const OPEN = ["submitted", "in_review", "needs_info"];
 
@@ -22,6 +25,8 @@ export default function Review() {
   const app = apps.find((a) => a.id === id);
   const club = clubs.find((c) => c.id === app?.clubId);
   const checks = useMemo(() => (app && club ? runChecks(app, club) : []), [app, club]);
+  const verdict = useMemo(() => greenlightVerdict(checks), [checks]);
+  const rid = app ? requestIdOf(app) : "";
   const [toast, say] = useToast();
   const [aiOffline, setAiOffline] = useState<boolean | null>(null);
   const [pickedOutcome, setOutcome] = useState<Outcome | null>(null);
@@ -123,7 +128,7 @@ export default function Review() {
       const r = await authFetch("/api/decision-send", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ clubId: club!.id, appId: app!.id, title: app!.event.title, outcome, amount: award, email }),
+        body: JSON.stringify({ clubId: club!.id, appId: app!.id, requestId: rid, title: app!.event.title, outcome, amount: award, email }),
       });
       const j = await r.json();
       emailed = (j.sent ?? 0) > 0;
@@ -165,6 +170,7 @@ export default function Review() {
         <nav className="crumbs" aria-label="Breadcrumb"><Link href="/usg">Review queue</Link><ChevronRight /><span>{app.event.title}</span>{app.sample && <span className="sample-tag">Sample</span>}</nav>
         <div className="page-head">
           <div>
+            <span className="eyebrow">{rid}</span>
             <h1>{app.event.title}</h1>
             <span className="muted">{club.name} · {BOARDS[app.event.board].name} · {fmtDate(app.event.date, { weekday: "long", month: "long", day: "numeric" })} · {app.event.attendance} expected</span>
           </div>

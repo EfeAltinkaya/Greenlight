@@ -6,6 +6,7 @@ import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles, AlertTri
 import { authFetch } from "@/lib/apiClient";
 import { newId, store, useCurrentClub } from "@/lib/store";
 import { runChecks, todayISO } from "@/lib/engine";
+import { makeRequestId } from "@/lib/requestId";
 import type { Application, EventInfo } from "@/lib/types";
 import type { Intake } from "@/lib/ai";
 import { stepOf, Spinner, useToast } from "@/components/ui";
@@ -40,13 +41,14 @@ export default function NewRequest() {
       if (!r.ok || !j.data) throw new Error(j.error ?? "Could not read that description. Try adding the date and costs.");
       const d = j.data;
       const event: EventInfo = { ...d.event, board: d.board, boardReason: d.boardReason };
+      const id = newId();
       let app: Application = {
-        id: newId(), clubId: club.id, sample: false, event,
+        id, requestId: makeRequestId(id), clubId: club.id, sample: false, event,
         items: d.items.map((i) => ({ ...i, id: newId(), link: "", orderBy: "", toSponsor: false })),
         answers: { description: "", missionFit: "", otherSources: "" }, docs: {}, docFiles: {}, docPaths: {}, uepa: "",
         status: "draft", createdAt: todayISO(), submittedAt: null,
         history: [{ at: todayISO(), status: "draft", note: j.offline ? "Started with the offline reader" : "Started from your description" }],
-        aiComments: [], decision: null, sponsorPlan: null, audit: [],
+        aiComments: [], decision: null, sponsorPlan: null, audit: [], messages: [],
       };
 
       // Auto-draft form answers so submit is not a surprise later.

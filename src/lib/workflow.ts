@@ -2,6 +2,7 @@
 // an owner (club, USG, sponsor). Each transition records history and produces the notices that
 // go to the other side automatically. Pages never change status directly; they call these.
 import { money, todayISO } from "./engine";
+import { requestIdOf, subjectTag } from "./requestId";
 import type { Application, Deal, DealStage, Notice, Status } from "./types";
 
 type Actor = "club" | "usg" | "sponsor" | "system";
@@ -27,15 +28,16 @@ export function moveApp(app: Application, to: Status, by: Actor, note: string): 
   const at = todayISO();
   const next: Application = { ...app, status: to, history: [...app.history, { at, status: to, note }], submittedAt: to === "submitted" ? at : app.submittedAt };
   const t = app.event.title;
+  const tag = subjectTag(app);
   const notices: Notice[] = [];
   const club = `/club/app/${app.id}`;
   const usg = `/usg/app/${app.id}`;
-  if (to === "submitted") notices.push(notice("usg", app.clubId, `New application: ${t}`, app.status === "needs_info" ? "The club sent the missing items." : "A club submitted a new request. It is already checked against the guidelines.", usg));
-  if (to === "in_review") notices.push(notice("club", app.clubId, `${t} is being reviewed`, "A USG funding director opened your application.", club));
-  if (to === "needs_info") notices.push(notice("club", app.clubId, `${t}: USG needs more information`, note + " You have 2 business days.", club));
-  if (to === "approved" || to === "partial") notices.push(notice("club", app.clubId, `${t}: funded`, note, club));
-  if (to === "denied") notices.push(notice("club", app.clubId, `${t}: not funded by USG`, "Greenlight has listed other USC sources you can apply to.", `/club/funding?app=${app.id}`));
-  if (to === "post_event_due") notices.push(notice("club", app.clubId, `${t}: post-event evaluation due`, "Submit photos and final invoices within 3 business days.", club));
+  if (to === "submitted") notices.push(notice("usg", app.clubId, `${tag} New application: ${t}`, app.status === "needs_info" ? "The club sent the missing items." : "A club submitted a new request. It is already checked against the guidelines.", usg));
+  if (to === "in_review") notices.push(notice("club", app.clubId, `${tag} ${t} is being reviewed`, "A USG funding director opened your application.", club));
+  if (to === "needs_info") notices.push(notice("club", app.clubId, `${tag} ${t}: USG needs more information`, note + " You have 2 business days.", club));
+  if (to === "approved" || to === "partial") notices.push(notice("club", app.clubId, `${tag} ${t}: funded`, note, club));
+  if (to === "denied") notices.push(notice("club", app.clubId, `${tag} ${t}: not funded by USG`, "Greenlight has listed other USC sources you can apply to.", `/club/funding?app=${app.id}`));
+  if (to === "post_event_due") notices.push(notice("club", app.clubId, `${tag} ${t}: post-event evaluation due`, "Submit photos and final invoices within 3 business days.", club));
   void by;
   return { app: next, notices };
 }

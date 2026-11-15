@@ -15,6 +15,7 @@ export async function POST(req: Request) {
   const body = (await req.json()) as {
     clubId: string;
     appId: string;
+    requestId?: string;
     title: string;
     outcome: string;
     amount: number;
@@ -35,10 +36,11 @@ export async function POST(req: Request) {
   if (!to.length) return Response.json({ sent: 0, status: "saved", reason: "No club recipients" });
 
   const resend = new Resend(resendKey);
+  const tag = body.requestId ? `[${body.requestId}] ` : "";
   const subject =
     body.outcome === "denied"
-      ? `USG decision: ${body.title} was not funded`
-      : `USG decision: ${body.title} — ${body.outcome === "partial" ? "partly funded" : "funded"}`;
+      ? `${tag}USG decision: ${body.title} was not funded`
+      : `${tag}USG decision: ${body.title} (${body.outcome === "partial" ? "partly funded" : "funded"})`;
   const link = new URL(`/club/app/${body.appId}#status`, site).toString();
   const { error } = await resend.emails.send({
     from: process.env.EMAIL_FROM ?? "Greenlight <onboarding@resend.dev>",

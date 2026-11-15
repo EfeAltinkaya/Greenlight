@@ -7,9 +7,12 @@ import { Inbox } from "lucide-react";
 import { BOARDS, type BoardId } from "@/data/rules";
 import { fmtDate, lookupDeadline, money, needsNineWeeks, requestTotal, runChecks, score, todayISO } from "@/lib/engine";
 import { fixDeadline } from "@/lib/decisionGuard";
+import { requestIdOf } from "@/lib/requestId";
+import { VERDICT_FILTERS, VERDICT_ORDER, greenlightVerdict, type VerdictId } from "@/lib/verdict";
 import { useStore } from "@/lib/store";
 import type { Status } from "@/lib/types";
 import { CountPills, StatusPill } from "@/components/ui";
+import { VerdictPill } from "@/components/VerdictPill";
 
 const OPEN: Status[] = ["submitted", "in_review", "needs_info"];
 const TABS = [
@@ -23,6 +26,7 @@ export default function Queue() {
   const router = useRouter();
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("open");
   const [board, setBoard] = useState<BoardId | "all">("all");
+  const [verdictFilter, setVerdictFilter] = useState<VerdictId | "all">("all");
   const t = TABS.find((x) => x.id === tab)!;
   const open = apps.filter((a) => OPEN.includes(a.status));
   // Fast lane: open applications with nothing to fix or check go to the top, ready for a one-click decision.
@@ -31,15 +35,20 @@ export default function Queue() {
   const [fast, setFast] = useState(false);
   const awarded = (b: BoardId) => apps.filter((a) => a.event.board === b && a.decision).reduce((s, a) => s + (a.decision?.amount ?? 0), 0);
   const pending = (b: BoardId) => open.filter((a) => a.event.board === b).reduce((s, a) => s + requestTotal(a), 0);
-  const risk = (a: (typeof apps)[number]) => {
+  const verdictOf = (a: (typeof apps)[number]) => {
     const c = clubs.find((x) => x.id === a.clubId);
-    const sc = c ? score(runChecks(a, c)) : { fail: 0, warn: 0 };
-    const age = a.submittedAt ? Date.parse(a.submittedAt + "T12:00:00Z") : 0;
-    return sc.fail * 1_000_000 + sc.warn * 10_000 + (age ? 1e15 - age : 0);
+    return c ? greenlightVerdict(runChecks(a, c)) : null;
   };
   const rows = apps
     .filter((a) => t.match(a.status) && (board === "all" || a.event.board === board) && (!fast || isClean(a.id)))
-    .sort((a, b) => (tab === "open" ? risk(b) - risk(a) : (a.submittedAt ?? "").localeCompare(b.submittedAt ?? "")));
+    .filter((a) => verdictFilter === "all" || verdictOf(a)?.id === verdictFilter)
+    .sort((a, b) => {
+      const va = verdictOf(a);
+      const vb = verdictOf(b);
+      const vo = (va ? VERDICT_ORDER[va.id] : 9) - (vb ? VERDICT_ORDER[vb.id] : 9);
+      if (tab === "open") return vo || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? "");
+      return (a.submittedAt ?? "").localeCompare(b.submittedAt ?? "");
+    });
 
   return (
     <>
@@ -80,28 +89,37 @@ export default function Queue() {
           </div>
           {board !== "all" && <button className="btn btn-sm btn-ghost" onClick={() => setBoard("all")}>Showing {BOARDS[board].short} only · Show all</button>}
         </div>
+        <div className="row" style={{ gap: 8, flexWrap: "wrap" }} role="group" aria-label="Greenlight Check filter">
+          {VERDICT_FILTERS.map((f) => (
+            <button key={f.id} className={"chip-btn" + (verdictFilter === f.id ? " on" : "")} aria-pressed={verdictFilter === f.id} onClick={() => setVerdictFilter(f.id)}>
+              {f.label}
+            </button>
+          ))}
+        </div>
         {rows.length === 0 ? (
           <div className="card empty"><Inbox /><strong>Nothing here</strong><span className="small">New submissions from clubs appear in this list.</span></div>
         ) : (
           <div className="card table-wrap">
             <table className="table stackable">
-              <thead><tr><th>Club and event</th><th>Event date</th><th>Board</th><th className="r">Requested</th><th>Checks</th><th>On time</th><th>Status</th></tr></thead>
+              <thead><tr><th>Club and event</th><th>Request ID</th><th>Event date</th><th>Board</th><th className="r">Requested</th><th>Greenlight Check</th><th>On time</th><th>Status</th></tr></thead>
               <tbody>
                 {rows.map((a) => {
                   const club = clubs.find((c) => c.id === a.clubId)!;
                   const sc = score(runChecks(a, club));
+                  const v = greenlightVerdict(runChecks(a, club));
                   const dl = lookupDeadline(a.event.date, needsNineWeeks(a), a.submittedAt ?? undefined);
                   const onTime = dl.kind === "ok" && !dl.passed;
                   const due = fixDeadline(a, todayISO());
                   return (
                     <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/usg/app/${a.id}`); }}>
                       <td><Link href={`/usg/app/${a.id}`} className="stack-xs"><strong>{a.event.title}{isClean(a.id) && <span className="pill pill-clear" style={{ marginLeft: 8, verticalAlign: 2 }}>Fast lane</span>}</strong><span className="tiny faint">{club.name}{a.sample ? " · Sample" : ""}</span></Link></td>
+                      <td data-label="Request ID" className="small code">{requestIdOf(a)}</td>
                       <td data-label="Event date" className="small num" style={{ whiteSpace: "nowrap" }}>{fmtDate(a.event.date)}</td>
                       <td data-label="Board" className="small">{BOARDS[a.event.board].short}</td>
                       <td data-label="Requested" className="r">{money(requestTotal(a))}</td>
-                      <td data-label="Checks"><CountPills fail={sc.fail} warn={sc.warn} /></td>
-                      <td data-label="On time">{onTime ? <span className="pill pill-clear">On time</span> : <span className="pill pill-fix">Late</span>}</td>
-                      <td data-label="Status"><span className="row" style={{ gap: 6 }}><StatusPill s={a.status} />{due?.overdue && <span className="pill pill-fix">Overdue since {fmtDate(due.due, { month: "short", day: "numeric" })}</span>}</span></td>
+                      <td data-label="Greenlight Check"><span className="stack-xs"><VerdictPill id={v.id} /><CountPills fail={sc.fail} warn={sc.warn} /></span></td>
+                      <td data-label="On time">{onTime ? <span className="pill pill-clear">On time</span> : <span className="pill pill-fail">Late</span>}</td>
+                      <td data-label="Status"><span className="row" style={{ gap: 6 }}><StatusPill s={a.status} />{due?.overdue && <span className="pill pill-fail">Overdue since {fmtDate(due.due, { month: "short", day: "numeric" })}</span>}</span></td>
                     </tr>
                   );
                 })}
@@ -109,7 +127,7 @@ export default function Queue() {
             </table>
           </div>
         )}
-        <p className="tiny faint">Board totals are FY26 budgets from USG&apos;s financial report. Awards count decisions in Greenlight. Open queue is sorted by rule risk, then age.</p>
+        <p className="tiny faint">Board totals are FY26 budgets from USG&apos;s financial report. Awards count decisions in Greenlight. Open queue is sorted by Greenlight Check (Matches first), then age.</p>
       </section>
     </>
   );

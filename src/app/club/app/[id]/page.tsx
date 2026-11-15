@@ -13,6 +13,9 @@ import { BudgetTable } from "@/components/BudgetTable";
 import { Reveal } from "@/components/Motion";
 import { SponsorPanel } from "@/components/SponsorPanel";
 import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, type StepId } from "@/components/ui";
+import { VerdictPill } from "@/components/VerdictPill";
+import { requestIdOf } from "@/lib/requestId";
+import { greenlightVerdict } from "@/lib/verdict";
 
 type Step = StepId | "status" | "sponsors";
 const DRAFT_STEPS: { id: Step; title: string; sub: string }[] = [
@@ -168,6 +171,8 @@ export default function Workspace() {
   const railChecks = step === "event" || step === "budget" || step === "documents" ? stepChecks(step) : checks.filter((c) => c.level === "fail" || c.level === "warn");
   const blockers = checks.filter((c) => c.level === "fail");
   const answersReady = Boolean(app.answers.description.trim() && app.answers.missionFit.trim() && app.answers.otherSources.trim());
+  const verdict = greenlightVerdict(checks);
+  const rid = requestIdOf(app);
 
   return (
     <>
@@ -176,10 +181,11 @@ export default function Workspace() {
         <nav className="crumbs" aria-label="Breadcrumb"><Link href="/club">Requests</Link><ChevronRight /><span>{app.event.title}</span>{app.sample && <span className="sample-tag">Sample</span>}</nav>
         <div className="page-head">
           <div>
+            <span className="eyebrow">{rid}</span>
             <h1>{app.event.title}</h1>
             <span className="muted">{club.name} · {app.event.date ? fmtDate(app.event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }) : "No date yet"} · {app.event.location || "No location yet"}</span>
           </div>
-          <div className="row"><StatusPill s={app.status} />{!locked && <CountPills fail={s.fail} warn={s.warn} />}</div>
+          <div className="row"><VerdictPill id={verdict.id} /><StatusPill s={app.status} />{!locked && <CountPills fail={s.fail} warn={s.warn} />}</div>
         </div>
       </div>
 
@@ -363,7 +369,32 @@ export default function Workspace() {
           {step === "submit" && (
             <section className="card card-pad stack" style={{ gap: 20 }}>
               <div className="stack-xs"><h2>Review and submit</h2><p className="small muted">This is what USG will see.</p></div>
+              <div className="inset stack-sm" style={{ padding: 16, borderLeft: `4px solid ${verdict.id === "matches" ? "var(--clear)" : verdict.id === "will_not_fund" ? "var(--fail)" : "var(--gold)"}` }}>
+                <div className="between" style={{ alignItems: "flex-start" }}>
+                  <div className="stack-xs">
+                    <span className="eyebrow">Greenlight Check</span>
+                    <strong style={{ fontSize: 18 }}>{verdict.clubLabel}</strong>
+                    <span className="tiny faint">{rid} · from the rules engine, not AI</span>
+                  </div>
+                  <VerdictPill id={verdict.id} />
+                </div>
+                {verdict.drivers.length > 0 && (
+                  <ul style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 4 }}>
+                    {verdict.drivers.map((c) => (
+                      <li key={c.id}>
+                        <button type="button" className="row small" style={{ border: 0, background: "none", padding: 0, cursor: "pointer", color: c.level === "fail" ? "var(--fail)" : "var(--check)", textAlign: "left", flexWrap: "nowrap" }} onClick={() => go(stepOf(c), fieldFor(c))}>
+                          {c.level === "fail" ? <X style={{ width: 14, height: 14, flex: "none" }} /> : <AlertTriangle style={{ width: 14, height: 14, flex: "none" }} />}
+                          {c.title}
+                          <ArrowRight style={{ width: 14, height: 14, flex: "none" }} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Link href={`/club/app/${app.id}/check`} className="btn btn-sm" style={{ justifySelf: "start" }}>Open Greenlight Check (copy or print)</Link>
+              </div>
               <dl className="kv">
+                <dt>Request ID</dt><dd className="code">{rid}</dd>
                 <dt>Board</dt><dd>{BOARDS[app.event.board].name}</dd>
                 <dt>Requested</dt><dd><strong>{money(requestTotal(app))}</strong> <span className="faint">· {money(RULES.annualCap.limit - club.receivedThisYear)} left now · {money(RULES.annualCap.limit - club.receivedThisYear - requestTotal(app))} after this request</span></dd>
                 <dt>Deadline</dt><dd>{dl?.kind === "ok" ? `${fmtDate(dl.deadline, { weekday: "long", month: "long", day: "numeric" })}${dl.passed ? " (passed)" : ""}` : "None for this date"}</dd>

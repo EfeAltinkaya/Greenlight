@@ -87,6 +87,10 @@ export type Decision = {
   sentAt: string;
   /** Whether the drafted letter was emailed (or only saved in-app). */
   emailed?: boolean;
+  /** Minor-fix path: fund once the club completes these conditions. */
+  conditions?: string[];
+  /** True when the award is waiting on conditions (Approve once fixed). */
+  pendingFixes?: boolean;
 };
 
 export type AuditEntry = {
@@ -101,10 +105,28 @@ export type PostEventEval = {
   invoices: boolean;
   notes: string;
   submittedAt?: string;
+  /** Actual attendance the club reports after the event. */
+  actualAttendance?: number;
+  /** Final invoice amount/file per funded line item id. */
+  lineInvoices?: Record<string, { amount: number; fileName: string }>;
+  /** Report event title (must match the approved application). */
+  reportTitle?: string;
+};
+
+/** One message in the club/USG thread on a request. */
+export type AppMessage = {
+  id: string;
+  at: string;
+  by: "club" | "usg";
+  text: string;
+  /** Always the GL-26-XXXX tag for this request. */
+  requestId: string;
 };
 
 export type Application = {
   id: string;
+  /** Public id shown everywhere and in email subjects: GL-26-XXXX. */
+  requestId?: string;
   clubId: string;
   sample: boolean;
   event: EventInfo;
@@ -129,6 +151,8 @@ export type Application = {
   postEvent?: PostEventEval;
   /** What a USG reviewer asked the club to fix instead of denying the request. */
   fixRequest?: { at: string; items: { text: string; checkId?: string }[]; note: string };
+  /** Club and USG message thread for this request. */
+  messages?: AppMessage[];
 };
 
 export type SponsorPackage = { title: string; covers: string; amount: number; offer: string[] };
