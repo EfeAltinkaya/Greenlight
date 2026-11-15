@@ -172,7 +172,23 @@ export const RULES = {
     section: "Section 2",
     quote: "The full budget proposal for the event, including quotes for each individual expense",
   },
+  postEvent: {
+    id: "post-event",
+    section: "Section 9",
+    quote: "evaluation form on the USG EngageSC page, photos with members in attendance, final invoices",
+  },
 } as const;
+
+/**
+ * Post-event report fields. Only Section 9 items are marked confirmed by USG;
+ * everything else stays pending confirmation and is never enforced as required.
+ */
+export const POST_EVENT_FIELDS = [
+  { id: "evaluation", label: "Evaluation form on the USG EngageSC page", confirmedByUsg: true },
+  { id: "photos", label: "Photos with members in attendance", confirmedByUsg: true },
+  { id: "invoices", label: "Final invoices", confirmedByUsg: true },
+  { id: "actualAttendance", label: "Actual attendance", confirmedByUsg: false },
+] as const;
 
 /**
  * Greenlight heuristics (not USG rules). Shown in the UI as "Greenlight check, not a USG rule".

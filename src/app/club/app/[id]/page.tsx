@@ -15,6 +15,7 @@ import { SponsorPanel } from "@/components/SponsorPanel";
 import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, type StepId } from "@/components/ui";
 import { VerdictPill } from "@/components/VerdictPill";
 import { MessageThread } from "@/components/MessageThread";
+import { postEventAsChecks, postEventDueDate } from "@/lib/postEventCheck";
 import { requestIdOf } from "@/lib/requestId";
 import { greenlightVerdict } from "@/lib/verdict";
 import { APP_FLOW } from "@/lib/workflow";
@@ -555,28 +556,67 @@ function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: ()
       )}
       <MessageThread app={app} by="club" />
 
-      {app.status === "post_event_due" && (
+      {app.status === "post_event_due" && (() => {
+        const peIssues = postEventAsChecks(app);
+        const due = postEventDueDate(app);
+        const funded = requestItems(app);
+        const patchPe = (patch: Partial<typeof pe>) => store.patchApp(app.id, { postEvent: { ...pe, reportTitle: pe.reportTitle ?? app.event.title, ...patch } });
+        return (
         <div className="card card-pad stack" style={{ borderTop: "4px solid var(--gold)" }}>
           <div className="stack-xs">
-            <span className="eyebrow">Close-out</span>
+            <span className="eyebrow">Close-out · Section 9</span>
             <h2>Post-event evaluation</h2>
-            <p className="small muted">Due within 3 business days of the event. USG needs photos of members attending and final invoices.</p>
+            <p className="small muted">Due within 3 business days of the event{due ? ` (by ${fmtDate(due)})` : ""}. Prefills from the approved application. File the evaluation form on EngageSC; Greenlight tracks photos and invoices here.</p>
           </div>
-          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
-            <input className="check-input" type="checkbox" checked={pe.photos} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, photos: e.target.checked } })} />
-            <span className="small" style={{ fontWeight: 550 }}>Photos of members attending are ready</span>
-          </label>
-          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
-            <input className="check-input" type="checkbox" checked={pe.invoices} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, invoices: e.target.checked } })} />
-            <span className="small" style={{ fontWeight: 550 }}>Final vendor invoices are ready</span>
+          <dl className="kv">
+            <dt>Event</dt><dd>{app.event.title}</dd>
+            <dt>Board</dt><dd>{BOARDS[app.event.board].name}</dd>
+            <dt>Expected attendance</dt><dd>{app.event.attendance}</dd>
+            <dt>Funded items</dt><dd>{funded.map((i) => `${i.item} (${money(i.total)})`).join(", ") || "None"}</dd>
+          </dl>
+          <label className="field">
+            <span className="lbl">Report event title (must match the approved application)</span>
+            <input className="input" value={pe.reportTitle ?? app.event.title} onChange={(e) => patchPe({ reportTitle: e.target.value })} />
           </label>
           <label className="field">
-            <span className="lbl">Notes for USG (optional)</span>
-            <textarea className="textarea" style={{ minHeight: 80 }} value={pe.notes} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, notes: e.target.value } })} placeholder="Attendance, anything that changed, invoice timing…" />
+            <span className="lbl">Actual attendance <span className="faint">(pending confirmation with USG)</span></span>
+            <input className="input num" type="number" min={0} value={pe.actualAttendance ?? ""} onChange={(e) => patchPe({ actualAttendance: Number(e.target.value) })} />
           </label>
-          <button className="btn btn-primary btn-lg" disabled={!canClose} onClick={closeOut} style={{ justifySelf: "start" }}><Send />Submit evaluation and close</button>
+          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
+            <input className="check-input" type="checkbox" checked={pe.photos} onChange={(e) => patchPe({ photos: e.target.checked })} />
+            <span className="small" style={{ fontWeight: 550 }}>Photos with members in attendance are ready</span>
+          </label>
+          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
+            <input className="check-input" type="checkbox" checked={pe.invoices} onChange={(e) => patchPe({ invoices: e.target.checked })} />
+            <span className="small" style={{ fontWeight: 550 }}>Final vendor invoices are ready</span>
+          </label>
+          <div className="stack-sm">
+            <strong className="small">Final invoice per funded line</strong>
+            {funded.map((i) => {
+              const inv = pe.lineInvoices?.[i.id];
+              return (
+                <div key={i.id} className="row" style={{ gap: 8, flexWrap: "nowrap" }}>
+                  <span className="small" style={{ flex: 1 }}>{i.item} · approved {money(i.total)}</span>
+                  <input className="input num" style={{ width: 100 }} type="number" min={0} step="0.01" placeholder="Amount" value={inv?.amount ?? ""} onChange={(e) => patchPe({ lineInvoices: { ...(pe.lineInvoices ?? {}), [i.id]: { amount: Number(e.target.value), fileName: inv?.fileName || "invoice.pdf" } } })} />
+                  <input className="input" style={{ width: 140 }} placeholder="File name" value={inv?.fileName ?? ""} onChange={(e) => patchPe({ lineInvoices: { ...(pe.lineInvoices ?? {}), [i.id]: { amount: inv?.amount ?? i.total, fileName: e.target.value } } })} />
+                </div>
+              );
+            })}
+          </div>
+          <label className="field">
+            <span className="lbl">Notes for USG (optional)</span>
+            <textarea className="textarea" style={{ minHeight: 80 }} value={pe.notes} onChange={(e) => patchPe({ notes: e.target.value })} placeholder="Anything that changed, invoice timing" />
+          </label>
+          {peIssues.length > 0 && (
+            <div className="inset stack-sm" style={{ padding: 12 }}>
+              <strong className="small">Consistency check</strong>
+              {peIssues.map((c) => <CheckItem key={c.id} c={c} compact />)}
+            </div>
+          )}
+          <button className="btn btn-primary btn-lg" disabled={!canClose || peIssues.some((c) => c.level === "fail")} onClick={closeOut} style={{ justifySelf: "start" }}><Send />Submit evaluation and close</button>
         </div>
-      )}
+        );
+      })()}
 
       {app.status === "closed" && (
         <div className="card card-pad stack-sm">
