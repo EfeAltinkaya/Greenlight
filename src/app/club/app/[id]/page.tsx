@@ -14,6 +14,7 @@ import { Reveal } from "@/components/Motion";
 import { SponsorPanel } from "@/components/SponsorPanel";
 import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, type StepId } from "@/components/ui";
 import { VerdictPill } from "@/components/VerdictPill";
+import { EventTimelineCard } from "@/components/EventTimeline";
 import { MessageThread } from "@/components/MessageThread";
 import { postEventAsChecks, postEventDueDate } from "@/lib/postEventCheck";
 import { requestIdOf } from "@/lib/requestId";
@@ -448,6 +449,7 @@ export default function Workspace() {
             </section>
           )}
 
+          {(step === "event" || step === "status") && <EventTimelineCard app={app} club={club} needsNine={needsNine} />}
           {step === "status" && <StatusView app={app} onSponsors={() => go("sponsors")} say={say} />}
           {step === "sponsors" && <SponsorPanel app={app} club={club} asks={asks} />}
 
