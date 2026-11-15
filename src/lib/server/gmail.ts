@@ -5,9 +5,10 @@ import { createClient } from "@supabase/supabase-js";
 export const SCOPE = "https://www.googleapis.com/auth/gmail.readonly openid email";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-const service = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-export const googleId = process.env.GOOGLE_CLIENT_ID;
-const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
+const service = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? "";
+// Trimmed: values pasted into Vercel can carry a trailing line break, which Google rejects as an unknown client.
+export const googleId = process.env.GOOGLE_CLIENT_ID?.trim();
+const googleSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
 
 export const gmailReady = () => Boolean(url && anon && service && googleId && googleSecret);
 export const admin = () => createClient(url, service);

@@ -5,8 +5,8 @@ import { Resend } from "resend";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const resendKey = process.env.RESEND_API_KEY;
+const service = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+const resendKey = process.env.RESEND_API_KEY?.trim();
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://greenlight-lac-tau.vercel.app";
 
 export async function POST(req: Request) {
