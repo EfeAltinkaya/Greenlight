@@ -6,8 +6,8 @@ import type { Check as CheckT, CheckLevel, Status } from "@/lib/types";
 export function Mark({ size = "md", slogan = false }: { size?: "md" | "lg"; slogan?: boolean }) {
   return (
     <span className={"mark" + (size === "lg" ? " mark-lg" : "") + (slogan ? " mark-with-slogan" : "")}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/greenlight-mark.png" alt="" className="mark-ico" width={size === "lg" ? 40 : 28} height={size === "lg" ? 40 : 28} />
+      {/* eslint-disable-next-line @next/next/no-img-element -- a small static logo; next/image adds nothing here */}
+      <img src="/logo-icon.png" alt="" className="mark-icon" />
       <span className="mark-word">
         Greenlight
         {slogan && <span className="mark-slogan">Your Highway to Capital</span>}
@@ -20,7 +20,7 @@ export function Mark({ size = "md", slogan = false }: { size?: "md" | "lg"; slog
 export function LogoLockup({ className }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src="/greenlight-logo.png" alt="Greenlight: Your Highway to Capital" className={className ?? "logo-lockup"} width={777} height={320} />
+    <img src="/logo-full.png" alt="Greenlight: Your Highway to Capital" className={className ?? "logo-lockup"} width={1200} height={458} />
   );
 }
 
