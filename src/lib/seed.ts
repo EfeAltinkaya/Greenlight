@@ -1,6 +1,6 @@
 // Example data so every screen has something real to show. All clubs and requests are made up
 // and marked as samples; no real student data.
-import type { Application, Club, Deal, LineItem, Offer, Outreach } from "./types";
+import type { Application, Club, Deal, LedgerLine, LedgerStatus, LineItem, Offer, Outreach } from "./types";
 
 export const DEMO_CLUB_ID = "builders";
 
@@ -143,4 +143,38 @@ export const SEED_DEALS: Deal[] = [
       { at: "2026-11-09", stage: "requested", note: "Club asked for details on prizes", by: "club" },
       { at: "2026-11-11", stage: "details_sent", note: "We can cover $450 of prizes. We'd like a 5-minute kit demo.", by: "sponsor" },
     ] },
+];
+
+const ll = (
+  p: Omit<LedgerLine, "history" | "updatedAt" | "evidence" | "sample"> & { status: LedgerStatus; at?: string },
+): LedgerLine => ({
+  evidence: null,
+  sample: true,
+  updatedAt: p.at ?? "2026-11-01",
+  history: [{ at: p.at ?? "2026-11-01", status: p.status, note: "Sample ledger line", by: "system" }],
+  ...p,
+});
+
+/** Realistic sample ledgers so the spine is never empty for demo clubs. Amounts are labeled Sample in the UI. */
+export const SEED_LEDGER: LedgerLine[] = [
+  // Trojan Builders · Robotics Build Night (Ronald Tutor Hall, 80 students)
+  ll({ id: "ll-b-pizza", clubId: "builders", eventId: "ev-builders-buildnight", eventTitle: "Robotics Build Night", item: "Pizza from a listed vendor", vendor: "Panda Catering", amount: 1600, category: "food", source: "usg", sourceRef: "s-robotics", status: "approved" }),
+  ll({ id: "ll-b-kits", clubId: "builders", eventId: "ev-builders-buildnight", eventTitle: "Robotics Build Night", item: "Parts kits", vendor: "Amazon", amount: 1400, category: "supplies", source: "usg", sourceRef: "s-robotics", status: "approved" }),
+  ll({ id: "ll-b-filament", clubId: "builders", eventId: "ev-builders-buildnight", eventTitle: "Robotics Build Night", item: "3D printing filament", vendor: "", amount: 400, category: "supplies", source: "viterbi_sos", sourceRef: null, status: "requested" }),
+  ll({ id: "ll-b-prizes", clubId: "builders", eventId: "ev-builders-buildnight", eventTitle: "Robotics Build Night", item: "Prizes", vendor: "", amount: 500, category: "gift", source: "sponsor_in_kind", sourceRef: "d-sample", status: "committed" }),
+  ll({ id: "ll-b-swag", clubId: "builders", eventId: "ev-builders-buildnight", eventTitle: "Robotics Build Night", item: "Swag", vendor: "", amount: 300, category: "tshirt", source: "unfunded", sourceRef: null, status: "planned" }),
+
+  // Southside Dance · Spring Showcase (Bovard)
+  ll({ id: "ll-d-light", clubId: "dance", eventId: "ev-dance-spring", eventTitle: "Spring Showcase", item: "Lighting rental from a PO vendor", vendor: "Trojan Event Services", amount: 2800, category: "venue", source: "usg", sourceRef: "s-dance", status: "approved" }),
+  ll({ id: "ll-d-staff", clubId: "dance", eventId: "ev-dance-spring", eventTitle: "Spring Showcase", item: "Venue staffing", vendor: "Trojan Event Services", amount: 1700, category: "personnel", source: "usg", sourceRef: "s-dance", status: "approved" }),
+  ll({ id: "ll-d-costumes-usg", clubId: "dance", eventId: "ev-dance-spring", eventTitle: "Spring Showcase", item: "Costumes", vendor: "", amount: 900, category: "durable", source: "usg", sourceRef: "s-dance", status: "declined" }),
+  ll({ id: "ll-d-costumes-ignite", clubId: "dance", eventId: "ev-dance-spring", eventTitle: "Spring Showcase", item: "Costumes", vendor: "", amount: 650, category: "durable", source: "ignitesc", sourceRef: null, status: "approved" }),
+  ll({ id: "ll-d-programs", clubId: "dance", eventId: "ev-dance-spring", eventTitle: "Spring Showcase", item: "Programs printing", vendor: "USC Print Services", amount: 250, category: "printing", source: "usg", sourceRef: "s-dance", status: "approved" }),
+  ll({ id: "ll-d-reception", clubId: "dance", eventId: "ev-dance-spring", eventTitle: "Spring Showcase", item: "Reception snacks", vendor: "", amount: 200, category: "food", source: "sponsor_in_kind", sourceRef: null, status: "committed" }),
+
+  // Shoreline · Beach Cleanup
+  ll({ id: "ll-s-buses-usg", clubId: "shore", eventId: "ev-shore-beach", eventTitle: "Beach Cleanup", item: "Buses", vendor: "", amount: 600, category: "travel", source: "usg", sourceRef: "s-shore", status: "declined" }),
+  ll({ id: "ll-s-buses-price", clubId: "shore", eventId: "ev-shore-beach", eventTitle: "Beach Cleanup", item: "Buses", vendor: "", amount: 600, category: "travel", source: "price", sourceRef: null, status: "approved" }),
+  ll({ id: "ll-s-gloves", clubId: "shore", eventId: "ev-shore-beach", eventTitle: "Beach Cleanup", item: "Gloves and bags", vendor: "Amazon", amount: 300, category: "supplies", source: "usg", sourceRef: "s-shore", status: "approved" }),
+  ll({ id: "ll-s-snacks", clubId: "shore", eventId: "ev-shore-beach", eventTitle: "Beach Cleanup", item: "Water and snacks", vendor: "", amount: 300, category: "food", source: "sponsor_in_kind", sourceRef: null, status: "committed" }),
 ];

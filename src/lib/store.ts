@@ -5,10 +5,12 @@
 // Persistence: the browser cache below, mirrored to Supabase by sync.ts when a user is signed in.
 import { useSyncExternalStore } from "react";
 import { isSeedClub } from "./clubs";
-import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS, SEED_DEALS, SEED_OFFERS, SEED_OUTREACH } from "./seed";
+import { applyAppToLedger, applyDealToLedger, exampleLedgerEvent } from "./ledger";
+import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS, SEED_DEALS, SEED_LEDGER, SEED_OFFERS, SEED_OUTREACH } from "./seed";
 import { autoAdvance, moveApp, moveDeal } from "./workflow";
 import { requestIdOf, subjectTag } from "./requestId";
-import type { Application, AuditEntry, Club, Deal, DealStage, Notice, Offer, Outreach, Status } from "./types";
+import { todayISO } from "./engine";
+import type { Application, AuditEntry, Club, Deal, DealStage, LedgerLine, Notice, Offer, Outreach, Status } from "./types";
 import type { Sponsor } from "@/data/sponsors";
 
 export type State = {
@@ -21,9 +23,10 @@ export type State = {
   offers?: Offer[];
   deals?: Deal[];
   notices?: Notice[];
+  ledger?: LedgerLine[];
 };
-const KEY = "greenlight:v4";
-const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS, currentClub: DEMO_CLUB_ID, outreach: SEED_OUTREACH, offers: SEED_OFFERS, deals: SEED_DEALS, notices: [] };
+const KEY = "greenlight:v5";
+const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS, currentClub: DEMO_CLUB_ID, outreach: SEED_OUTREACH, offers: SEED_OFFERS, deals: SEED_DEALS, notices: [], ledger: SEED_LEDGER };
 
 let state: State | null = null;
 const listeners = new Set<() => void>();
@@ -50,6 +53,9 @@ function load(): State {
     state = { ...state!, clubs: cleaned, currentClub };
   } else if (!cleaned.length) {
     state = { ...state!, clubs: structuredClone(SEED_CLUBS), currentClub: DEMO_CLUB_ID };
+  }
+  if (!state!.ledger?.length) {
+    state = { ...state!, ledger: structuredClone(SEED_LEDGER) };
   }
   // Time-based steps nobody has to click.
   let changed = false;
@@ -104,12 +110,6 @@ function pushNotices(s: State, list: Notice[]): State {
 
 export const store = {
   get: load,
-  upsertApp(app: Application) {
-    const s = load();
-    const apps = s.apps.some((a) => a.id === app.id) ? s.apps.map((a) => (a.id === app.id ? app : a)) : [app, ...s.apps];
-    save({ ...s, apps });
-    writer?.("app", app.id, app, app.clubId);
-  },
   patchApp(id: string, patch: Partial<Application> | ((a: Application) => Partial<Application>)) {
     const s = load();
     let saved: Application | null = null;
@@ -141,8 +141,16 @@ export const store = {
     const a = s.apps.find((x) => x.id === id);
     if (!a) return;
     const r = moveApp({ ...a, ...patch }, to, by, note);
-    save(pushNotices({ ...s, apps: s.apps.map((x) => (x.id === id ? r.app : x)) }, r.notices));
+    const ledger = applyAppToLedger(s.ledger ?? [], r.app, todayISO());
+    save(pushNotices({ ...s, apps: s.apps.map((x) => (x.id === id ? r.app : x)), ledger }, r.notices));
     writer?.("app", id, r.app, r.app.clubId);
+  },
+  upsertApp(app: Application) {
+    const s = load();
+    const apps = s.apps.some((a) => a.id === app.id) ? s.apps.map((a) => (a.id === app.id ? app : a)) : [app, ...s.apps];
+    const ledger = applyAppToLedger(s.ledger ?? [], app, todayISO());
+    save({ ...s, apps, ledger });
+    writer?.("app", app.id, app, app.clubId);
   },
   patchClub(id: string, patch: Partial<Club>) {
     const s = load();
@@ -199,7 +207,8 @@ export const store = {
     const d = (s.deals ?? []).find((x) => x.id === id);
     if (!d) return;
     const r = moveDeal(d, to, by, note, patch);
-    save(pushNotices({ ...s, deals: (s.deals ?? []).map((x) => (x.id === id ? r.deal : x)) }, r.notices));
+    const ledger = applyDealToLedger(s.ledger ?? [], r.deal, todayISO());
+    save(pushNotices({ ...s, deals: (s.deals ?? []).map((x) => (x.id === id ? r.deal : x)), ledger }, r.notices));
     writer?.("deal", id, r.deal, r.deal.clubId);
   },
   patchDeal(id: string, patch: Partial<Deal>) {
@@ -207,6 +216,21 @@ export const store = {
     let saved: Deal | null = null;
     save({ ...s, deals: (s.deals ?? []).map((d) => (d.id === id ? (saved = { ...d, ...patch }) : d)) });
     if (saved) writer?.("deal", id, saved, (saved as Deal).clubId);
+  },
+  setLedger(lines: LedgerLine[]) {
+    save({ ...load(), ledger: lines });
+  },
+  deleteExampleLedger(clubId: string) {
+    const s = load();
+    save({ ...s, ledger: (s.ledger ?? []).filter((l) => !(l.clubId === clubId && l.example)) });
+  },
+  ensureExampleLedger(clubId: string) {
+    const s = load();
+    if ((s.ledger ?? []).some((l) => l.clubId === clubId && l.example)) return;
+    if ((s.ledger ?? []).some((l) => l.clubId === clubId && !l.example && l.amount > 0)) return;
+    const club = s.clubs.find((c) => c.id === clubId);
+    if (club?.sample) return;
+    save({ ...s, ledger: [...exampleLedgerEvent(clubId, todayISO()), ...(s.ledger ?? [])] });
   },
   readNotices(to: Notice["to"], clubId: string | null) {
     const s = load();

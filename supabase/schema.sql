@@ -192,3 +192,54 @@ create table if not exists public.gmail_tokens (
   updated_at timestamptz not null default now()
 );
 alter table public.gmail_tokens enable row level security;
+
+-- Append-only ledger events (hash-linked). History arrays in the client are views over this.
+create table if not exists public.ledger_lines (
+  id text primary key,
+  club_id text not null references public.clubs (id),
+  event_id text not null,
+  event_title text not null,
+  item text not null,
+  vendor text not null default '',
+  amount numeric not null default 0,
+  category text not null default '',
+  source text not null,
+  source_ref text,
+  status text not null,
+  evidence text,
+  sample boolean not null default false,
+  example boolean not null default false,
+  updated_at timestamptz not null default now(),
+  data jsonb not null default '{}'
+);
+alter table public.ledger_lines enable row level security;
+drop policy if exists ledger_lines_read on public.ledger_lines;
+create policy ledger_lines_read on public.ledger_lines for select to authenticated using (
+  club_id = my_club() or my_role() = 'usg'
+);
+drop policy if exists ledger_lines_write on public.ledger_lines;
+create policy ledger_lines_write on public.ledger_lines for all to authenticated using (club_id = my_club()) with check (club_id = my_club());
+
+create table if not exists public.ledger_events (
+  id text primary key,
+  at timestamptz not null default now(),
+  club_id text not null references public.clubs (id),
+  line_id text not null,
+  kind text not null,
+  detail text not null default '',
+  prev_hash text,
+  hash text not null
+);
+create unique index if not exists ledger_events_hash on public.ledger_events (hash);
+alter table public.ledger_events enable row level security;
+drop policy if exists ledger_events_read on public.ledger_events;
+create policy ledger_events_read on public.ledger_events for select to authenticated using (
+  club_id = my_club() or my_role() = 'usg'
+);
+drop policy if exists ledger_events_insert on public.ledger_events;
+create policy ledger_events_insert on public.ledger_events for insert to authenticated with check (club_id = my_club() or my_role() = 'usg');
+
+do $$ begin
+  begin alter publication supabase_realtime add table public.ledger_lines; exception when duplicate_object then null; end;
+  begin alter publication supabase_realtime add table public.ledger_events; exception when duplicate_object then null; end;
+end $$;
