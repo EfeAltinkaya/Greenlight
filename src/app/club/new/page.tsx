@@ -3,11 +3,12 @@ import { useRouter } from "next/navigation";
 import { announceNav } from "@/components/Motion";
 import { useState, useEffect } from "react";
 import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles, AlertTriangle } from "lucide-react";
+import { authFetch } from "@/lib/apiClient";
 import { newId, store, useCurrentClub } from "@/lib/store";
-import { todayISO } from "@/lib/engine";
+import { runChecks, todayISO } from "@/lib/engine";
 import type { Application, EventInfo } from "@/lib/types";
 import type { Intake } from "@/lib/ai";
-import { Spinner, useToast } from "@/components/ui";
+import { stepOf, Spinner, useToast } from "@/components/ui";
 import { useSession } from "@/lib/session";
 
 const EXAMPLES = [
@@ -34,22 +35,39 @@ export default function NewRequest() {
     setErr("");
     setBusy(true);
     try {
-      const r = await fetch("/api/intake", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) });
+      const r = await authFetch("/api/intake", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) });
       const j = (await r.json()) as { data?: Intake; offline?: boolean; error?: string };
       if (!r.ok || !j.data) throw new Error(j.error ?? "Could not read that description. Try adding the date and costs.");
       const d = j.data;
       const event: EventInfo = { ...d.event, board: d.board, boardReason: d.boardReason };
-      const app: Application = {
+      let app: Application = {
         id: newId(), clubId: club.id, sample: false, event,
         items: d.items.map((i) => ({ ...i, id: newId(), link: "", orderBy: "", toSponsor: false })),
-        answers: { description: "", missionFit: "", otherSources: "" }, docs: {}, docFiles: {}, uepa: "",
+        answers: { description: "", missionFit: "", otherSources: "" }, docs: {}, docFiles: {}, docPaths: {}, uepa: "",
         status: "draft", createdAt: todayISO(), submittedAt: null,
         history: [{ at: todayISO(), status: "draft", note: j.offline ? "Started with the offline reader" : "Started from your description" }],
-        aiComments: [], decision: null, sponsorPlan: null,
+        aiComments: [], decision: null, sponsorPlan: null, audit: [],
       };
+
+      // Auto-draft form answers so submit is not a surprise later.
+      try {
+        const ar = await authFetch("/api/answers", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club.name, mission: club.mission ?? "" }) });
+        const aj = await ar.json();
+        if (ar.ok && aj.data) {
+          app = { ...app, answers: aj.data, history: [...app.history, { at: todayISO(), status: "draft", note: aj.offline ? "Form answers drafted offline" : "Form answers drafted" }] };
+        }
+      } catch {
+        /* answers can be drafted on the answers step */
+      }
+
       store.upsertApp(app);
+      store.audit(app.id, { by: "club", action: "intake", detail: j.offline ? "Offline intake" : "AI intake" });
+
+      const checks = runChecks(app, club);
+      const firstFail = checks.find((c) => c.level === "fail");
+      const hash = firstFail ? stepOf(firstFail) : app.answers.description ? "event" : "answers";
       announceNav();
-      router.push(`/club/app/${app.id}`);
+      router.push(`/club/app/${app.id}#${hash}`);
     } catch (e) {
       setErr((e as Error).message);
       say((e as Error).message, "error");
@@ -90,7 +108,7 @@ export default function NewRequest() {
             {EXAMPLES.map((e) => <button key={e.label} className="chip-btn" onClick={() => setText(e.text)}>{e.label}</button>)}
           </div>
           <button className="btn btn-primary btn-lg" onClick={build} disabled={busy}>
-            {busy ? <><Spinner />Reading your event</> : <>Build my application<ArrowRight /></>}
+            {busy ? <><Spinner />Building your application</> : <>Build my application<ArrowRight /></>}
           </button>
         </div>
       </section>

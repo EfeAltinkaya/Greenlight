@@ -5,6 +5,8 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { AlertTriangle, ArrowLeft, ArrowRight, Check, ChevronRight, CircleCheck, Download, FileCheck2, FileUp, MoveRight, Send, Sparkles, X } from "lucide-react";
 import { BOARDS, RULES, type BoardId } from "@/data/rules";
 import { budgetCsv, documentList, fmtDate, lookupDeadline, money, nineWeekReason, checkKey, requestItems, requestTotal, runChecks, score, sponsorAsks, UEPA_RE } from "@/lib/engine";
+import { authFetch } from "@/lib/apiClient";
+import { putDoc } from "@/lib/docStore";
 import { store, useStore } from "@/lib/store";
 import type { Application, Check as CheckT, EventInfo, LineItem } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
@@ -107,24 +109,35 @@ export default function Workspace() {
   }
 
   async function attachQuote(itemId: string, file: File) {
+    const saved = await putDoc(app!.id, "quotes", file);
     const fd = new FormData();
     fd.append("file", file);
-    const r = await fetch("/api/quote", { method: "POST", body: fd });
+    const r = await authFetch("/api/quote", { method: "POST", body: fd });
     const j = await r.json();
-    if (!r.ok) return say(j.error ?? "Could not read that file");
+    if (!r.ok) {
+      patch({ docs: { ...app!.docs, quotes: true }, docFiles: { ...(app!.docFiles ?? {}), quotes: saved.name }, docPaths: { ...(app!.docPaths ?? {}), quotes: saved.path } });
+      return say(j.error ?? "Quote saved. Enter the total by hand if needed.");
+    }
     const line = app!.items.find((i) => i.id === itemId)!;
     const total: number | null = j.data.total;
     const matches = total != null && Math.abs(total - line.total) <= Math.max(1, line.total * 0.01);
     const note = total == null ? "No total found on the quote." : matches ? `Quote total ${money(total)} matches this line.` : `Quote total ${money(total)} vs budget ${money(line.total)}. Update the line or get a new quote.`;
     setItems(app!.items.map((i) => (i.id === itemId ? { ...i, quote: { fileName: file.name, vendor: j.data.vendor, total, matches, note } } : i)));
-    patch({ docs: { ...app!.docs, quotes: true }, docFiles: { ...(app!.docFiles ?? {}), quotes: file.name } });
+    patch({ docs: { ...app!.docs, quotes: true }, docFiles: { ...(app!.docFiles ?? {}), quotes: saved.name }, docPaths: { ...(app!.docPaths ?? {}), quotes: saved.path } });
     say(matches ? `Quote read: ${money(total!)} matches` : "Quote read, but the total differs");
+  }
+
+  async function attachDoc(key: string, file: File) {
+    const saved = await putDoc(app!.id, key, file);
+    patch({ docs: { ...app!.docs, [key]: true }, docFiles: { ...(app!.docFiles ?? {}), [key]: saved.name }, docPaths: { ...(app!.docPaths ?? {}), [key]: saved.path } });
+    store.audit(app!.id, { by: "club", action: "attach_doc", detail: `${key}: ${saved.name}` });
+    say(`${saved.name} attached`);
   }
 
   async function draft() {
     setDrafting(true);
     try {
-      const r = await fetch("/api/answers", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club!.name, mission: club!.mission ?? "" }) });
+      const r = await authFetch("/api/answers", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club!.name, mission: club!.mission ?? "" }) });
       const j = await r.json();
       patch({ answers: { ...j.data, otherSources: app!.answers.otherSources } });
       setAnswersOffline(Boolean(j.offline));
@@ -135,8 +148,9 @@ export default function Workspace() {
   }
 
   function submit() {
-    store.moveApp(app!.id, "submitted", "club", app!.status === "needs_info" ? "Resubmitted with the missing items" : "Submitted to USG");
-    say("Submitted to USG");
+    store.moveApp(app!.id, "submitted", "club", app!.status === "needs_info" ? "Resubmitted with the missing items" : "Submitted to USG (packet ready; file the EngageSC form to complete)");
+    store.audit(app!.id, { by: "club", action: "submit", detail: "Submitted for USG review in Greenlight" });
+    say("Submitted in Greenlight. Still file it in EngageSC when you are ready.");
     go("status");
   }
 
@@ -280,7 +294,7 @@ export default function Workspace() {
 
           {step === "documents" && (
             <section className="card card-pad stack" style={{ gap: 18 }}>
-              <div className="stack-xs"><h2>Documents</h2><p className="small muted">Built from USG&apos;s form for this event. Files stay on your device; Greenlight keeps the file name so your checklist is complete.</p></div>
+              <div className="stack-xs"><h2>Documents</h2><p className="small muted">Built from USG&apos;s form for this event. Attach files so reviewers can preview them. In demo mode they stay in this browser; when signed in they also upload to secure storage.</p></div>
               <label className="field" style={{ maxWidth: 280 }}>
                 <span className="lbl">UEPA number</span>
                 <input id="uepa" className="input code" placeholder="A12345" disabled={locked} value={app.uepa} aria-invalid={Boolean(app.uepa) && !UEPA_RE.test(app.uepa)} aria-describedby="uepa-msg" onChange={(e) => patch({ uepa: e.target.value.trim().toUpperCase() })} />
@@ -304,7 +318,7 @@ export default function Workspace() {
                         {!locked && (
                           <>
                             <span className="btn btn-sm" aria-hidden="true">{done ? "Replace" : "Attach"}</span>
-                            <input type="file" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) { patch({ docs: { ...app.docs, [d.key]: true }, docFiles: { ...(app.docFiles ?? {}), [d.key]: f.name } }); say(`${f.name} attached`); } e.target.value = ""; }} aria-label={`Attach ${d.label}`} />
+                            <input type="file" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void attachDoc(d.key, f); e.target.value = ""; }} aria-label={`Attach ${d.label}`} />
                           </>
                         )}
                       </label>
@@ -371,7 +385,7 @@ export default function Workspace() {
             </section>
           )}
 
-          {step === "status" && <StatusView app={app} onSponsors={() => go("sponsors")} />}
+          {step === "status" && <StatusView app={app} onSponsors={() => go("sponsors")} say={say} />}
           {step === "sponsors" && <SponsorPanel app={app} club={club} asks={asks} />}
 
           {next && step !== "submit" && (
@@ -413,18 +427,73 @@ export default function Workspace() {
   );
 }
 
-function StatusView({ app, onSponsors }: { app: Application; onSponsors: () => void }) {
+function StatusView({ app, onSponsors, say }: { app: Application; onSponsors: () => void; say: (m: string) => void }) {
   const d = app.decision;
+  const pe = app.postEvent ?? { photos: false, invoices: false, notes: "" };
+  const canClose = pe.photos && pe.invoices;
+
+  function closeOut() {
+    if (!canClose) return say("Confirm photos and final invoices first");
+    store.moveApp(app.id, "closed", "club", "Post-event evaluation and invoices submitted", {
+      postEvent: { ...pe, submittedAt: new Date().toISOString().slice(0, 10) },
+    });
+    store.audit(app.id, { by: "club", action: "close_out", detail: pe.notes.slice(0, 160) || "Evaluation submitted" });
+    say("Close-out submitted. This request is closed.");
+  }
+
   return (
     <section className="stack">
       {d && (
-        <div className="card card-pad stack-sm" style={{ borderTop: `4px solid ${d.outcome === "denied" ? "var(--fix)" : "var(--gold)"}` }}>
+        <div className="card card-pad stack-sm" style={{ borderTop: `4px solid ${d.outcome === "denied" ? "var(--fail)" : "var(--gold)"}` }}>
           <span className="eyebrow">{d.outcome === "denied" ? "Decision" : "Funded"}</span>
           <h2 style={{ fontSize: 28 }}>{d.outcome === "denied" ? "USG denied this request" : `USG awarded ${money(d.amount)}`}</h2>
           <div className="email small muted">{d.email}</div>
-          <div id="funding" className="row">{d.outcome !== "denied" && <button className="btn btn-primary" onClick={onSponsors}>Cover the rest with sponsors<ArrowRight /></button>}{d.outcome !== "approved" && <Link href="/club/funding" className={"btn" + (d.outcome === "denied" ? " btn-primary" : "")}>Apply to other USC funding<ArrowRight /></Link>}</div>
+          {d.emailed === false && <p className="tiny faint">Saved in Greenlight (email delivery was not configured for this send).</p>}
+          <div className="row">
+            {(d.outcome === "partial" || (d.outcome === "approved" && sponsorAsks(app).length > 0)) && (
+              <button className="btn btn-primary" onClick={onSponsors}>Cover the rest with sponsors<ArrowRight /></button>
+            )}
+            {d.outcome !== "approved" && (
+              <Link href={`/club/funding?app=${app.id}`} className={"btn" + (d.outcome === "denied" ? " btn-primary" : "")}>
+                Apply to other USC funding<ArrowRight />
+              </Link>
+            )}
+            {d.outcome !== "denied" && <Link href="/club/sponsors?tab=offers" className="btn">Browse sponsor offers<ArrowRight /></Link>}
+          </div>
         </div>
       )}
+
+      {app.status === "post_event_due" && (
+        <div className="card card-pad stack" style={{ borderTop: "4px solid var(--gold)" }}>
+          <div className="stack-xs">
+            <span className="eyebrow">Close-out</span>
+            <h2>Post-event evaluation</h2>
+            <p className="small muted">Due within 3 business days of the event. USG needs photos of members attending and final invoices.</p>
+          </div>
+          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
+            <input className="check-input" type="checkbox" checked={pe.photos} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, photos: e.target.checked } })} />
+            <span className="small" style={{ fontWeight: 550 }}>Photos of members attending are ready</span>
+          </label>
+          <label className="inset row" style={{ padding: "10px 12px", gap: 10, cursor: "pointer", flexWrap: "nowrap" }}>
+            <input className="check-input" type="checkbox" checked={pe.invoices} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, invoices: e.target.checked } })} />
+            <span className="small" style={{ fontWeight: 550 }}>Final vendor invoices are ready</span>
+          </label>
+          <label className="field">
+            <span className="lbl">Notes for USG (optional)</span>
+            <textarea className="textarea" style={{ minHeight: 80 }} value={pe.notes} onChange={(e) => store.patchApp(app.id, { postEvent: { ...pe, notes: e.target.value } })} placeholder="Attendance, anything that changed, invoice timing…" />
+          </label>
+          <button className="btn btn-primary btn-lg" disabled={!canClose} onClick={closeOut} style={{ justifySelf: "start" }}><Send />Submit evaluation and close</button>
+        </div>
+      )}
+
+      {app.status === "closed" && (
+        <div className="card card-pad stack-sm">
+          <span className="eyebrow">Closed</span>
+          <h2>Evaluation submitted</h2>
+          <p className="small muted">{app.postEvent?.submittedAt ? `Submitted ${fmtDate(app.postEvent.submittedAt)}.` : "This request is closed."}{app.postEvent?.notes ? ` ${app.postEvent.notes}` : ""}</p>
+        </div>
+      )}
+
       <div className="card card-pad stack-sm">
         <h2>Timeline</h2>
         <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 0 }}>

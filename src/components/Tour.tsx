@@ -6,15 +6,13 @@ type Step = { target: string; title: string; body: string };
 
 const STEPS: Record<"club" | "usg" | "sponsor", Step[]> = {
   club: [
-    { target: "home", title: "Home", body: "What needs you today: requests to fix, deadlines, sponsor follow-ups and money left for the year." },
-    { target: "new", title: "1. New request", body: "Describe your event in a few sentences. Greenlight fills in USG's budget sheet and checks every line against the 2026-27 rules." },
+    { target: "home", title: "Home", body: "Continue cards show what needs you: drafts to fix, USG waits, sponsor follow-ups, and close-outs." },
+    { target: "new", title: "1. New request", body: "Describe your event in a few sentences. Greenlight fills in USG's budget sheet, drafts answers, and jumps to the first failing check." },
     { target: "requests", title: "2. My requests", body: "Every request and where it is: draft, with USG, funded or denied. Open one to work through it step by step." },
     { target: "deadlines", title: "Deadlines", body: "Pick a date and see the exact Wednesday you must submit by, from USG's own deadline sheet." },
     { target: "funding", title: "Other funding", body: "If USG says no or funds part, apply to Viterbi, Marshall, GSG, IgniteSC and other USC sources from here." },
-    { target: "offers", title: "3. Sponsor offers", body: "Companies post what they want to support. Request details on one that fits your event." },
-    { target: "deals", title: "4. Deals", body: "Each sponsor deal, step by step: details, agreement, vendor invoice, payment, event and recap." },
-    { target: "sponsors", title: "Find companies", body: "Companies ranked for your audience, with links to their recruiters and USC alumni on LinkedIn." },
-    { target: "money", title: "5. Money tracker", body: "Every dollar for every event: what USG awarded, what sponsors committed, what is paid and which invoices are due." },
+    { target: "sponsors", title: "3. Sponsors", body: "One hub for covering the gap: find companies, outreach, inbound offers, and deals. Sponsors pay vendors directly." },
+    { target: "money", title: "4. Money tracker", body: "Every dollar for every event: what USG awarded, what sponsors committed, what is paid and which invoices are due." },
     { target: "updates", title: "Updates", body: "When USG or a sponsor acts, it shows up here and in your email automatically." },
   ],
   usg: [

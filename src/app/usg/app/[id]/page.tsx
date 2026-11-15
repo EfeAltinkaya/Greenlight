@@ -4,13 +4,14 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, ArrowRight, Check, CheckCheck, ChevronRight, FileCheck2, FileX2, Pencil, RotateCcw, Send, Sparkles, X } from "lucide-react";
 import { BOARDS } from "@/data/rules";
-import { documentList, fmtDate, money, requestItems, requestTotal, runChecks } from "@/lib/engine";
+import { checkKey, documentList, fmtDate, money, requestItems, requestTotal, runChecks, todayISO } from "@/lib/engine";
+import { authFetch } from "@/lib/apiClient";
+import { getDocUrl } from "@/lib/docStore";
 import { store, useStore } from "@/lib/store";
 import type { AiComment, Check as CheckT } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
 import { decisionSupport, type DecisionSupport } from "@/lib/decision";
 import { REASONS, awardError, decisionFacts, defaultOutcome, emailProblems, excludedLines, fixDeadline, suggestedAmount, type Outcome, type ReasonId } from "@/lib/decisionGuard";
-import { checkKey, todayISO } from "@/lib/engine";
 import { AiTag, LEVEL, Spinner, StatusPill, useToast } from "@/components/ui";
 
 const OPEN = ["submitted", "in_review", "needs_info"];
@@ -36,7 +37,7 @@ export default function Review() {
     asked.current = app.id;
     if (app.status === "submitted") store.moveApp(app.id, "in_review", "usg", "Opened by the funding director");
     if (app.aiComments.length === 0 && OPEN.includes(app.status)) {
-      fetch("/api/review", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, checks }) })
+      authFetch("/api/review", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, checks }) })
         .then((r) => r.json())
         .then((j: { data: { checkId: string; text: string }[]; offline?: boolean }) => {
           setAiOffline(Boolean(j.offline));
@@ -45,6 +46,7 @@ export default function Review() {
             return { id: "c" + i, checkId: c.checkId, text: c.text, citation: ck ? `${ck.section}: "${ck.quote}"` : "", action: "pending" };
           });
           store.patchApp(app.id, { aiComments: comments });
+          store.audit(app.id, { by: "system", action: "ai_review", detail: `Generated ${comments.length} review comments${j.offline ? " (offline)" : ""}` });
         })
         .catch(() => setAiOffline(true));
     }
@@ -73,10 +75,25 @@ export default function Review() {
   const missing = docs.filter((d) => !app.docs[d.key]);
   const loading = app.aiComments.length === 0 && OPEN.includes(app.status) && aiOffline === null;
   const handled = app.aiComments.filter((c) => c.action !== "pending").length;
-  const nextApp = apps.find((a) => a.id !== app.id && OPEN.includes(a.status));
+  const nextApp = [...apps]
+    .filter((a) => a.id !== app.id && OPEN.includes(a.status))
+    .sort((a, b) => {
+      const ca = clubs.find((c) => c.id === a.clubId);
+      const cb = clubs.find((c) => c.id === b.clubId);
+      const fa = ca ? runChecks(a, ca).filter((x) => x.level === "fail").length : 0;
+      const fb = cb ? runChecks(b, cb).filter((x) => x.level === "fail").length : 0;
+      return fb - fa || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? "");
+    })[0];
 
-  const act = (cid: string, action: AiComment["action"], edited?: string) => store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.id === cid ? { ...c, action, edited: edited ?? c.edited } : c)) }));
-  const agreeAll = () => store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.action === "pending" ? { ...c, action: "agree" } : c)) }));
+  const act = (cid: string, action: AiComment["action"], edited?: string) => {
+    store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.id === cid ? { ...c, action, edited: edited ?? c.edited } : c)) }));
+    store.audit(app.id, { by: "usg", action: `comment_${action}`, detail: edited ? edited.slice(0, 160) : `Comment ${cid} marked ${action}` });
+  };
+  const agreeAll = () => {
+    store.patchApp(app.id, (a) => ({ aiComments: a.aiComments.map((c) => (c.action === "pending" ? { ...c, action: "agree" } : c)) }));
+    store.audit(app.id, { by: "usg", action: "comment_agree_all", detail: "Agreed with remaining AI comments" });
+  };
+  const pendingComments = app.aiComments.filter((c) => c.action === "pending" && checks.some((ck) => ck.id === c.checkId && (ck.level === "fail" || ck.level === "warn")));
 
   async function draftEmail(over?: { outcome: Outcome; amount: number; reason: ReasonId }) {
     setDrafting(true);
@@ -86,7 +103,7 @@ export default function Review() {
         .map((c) => ({ c, ck: checks.find((x) => x.id === c.checkId) }))
         .filter(({ c, ck }) => c.action === "edited" || (ck && (ck.level === "fail" || ck.level === "warn")))
         .map(({ c, ck }) => (c.action === "edited" ? `${c.edited} (${ck?.section ?? "Guidelines"})` : `${ck!.title}. ${ck!.detail} (${ck!.section})`));
-      const r = await fetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(over ? decisionFacts(app!, club!, checks, over.outcome, over.amount, over.reason, notes) : facts(notes)) });
+      const r = await authFetch("/api/decision", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(over ? decisionFacts(app!, club!, checks, over.outcome, over.amount, over.reason, notes) : facts(notes)) });
       const j = await r.json();
       setEmail(j.data);
       setEmailOffline(Boolean(j.offline));
@@ -95,17 +112,50 @@ export default function Review() {
     }
   }
 
-  function send() {
+  async function send() {
+    if (pendingComments.length) return say("Handle the fail and warn AI comments before you send");
+    if (!email.trim()) return say("Draft the email first");
+    if (blocked) return say(amtError ?? "Fix the award amount first");
     const at = new Date().toISOString().slice(0, 10);
-    store.moveApp(app!.id, outcome, "usg", outcome === "denied" ? "Denied. Explanation emailed to the club." : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(amt)}. Explanation emailed to the club.`, { decision: { outcome, amount: outcome === "denied" ? 0 : amt, reasonCode: reason, email, sentAt: at } });
-    if (outcome !== "denied") store.patchClub(club!.id, { receivedThisYear: club!.receivedThisYear + amt, eventsThisSemester: club!.eventsThisSemester + 1 });
-    say("Decision sent. The club sees it now");
+    const award = outcome === "denied" ? 0 : amt;
+    let emailed = false;
+    try {
+      const r = await authFetch("/api/decision-send", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ clubId: club!.id, appId: app!.id, title: app!.event.title, outcome, amount: award, email }),
+      });
+      const j = await r.json();
+      emailed = (j.sent ?? 0) > 0;
+    } catch {
+      /* demo / offline: still save the decision */
+    }
+    store.moveApp(
+      app!.id,
+      outcome,
+      "usg",
+      outcome === "denied"
+        ? emailed ? "Denied. Decision letter emailed to the club." : "Denied. Decision letter saved for the club in Greenlight."
+        : `${outcome === "partial" ? "Partly funded" : "Approved"}: ${money(award)}. ${emailed ? "Decision letter emailed." : "Decision letter saved in Greenlight."}`,
+      { decision: { outcome, amount: award, reasonCode: reason, email, sentAt: at, emailed } },
+    );
+    store.audit(app!.id, { by: "usg", action: "decision", detail: `${outcome} ${money(award)}; reason ${reason}${emailed ? "; emailed" : "; in-app only"}` });
+    if (outcome !== "denied") store.patchClub(club!.id, { receivedThisYear: club!.receivedThisYear + award, eventsThisSemester: club!.eventsThisSemester + 1 });
+    say(emailed ? "Decision emailed to the club" : "Decision saved. The club sees it in Greenlight");
   }
 
   function sendBack(items: { text: string; checkId?: string }[], note: string) {
     const list = items.map((x, i) => `${i + 1}. ${x.text}`).join("; ") + ".";
-    store.moveApp(app!.id, "needs_info", "usg", `Sent back to fix: ${list}${note ? ` Note: ${note}` : ""} 2 business days to fix.`, { fixRequest: { at: todayISO(), items, note } });
+    const detail = `Sent back to fix: ${list}${note ? ` Note: ${note}` : ""} 2 business days to fix.`;
+    store.moveApp(app!.id, "needs_info", "usg", detail, { fixRequest: { at: todayISO(), items, note } });
+    store.audit(app!.id, { by: "usg", action: "return_incomplete", detail });
     say("Sent back to the club with the fix list. The 2-business-day clock started");
+  }
+
+  async function openDoc(key: string) {
+    const url = await getDocUrl(app!.id, key, app!.docPaths?.[key]);
+    if (!url) return say("No file available to preview on this device");
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -150,9 +200,14 @@ export default function Review() {
             <div className="between"><h2>Documents</h2><span className="small faint">{docs.length - missing.length} of {docs.length}</span></div>
             <div className="row small" style={{ gap: 10, flexWrap: "nowrap" }}>{app.uepa ? <FileCheck2 style={{ width: 18, color: "var(--clear)" }} /> : <FileX2 style={{ width: 18, color: "var(--fix)" }} />}UEPA <span className="code">{app.uepa || "missing"}</span></div>
             {docs.map((d) => (
-              <div key={d.key} className="row small" style={{ gap: 10, flexWrap: "nowrap", alignItems: "flex-start" }}>
-                {app.docs[d.key] ? <FileCheck2 style={{ width: 18, flex: "none", color: "var(--clear)" }} /> : <FileX2 style={{ width: 18, flex: "none", color: "var(--fix)" }} />}
-                <span className="wrap-any">{d.label}{app.docFiles?.[d.key] ? <span className="faint"> · {app.docFiles[d.key]}</span> : null}</span>
+              <div key={d.key} className="between small" style={{ gap: 10, flexWrap: "nowrap", alignItems: "flex-start" }}>
+                <div className="row" style={{ gap: 10, flexWrap: "nowrap", alignItems: "flex-start", flex: 1 }}>
+                  {app.docs[d.key] ? <FileCheck2 style={{ width: 18, flex: "none", color: "var(--clear)" }} /> : <FileX2 style={{ width: 18, flex: "none", color: "var(--fail)" }} />}
+                  <span className="wrap-any">{d.label}{app.docFiles?.[d.key] ? <span className="faint"> · {app.docFiles[d.key]}</span> : null}</span>
+                </div>
+                {(app.docPaths?.[d.key] || app.docFiles?.[d.key]) && (
+                  <button type="button" className="btn btn-sm btn-ghost" onClick={() => openDoc(d.key)}>Preview</button>
+                )}
               </div>
             ))}
           </section>
@@ -164,6 +219,18 @@ export default function Review() {
                 <span className="small">{h.note}</span>
               </div>
             ))}
+            {(app.audit?.length ?? 0) > 0 && (
+              <>
+                <hr className="hr" />
+                <h3 className="small">Audit trail</h3>
+                {[...(app.audit ?? [])].reverse().slice(0, 12).map((e, i) => (
+                  <div key={i} className="row" style={{ gap: 14, padding: "6px 0", flexWrap: "nowrap", alignItems: "flex-start" }}>
+                    <span className="tiny faint num" style={{ width: 70, flex: "none" }}>{e.at.slice(0, 10)}</span>
+                    <span className="tiny"><strong>{e.by}</strong> · {e.action}: {e.detail}</span>
+                  </div>
+                ))}
+              </>
+            )}
           </section>
         </div>
 
@@ -204,7 +271,8 @@ export default function Review() {
                   {emailOffline !== null && <AiTag offline={emailOffline} />}
                   <textarea id="decision-email" className="textarea email" style={{ minHeight: 260 }} value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Decision email" />
                   {emailIssues.length > 0 && <div className="small field-error" role="alert" style={{ display: "grid", gap: 4 }}><span><AlertTriangle />The email doesn&apos;t match the decision:</span>{emailIssues.map((x) => <span key={x}>· {x}</span>)}</div>}
-                  <button className="btn btn-primary btn-lg" onClick={send} disabled={blocked || emailIssues.length > 0 || (reason === "complete" && (excluded.length > 0 || outcome !== "approved"))}><Send />Send decision</button>
+                  {pendingComments.length > 0 && <p className="small" style={{ color: "var(--check)" }}>Agree, disagree, or edit {pendingComments.length} fail/warn AI comment{pendingComments.length > 1 ? "s" : ""} before sending.</p>}
+                  <button className="btn btn-primary btn-lg" onClick={send} disabled={blocked || emailIssues.length > 0 || pendingComments.length > 0 || (reason === "complete" && (excluded.length > 0 || outcome !== "approved"))}><Send />Send decision</button>
                 </>
               )}
               {app.status !== "needs_info" && (fixes.length > 0 || missing.length > 0) && <><hr className="hr" /><SendBack checks={fixes} missing={missing.map((m) => m.label.split(" (")[0])} onSend={sendBack} /></>}

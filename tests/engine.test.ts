@@ -1,7 +1,7 @@
 // Run: npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { lookupDeadline, matchVendor, runChecks, sponsorAsks, budgetCsv, documentList } from "../src/lib/engine";
+import { lookupDeadline, matchVendor, needsNineWeeks, runChecks, sponsorAsks, budgetCsv, documentList } from "../src/lib/engine";
 import type { Application, Club } from "../src/lib/types";
 
 const club: Club = { id: "c1", name: "Test Club", school: "Viterbi", startupEligible: false, receivedThisYear: 2000, eventsThisSemester: 1 };
@@ -107,4 +107,49 @@ test("export: budget CSV uses USG's eight columns and skips sponsor items", () =
   assert.equal(csv.length, 2);
   assert.match(csv[0], /Payment\/Order by Date/);
   assert.ok(documentList(a).some((d) => d.key === "healthPermit"));
+});
+
+test("needsNineWeeks: travel or unlisted food vendor, not listed caterers", () => {
+  assert.equal(needsNineWeeks(app()), false);
+  assert.equal(needsNineWeeks(app({ event: { ...app().event, travel: true } })), true);
+  const chipotle = app();
+  chipotle.items[0].vendor = "Chipotle";
+  assert.equal(needsNineWeeks(chipotle), true);
+});
+
+test("checks: foodWhy warns without purpose; otherSources empty warns; hotel compare fails", () => {
+  const a = app({
+    answers: { description: "Short", missionFit: "", otherSources: "" },
+    items: [
+      ...app().items,
+      { id: "i3", item: "Hotel", vendor: "Hilton", link: "", justification: "", quantity: 1, unitPrice: 200, total: 200, orderBy: "", category: "lodging", estimate: false, toSponsor: false },
+    ],
+  });
+  a.items[0].total = 4200; a.items[0].unitPrice = 35;
+  a.items[1].toSponsor = true;
+  const c = runChecks(a, club, "2026-11-14");
+  assert.equal(c.find((x) => x.ruleId === "food-why")?.level, "warn");
+  assert.equal(c.find((x) => x.ruleId === "other-university-funding")?.level, "warn");
+  assert.equal(c.find((x) => x.ruleId === "hotel-compare")?.level, "fail");
+  assert.ok(documentList(a).some((d) => d.key === "hotelCompare"));
+});
+
+test("checks: foodWhy and otherSources pass when filled; hotel compare passes with doc", () => {
+  const a = app({
+    uepa: "A12345",
+    docs: { healthPermit: true, hotelCompare: true },
+    answers: {
+      description: "A full-day hackathon with lunch so teams can stay and build.",
+      missionFit: "Supports our professional development mission for engineers.",
+      otherSources: "N/A",
+    },
+    items: [
+      { id: "i1", item: "Catered lunch", vendor: "Panda Catering", link: "", justification: "", quantity: 120, unitPrice: 35, total: 4200, orderBy: "", category: "food", estimate: false, toSponsor: false },
+      { id: "i3", item: "Hotel", vendor: "Hilton", link: "", justification: "", quantity: 1, unitPrice: 200, total: 200, orderBy: "", category: "lodging", estimate: false, toSponsor: false },
+    ],
+  });
+  const c = runChecks(a, club, "2026-11-14");
+  assert.equal(c.find((x) => x.ruleId === "food-why")?.level, "pass");
+  assert.equal(c.find((x) => x.ruleId === "other-university-funding")?.level, "pass");
+  assert.equal(c.find((x) => x.ruleId === "hotel-compare")?.level, "pass");
 });

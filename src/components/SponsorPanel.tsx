@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Check, Copy, HandCoins, Plus, RefreshCw, Sparkles } from "lucide-react";
 import { buildPackages } from "@/lib/ai-shared";
+import { authFetch } from "@/lib/apiClient";
 import { money, todayISO } from "@/lib/engine";
 import { newId, store, useStore } from "@/lib/store";
 import type { Application, Club } from "@/lib/types";
@@ -23,7 +24,7 @@ export function SponsorPanel({ app, club, asks }: { app: Application; club: Club
     setBusy(true);
     try {
       const packages = buildPackages(asks, app.event.attendance);
-      const r = await fetch("/api/sponsors", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club.name, packages, majors, extra: customSponsors ?? [] }) });
+      const r = await authFetch("/api/sponsors", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ app, clubName: club.name, packages, majors, extra: customSponsors ?? [] }) });
       const j = await r.json();
       store.patchApp(app.id, { sponsorPlan: { packages, picks: j.data.picks, email: j.data.email } });
       setOffline(Boolean(j.offline));

@@ -117,6 +117,12 @@ const lineTotal = (i: LineItem) => i.total;
 export const requestItems = (a: Application) => a.items.filter((i) => !i.toSponsor);
 export const requestTotal = (a: Application) => requestItems(a).reduce((s, i) => s + lineTotal(i), 0);
 
+/** Same 9-week trigger the guidelines use: travel, or a food vendor not on USG's list. */
+export function needsNineWeeks(app: Application) {
+  if (app.event.travel) return true;
+  return requestItems(app).some((i) => i.category === "food" && i.vendor && matchVendor(i.vendor, "food").kind === "not_listed");
+}
+
 let n = 0;
 /** A check's identity across runs: which rule, on which budget line. */
 export const checkKey = (c: Pick<Check, "ruleId" | "itemId">) => `${c.ruleId}:${c.itemId ?? ""}`;
@@ -141,7 +147,7 @@ export function runChecks(app: Application, club: Club, today = todayISO()): Che
   const total = requestTotal(app);
 
   // Deadline
-  const needsNine = e.travel || items.some((i) => i.category === "food" && matchVendor(i.vendor, "food").kind === "not_listed");
+  const needsNine = needsNineWeeks(app);
   const sent = app.submittedAt && app.status !== "draft" && app.status !== "needs_info" ? app.submittedAt : null;
   const dl = lookupDeadline(e.date, needsNine, sent ?? today);
   if (dl.kind === "blackout") out.push(mk({ ruleId: RULES.blackout.id, level: "fail", title: "USG does not fund events on this date", detail: "Events from Dec 5 to Jan 12, and after May 1, cannot be funded.", quote: RULES.blackout.quote, section: RULES.blackout.section }));
@@ -228,6 +234,54 @@ export function runChecks(app: Application, club: Club, today = todayISO()): Che
 
   if (food.length) {
     out.push(mk({ ruleId: RULES.foodDocs.id, level: app.docs.healthPermit ? "pass" : "fail", title: app.docs.healthPermit ? "Food vendor health permit and insurance attached" : "Food vendor health permit and insurance missing", detail: "Attach both from the food vendor, plus the Hospitality food and beverage form.", quote: RULES.foodDocs.quote, section: RULES.foodDocs.section }));
+    const foodWhyText = `${app.answers.description} ${app.answers.missionFit}`.trim();
+    out.push(mk({
+      ruleId: RULES.foodWhy.id,
+      level: foodWhyText.length >= 40 ? "pass" : "warn",
+      title: foodWhyText.length >= 40 ? "Food purpose is explained in the form answers" : "Explain why food is necessary for the event",
+      detail: "USG requires additional information detailing why food is necessary and how it aligns with the event's purpose.",
+      quote: RULES.foodWhy.quote,
+      section: RULES.foodWhy.section,
+    }));
+  }
+  if (items.some((i) => i.category === "lodging")) {
+    out.push(mk({
+      ruleId: RULES.hotelCompare.id,
+      level: app.docs.hotelCompare ? "pass" : "fail",
+      title: app.docs.hotelCompare ? "Hotel price comparison attached" : "Hotel price comparison missing",
+      detail: "Attach proof of price comparison with other hotels for lodging expenses.",
+      quote: RULES.hotelCompare.quote,
+      section: RULES.hotelCompare.section,
+    }));
+  }
+  const other = app.answers.otherSources.trim();
+  if (!other) {
+    out.push(mk({
+      ruleId: RULES.otherFunding.id,
+      level: "warn",
+      title: "List other funding sources (or N/A)",
+      detail: "USG asks what other sources you are using. Receiving funding from another University income source can be grounds for denial.",
+      quote: RULES.otherFunding.quote,
+      section: RULES.otherFunding.section,
+    }));
+  } else if (/\b(viterbi|marshall|price|sos|school of|department of|gsg)\b/i.test(other) && !/\bn\/?a\b/i.test(other)) {
+    out.push(mk({
+      ruleId: RULES.otherFunding.id,
+      level: "warn",
+      title: "Other University funding may conflict with USG",
+      detail: `You listed: "${other.slice(0, 120)}${other.length > 120 ? "…" : ""}". Confirm stacking order with USG before you submit.`,
+      quote: RULES.otherFunding.quote,
+      section: RULES.otherFunding.section,
+    }));
+  } else {
+    out.push(mk({
+      ruleId: RULES.otherFunding.id,
+      level: "pass",
+      title: "Other funding sources listed",
+      detail: other.slice(0, 160),
+      quote: RULES.otherFunding.quote,
+      section: RULES.otherFunding.section,
+    }));
   }
   const needsUepa = e.food || e.attendance >= 25 || items.length > 0;
   if (needsUepa && !e.travel)
@@ -264,6 +318,7 @@ export function documentList(app: Application) {
     list.push({ key: "purpose", label: "Statement of purpose for the travel", why: RULES.travelPurpose.quote });
     list.push({ key: "travelers", label: "Traveler details entered in EngageSC (not here)", why: "Name, DOB, phone number, USC email, USC ID # and class level of all travelers" });
   }
+  if (items.some((i) => i.category === "lodging")) list.push({ key: "hotelCompare", label: "Hotel price comparison", why: RULES.hotelCompare.quote });
   if (app.items.some((i) => i.toSponsor)) list.push({ key: "inkind", label: "Campus Activities approval for in-kind sponsor donations", why: "Outside organizations may support events through approved in-kind donations only" });
   return list;
 }

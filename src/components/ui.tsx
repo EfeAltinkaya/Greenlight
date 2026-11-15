@@ -103,7 +103,8 @@ export function overall(checks: CheckT[]): "fail" | "warn" | "pass" {
 /** Which step of the request each rule belongs to. */
 export type StepId = "event" | "budget" | "documents" | "answers" | "submit";
 export function stepOf(c: CheckT): StepId {
-  if (["food-docs", "uepa"].includes(c.ruleId)) return "documents";
+  if (["food-docs", "uepa", "hotel-compare"].includes(c.ruleId)) return "documents";
+  if (["food-why", "other-university-funding"].includes(c.ruleId)) return "answers";
   if (c.itemId || ["over-4k", "venue-cap", "quote-needed", "quote-mismatch", "annual-cap", "semester-cap"].includes(c.ruleId) || c.ruleId.startsWith("ineligible")) return "budget";
   return "event";
 }

@@ -34,7 +34,7 @@ export function moveApp(app: Application, to: Status, by: Actor, note: string): 
   if (to === "in_review") notices.push(notice("club", app.clubId, `${t} is being reviewed`, "A USG funding director opened your application.", club));
   if (to === "needs_info") notices.push(notice("club", app.clubId, `${t}: USG needs more information`, note + " You have 2 business days.", club));
   if (to === "approved" || to === "partial") notices.push(notice("club", app.clubId, `${t}: funded`, note, club));
-  if (to === "denied") notices.push(notice("club", app.clubId, `${t}: not funded by USG`, "Greenlight has listed other USC sources you can apply to.", club + "#funding"));
+  if (to === "denied") notices.push(notice("club", app.clubId, `${t}: not funded by USG`, "Greenlight has listed other USC sources you can apply to.", `/club/funding?app=${app.id}`));
   if (to === "post_event_due") notices.push(notice("club", app.clubId, `${t}: post-event evaluation due`, "Submit photos and final invoices within 3 business days.", club));
   void by;
   return { app: next, notices };

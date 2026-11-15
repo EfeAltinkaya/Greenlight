@@ -6,7 +6,7 @@
 import { useSyncExternalStore } from "react";
 import { DEMO_CLUB_ID, SEED_APPS, SEED_CLUBS, SEED_DEALS, SEED_OFFERS, SEED_OUTREACH } from "./seed";
 import { autoAdvance, moveApp, moveDeal } from "./workflow";
-import type { Application, Club, Deal, DealStage, Notice, Offer, Outreach, Status } from "./types";
+import type { Application, AuditEntry, Club, Deal, DealStage, Notice, Offer, Outreach, Status } from "./types";
 import type { Sponsor } from "@/data/sponsors";
 
 export type State = {
@@ -105,6 +105,11 @@ export const store = {
     let saved: Application | null = null;
     save({ ...s, apps: s.apps.map((a) => (a.id === id ? (saved = { ...a, ...(typeof patch === "function" ? patch(a) : patch) }) : a)) });
     if (saved) writer?.("app", id, saved, (saved as Application).clubId);
+  },
+  /** Append a fairness/audit trail entry without clobbering other fields. */
+  audit(id: string, entry: Omit<AuditEntry, "at"> & { at?: string }) {
+    const at = entry.at ?? new Date().toISOString();
+    this.patchApp(id, (a) => ({ audit: [...(a.audit ?? []), { at, by: entry.by, action: entry.action, detail: entry.detail }] }));
   },
   /** Move an application through the workflow; notices go to the other side automatically. */
   moveApp(id: string, to: Status, by: "club" | "usg" | "system", note: string, patch: Partial<Application> = {}) {
