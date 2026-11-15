@@ -148,6 +148,8 @@ export type Application = {
   decision: Decision | null;
   sponsorPlan: SponsorPlan | null;
   altRequests?: AltRequest[];
+  /** Per-event log of every funding source and which budget lines it covers. */
+  fundingStack?: FundingStackEntry[];
   /** Immutable-ish trail of reviewer/club actions that matter for fairness. */
   audit?: AuditEntry[];
   postEvent?: PostEventEval;
@@ -219,6 +221,14 @@ export type Deal = {
   invoice: { fileName: string; amount: number; vendor: string; uploadedAt: string } | null;
   recap: string;
   history: { at: string; stage: DealStage; note: string; by: "club" | "sponsor" | "system" }[];
+};
+
+export type FundingStackEntry = {
+  id: string;
+  source: string;
+  status: "planning" | "applied" | "awarded" | "declined";
+  amount: number;
+  lineIds: string[];
 };
 
 /** A request to another USC funding source after USG denies or partly funds. */

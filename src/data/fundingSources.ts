@@ -15,6 +15,16 @@ export type FundingSource = {
 
 export const FUNDING_SOURCES: FundingSource[] = [
   {
+    id: "legislative-fund",
+    name: "Legislative Fund",
+    who: "Recognized student organizations with a senator or committee sponsor",
+    eligible: () => true,
+    lead: "Under $1,000: 1 week with advisor, Speaker, VP, CDO, or CFO. Over $1,000: 2 weeks, feasibility meeting, then Legislative Branch vote of confidence (every other Tuesday 6-7 PM; criteria 1-4 need 80% scores of 3 or 4), then a Senate bill.",
+    how: "Slide deck required. Annual events capped at $2,000. Contingency line 10% maximum $350. Your club needs a senator or committee to sponsor the bill.",
+    url: "https://docs.google.com/document/d/1hC3oxctqxv7w1QUXugIA2nTCc2iwQD83GSRMwlt2a8Y/edit",
+    note: "2025-26 guidelines; 2026-27 not yet posted.",
+  },
+  {
     id: "vfb", name: "Viterbi Funding Board (VFB)", who: "Viterbi-affiliated student organizations",
     eligible: (c) => c.school === "Viterbi", lead: "Meets weekly during the semester until funds run out",
     how: "Complete application with all supporting documents; organization must be in good standing with the Viterbi Presidents Council and have filed its annual report.",
@@ -49,6 +59,7 @@ export const FUNDING_SOURCES: FundingSource[] = [
     eligible: () => true, lead: "Reach out well before the event",
     how: "USG has 19 programming assemblies. Ask the one closest to your event's audience to co-sponsor.",
     url: "https://usg.usc.edu/branches/programming/",
+    note: "For FY27, membership organizations moved to the Funding Department (Daily Trojan). Confirm eligibility with the assembly first.",
   },
   {
     id: "price", name: "Price School student organization funding", who: "Price-affiliated student organizations",
