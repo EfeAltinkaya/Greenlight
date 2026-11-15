@@ -9,6 +9,7 @@ import { newId, store, useCurrentClub, useStore } from "@/lib/store";
 import type { Outreach, OutreachStatus, SponsorPackage } from "@/lib/types";
 import { MAJORS, SCHOOL_MAJORS, SPONSORS, linkedInAlumni, linkedInRecruiters, universityPage, type Major, type Sponsor } from "@/data/sponsors";
 import { AiTag, Spinner, useToast } from "@/components/ui";
+import { Reveal } from "@/components/Motion";
 
 const STAGES: { id: OutreachStatus; label: string }[] = [
   { id: "shortlist", label: "To contact" },
@@ -157,7 +158,7 @@ export default function Sponsors() {
           </div>
         )}
 
-        <div className="grid cols-3">
+        <div className="grid cols-3 appear" key={majors.join() + needs.join() + tieOnly + q}>
           {shown.map(({ sponsor: s, score, reasons }) => {
             const tracked = mine.some((o) => o.sponsorId === s.id && o.appId === (target?.a.id ?? null));
             return (
@@ -200,7 +201,7 @@ export default function Sponsors() {
             })}
           </div>
         )}
-        {sel && <OutreachDetail key={sel.id} o={sel} pool={pool} say={say} onClose={() => setSelected(null)} />}
+        {sel && <Reveal k={sel.id}><OutreachDetail o={sel} pool={pool} say={say} onClose={() => setSelected(null)} /></Reveal>}
       </section>
     </>
   );

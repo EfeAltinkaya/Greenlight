@@ -161,7 +161,7 @@ export default function Review() {
             <p className="small muted">Suggestions only. Nothing reaches the club until you send a decision.</p>
             {aiOffline !== null && <AiTag offline={aiOffline} />}
             {loading && <div className="row small muted"><Spinner />Reading the application</div>}
-            <div>{app.aiComments.map((c) => <Comment key={c.id} c={c} check={checks.find((x) => x.id === c.checkId)} locked={decided} onAct={act} />)}</div>
+            <div className="appear">{app.aiComments.map((c) => <Comment key={c.id} c={c} check={checks.find((x) => x.id === c.checkId)} locked={decided} onAct={act} />)}</div>
             {!decided && app.aiComments.some((c) => c.action === "pending") && <div><button className="btn btn-sm" onClick={agreeAll}><CheckCheck />Agree with the rest</button></div>}
           </div>
 

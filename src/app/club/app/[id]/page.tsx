@@ -8,6 +8,7 @@ import { budgetCsv, documentList, fmtDate, lookupDeadline, money, requestItems, 
 import { store, useStore } from "@/lib/store";
 import type { Application, Check as CheckT, EventInfo, LineItem } from "@/lib/types";
 import { BudgetTable } from "@/components/BudgetTable";
+import { Reveal } from "@/components/Motion";
 import { SponsorPanel } from "@/components/SponsorPanel";
 import { AiTag, CheckItem, CountPills, Spinner, StatusPill, stepOf, useToast, type StepId } from "@/components/ui";
 
@@ -188,7 +189,7 @@ export default function Workspace() {
           })}
         </nav>
 
-        <div className="stack" style={{ gap: 20 }}>
+        <Reveal k={step}>
           {step === "event" && (
             <section className="card card-pad stack" style={{ gap: 18 }}>
               <div className="stack-xs"><h2>Event details</h2><p className="small muted">Read from your description. Change anything that is off; checks update as you type.</p></div>
@@ -312,7 +313,7 @@ export default function Workspace() {
               <button className="btn btn-dark" onClick={() => go(next.id)}>{next.title}<ArrowRight /></button>
             </div>
           )}
-        </div>
+        </Reveal>
 
         <aside className="sticky stack-sm" aria-label="Checks">
           {step === "status" || step === "sponsors" ? (
@@ -334,7 +335,7 @@ export default function Workspace() {
               {railChecks.length === 0 ? (
                 <div className="row small" style={{ color: "var(--clear)", padding: "8px 0" }}><CircleCheck style={{ width: 18, height: 18 }} />Nothing to fix here.</div>
               ) : (
-                <div>{[...railChecks].sort((a, b) => "fwpi".indexOf(a.level[0]) - "fwpi".indexOf(b.level[0])).map((c) => <CheckItem key={c.id} c={c} onFix={locked ? undefined : fix} />)}</div>
+                <div className="appear" key={step}>{[...railChecks].sort((a, b) => "fwpi".indexOf(a.level[0]) - "fwpi".indexOf(b.level[0])).map((c) => <CheckItem key={c.id} c={c} onFix={locked ? undefined : fix} />)}</div>
               )}
             </div>
           )}

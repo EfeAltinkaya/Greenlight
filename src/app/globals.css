@@ -338,3 +338,22 @@ p { margin: 0; }
 @media (max-width: 720px) { .stats-band { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 24px !important; } }
 .pipeline { display: grid; grid-template-columns: repeat(5, minmax(220px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 6px; align-items: start; }
 .pipe-col { background: rgba(0,0,0,.035); border-radius: var(--r-md); padding: 10px; display: grid; gap: 10px; align-content: start; min-height: 120px; }
+
+/* ---------- Motion and click feedback ---------- */
+.nav-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--cardinal); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.nav-progress.on { opacity: 1; animation: nav-load 1.6s cubic-bezier(.2,.8,.2,1) forwards; box-shadow: 0 0 8px rgba(153,0,0,.35); }
+@keyframes nav-load { from { width: 0; } to { width: 82%; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.appear > * { animation: rise-in .32s cubic-bezier(.2,.8,.2,1) both; }
+.appear > *:nth-child(2) { animation-delay: .04s; } .appear > *:nth-child(3) { animation-delay: .08s; }
+.appear > *:nth-child(4) { animation-delay: .12s; } .appear > *:nth-child(5) { animation-delay: .16s; }
+.appear > *:nth-child(6) { animation-delay: .2s; } .appear > *:nth-child(n+7) { animation-delay: .24s; }
+.side-link, .segmented button, .chip-btn, .step, .role-switch a, .drop, .check-ico { transition: background .18s, color .18s, box-shadow .2s, border-color .18s, transform .1s; }
+.side-link:active, .segmented button:active, .chip-btn:active, .step:active, .role-switch a:active { transform: scale(.98); }
+a.card, button.card { transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s; }
+a.card:hover, button.card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 12px 32px rgba(0,0,0,.08); }
+a.card:active, button.card:active { transform: translateY(0) scale(.99); }
+.table tbody tr.click:active { background: var(--cardinal-tint); }
+.btn-primary:active { box-shadow: 0 0 0 4px var(--cardinal-tint); }
+.pill { transition: background .2s, color .2s; }
+@media (prefers-reduced-motion: reduce) { .nav-progress.on { animation: none; width: 82%; } }

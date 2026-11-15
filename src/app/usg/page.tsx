@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { announceNav } from "@/components/Motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Inbox } from "lucide-react";
@@ -80,7 +81,7 @@ export default function Queue() {
                   const dl = lookupDeadline(a.event.date, a.event.travel, a.submittedAt ?? undefined);
                   const onTime = dl.kind === "ok" && !dl.passed;
                   return (
-                    <tr key={a.id} className="click" onClick={() => router.push(`/usg/app/${a.id}`)}>
+                    <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/usg/app/${a.id}`); }}>
                       <td><Link href={`/usg/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{club.name}{a.sample ? " · Sample" : ""}</span></Link></td>
                       <td className="small num" style={{ whiteSpace: "nowrap" }}>{fmtDate(a.event.date)}</td>
                       <td className="small">{BOARDS[a.event.board].short}</td>

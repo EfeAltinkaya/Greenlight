@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { NavProgress } from "@/components/Motion";
 
 const display = Inter_Tight({ variable: "--font-display", subsets: ["latin"], weight: ["600", "700"] });
 const body = Inter({ variable: "--font-body", subsets: ["latin"] });
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body><NavProgress>{children}</NavProgress></body>
     </html>
   );
 }

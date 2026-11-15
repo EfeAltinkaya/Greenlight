@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { announceNav } from "@/components/Motion";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CalendarClock, CircleDollarSign, FilePlus2, Inbox, PartyPopper, TriangleAlert } from "lucide-react";
 import { BOARDS, RULES } from "@/data/rules";
@@ -109,7 +110,7 @@ export default function ClubOverview() {
                 {mine.map((a) => {
                   const s = score(runChecks(a, club));
                   return (
-                    <tr key={a.id} className="click" onClick={() => router.push(`/club/app/${a.id}`)}>
+                    <tr key={a.id} className="click" onClick={() => { announceNav(); router.push(`/club/app/${a.id}`); }}>
                       <td><Link href={`/club/app/${a.id}`} className="stack-xs"><strong>{a.event.title}</strong><span className="tiny faint">{a.event.location}{a.sample ? " · Sample" : ""}</span></Link></td>
                       <td className="small num" style={{ whiteSpace: "nowrap" }}>{a.event.date ? fmtDate(a.event.date) : "No date"}</td>
                       <td className="small">{BOARDS[a.event.board].short}</td>

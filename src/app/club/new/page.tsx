@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { announceNav } from "@/components/Motion";
 import { useState } from "react";
 import { ArrowRight, CalendarSearch, ListChecks, ReceiptText, Sparkles } from "lucide-react";
 import { newId, store, useCurrentClub } from "@/lib/store";
@@ -39,6 +40,7 @@ export default function NewRequest() {
         aiComments: [], decision: null, sponsorPlan: null,
       };
       store.upsertApp(app);
+      announceNav();
       router.push(`/club/app/${app.id}`);
     } catch (e) {
       say((e as Error).message);
