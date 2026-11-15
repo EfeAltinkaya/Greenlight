@@ -9,6 +9,7 @@ One app, two sides. Club officers describe an event in plain words; Greenlight f
 
 ## Where things live
 - `src/data/` = USG facts as data. `rules.ts` (every rule with its exact quote and section), `deadlines.ts` (USG's week-by-week deadline sheet), `vendors.json` (built from USG's Vendor List by `scripts/build-vendors.mjs`), `sponsors.ts`, `guidelines.ts` (text sent to Claude, cached), `sources.ts` (the only stats the landing may state, each with its source), `team.ts` (team and founder copy).
+- `ml/` = Greenlight Models training (CSVs, `embed.py`, `train_heads.py`, reports). Shipped heads live in `public/models/heads/`; browser runtime in `src/lib/models/`. Models suggest; the rules engine and people decide.
 - `src/lib/engine.ts` = the rules engine. Plain code, no AI. All pass/warn/fail results come from here. Tested in `tests/engine.test.ts`.
 - `src/lib/ai.ts` = every Claude call (intake, quote reading, answers, review comments, decision email, sponsor match). Each has a zod schema and an offline fallback (`offline: true`). Models are in `src/lib/claude.ts` (Haiku for reading, Sonnet for writing).
 - `src/lib/store.ts` = app state (localStorage in demo mode). When signed in, `src/lib/sync.ts` mirrors every write to Supabase and reloads on Realtime changes. `src/lib/session.ts` = auth. `src/lib/workflow.ts` = state machines for requests and sponsor deals (each step notifies the other side). `decision.ts` = USG decision support, `contract.ts` = standard in-kind agreement.
