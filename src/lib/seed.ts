@@ -128,6 +128,13 @@ export const SEED_APPS: Application[] = [
 export const SEED_OUTREACH: Outreach[] = [
   { id: "o1", clubId: "builders", appId: "s-robotics", sponsorId: "northrop", packageTitle: "Prizes for the top three teams", amount: 450, status: "emailed", contactName: "", contactInfo: "", notes: "Sample: emailed the university recruiting inbox.", committed: 0, followUp: "2026-11-12", updatedAt: "2026-11-07", email: null },
   { id: "o2", clubId: "builders", appId: "s-robotics", sponsorId: "spacex", packageTitle: "Club t-shirts for volunteers", amount: 450, status: "shortlist", contactName: "", contactInfo: "", notes: "", committed: 0, followUp: "", updatedAt: "2026-11-07", email: null },
+  // Sample outcomes from the other sample clubs (made up), so the learned ranking has something to learn from.
+  ...([
+    ["s1", "fintech", "deloitte", "replied"], ["s2", "fintech", "ey", "committed"], ["s3", "fintech", "k1", "replied"],
+    ["s4", "chess", "riot", "replied"], ["s5", "chess", "netflix", "declined"], ["s6", "dance", "disney", "emailed"],
+    ["s7", "dance", "sony-pictures", "declined"], ["s8", "shore", "chevron", "emailed"], ["s9", "shore", "kaiser", "replied"],
+    ["s10", "chess", "google", "emailed"], ["s11", "fintech", "amazon", "emailed"], ["s12", "dance", "netflix", "declined"],
+  ] as const).map(([id, clubId, sponsorId, status]): Outreach => ({ id, clubId, appId: null, sponsorId, packageTitle: "General support", amount: 300, status, contactName: "", contactInfo: "", notes: "Sample outcome", committed: status === "committed" ? 300 : 0, followUp: "", updatedAt: "2026-10-20", email: null })),
 ];
 
 // Sample sponsor offers from made-up local businesses (clearly labeled), so the portal is not empty.

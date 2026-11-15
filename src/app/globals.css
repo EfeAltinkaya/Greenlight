@@ -492,3 +492,8 @@ button.link { border: 0; background: none; padding: 0; cursor: pointer; }
 /* The fix list USG sent back, at the top of the club's request. */
 .fix-request { border-left: 4px solid var(--check); }
 .fix-request h2 { font-size: 18px; }
+
+/* Learned reply chance on sponsor cards */
+.learned-line { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-weight: 600; }
+.learned-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 25%, transparent); }
+.learn-note { margin: -4px 0 6px; max-width: 70ch; }

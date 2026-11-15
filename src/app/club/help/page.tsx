@@ -32,15 +32,15 @@ type QuestionId = (typeof QUESTIONS)[number]["id"];
 
 const BOARD_QUESTIONS: Set<QuestionId> = new Set(["vendor", "incomplete", "eligible", "deadline", "reviewers"]);
 
+// The snapshot must be a stable value (a string), not a new URLSearchParams each call:
+// a fresh object every render made React loop forever and the page never showed.
+const subscribeSearch = (cb: () => void) => {
+  window.addEventListener("popstate", cb);
+  return () => window.removeEventListener("popstate", cb);
+};
 function useSearch() {
-  return useSyncExternalStore(
-    (cb) => {
-      window.addEventListener("popstate", cb);
-      return () => window.removeEventListener("popstate", cb);
-    },
-    () => new URLSearchParams(window.location.search),
-    () => new URLSearchParams(),
-  );
+  const search = useSyncExternalStore(subscribeSearch, () => window.location.search, () => "");
+  return useMemo(() => new URLSearchParams(search), [search]);
 }
 
 function fmtNext(p: Person) {
@@ -163,7 +163,7 @@ export default function ClubHelp() {
       const mailto = `mailto:${toEmails.join(",")}?subject=${encodeURIComponent(rid ? `[${rid}] Question for USG Funding` : "Question for USG Funding")}&body=${encodeURIComponent(draft)}`;
       await navigator.clipboard.writeText(draft);
       say("Draft copied");
-      window.location.href = mailto;
+      window.location.assign(mailto);
     } catch {
       say("Could not copy draft", "error");
     }

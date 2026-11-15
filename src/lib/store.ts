@@ -21,7 +21,7 @@ export type State = {
   deals?: Deal[];
   notices?: Notice[];
 };
-const KEY = "greenlight:v4";
+const KEY = "greenlight:v5"; // v5: sample outreach outcomes for the learned sponsor ranking
 const SERVER: State = { clubs: SEED_CLUBS, apps: SEED_APPS, currentClub: DEMO_CLUB_ID, outreach: SEED_OUTREACH, offers: SEED_OFFERS, deals: SEED_DEALS, notices: [] };
 
 let state: State | null = null;
