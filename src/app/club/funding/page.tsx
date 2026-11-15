@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { ArrowRight, Copy, ExternalLink, HandCoins, Landmark } from "lucide-react";
+import { ArrowRight, Copy, Download, ExternalLink, HandCoins, Landmark } from "lucide-react";
 import { eligibleSources, FUNDING_SOURCES } from "@/data/fundingSources";
 import { money, requestTotal, sponsorAsks, todayISO } from "@/lib/engine";
+import { downloadLegFundPptx } from "@/lib/export/legFundPptx";
 import { store, useCurrentClub, useStore } from "@/lib/store";
 import type { AltRequest, Application } from "@/lib/types";
-import { useToast } from "@/components/ui";
+import { Spinner, useToast } from "@/components/ui";
 
 const draftFor = (a: Application, clubName: string, sourceName: string, amount: number) =>
   `Hello,\n\n${clubName} is requesting ${money(amount)} from ${sourceName} for ${a.event.title} on ${a.event.date}${a.event.location ? ` at ${a.event.location}` : ""}, for about ${a.event.attendance} students.\n\n${a.answers.description || a.event.description}\n\n${a.decision ? `USG's Funding Department ${a.decision.outcome === "denied" ? "was not able to fund this request" : `funded ${money(a.decision.amount)}`}, so we are asking for the remaining ${money(amount)}.` : ""}\n\nThe itemized budget and vendor quotes are attached.\n\nThank you,\n[Your name]\n${clubName}`;
@@ -24,6 +25,7 @@ export default function OtherFunding() {
   const { apps } = useStore();
   const club = useCurrentClub();
   const [toast, say] = useToast();
+  const [pptxBusy, setPptxBusy] = useState(false);
   const fromUrl = useQueryApp();
   const candidates = apps.filter((a) => a.clubId === club.id && (a.status === "denied" || a.status === "partial" || a.status === "needs_info" || a.status === "draft"));
   const [appId, setAppId] = useState("");
@@ -154,6 +156,26 @@ export default function OtherFunding() {
                   <a className="btn btn-sm" href={s.url} target="_blank" rel="noreferrer"><ExternalLink />Open {s.name.split(" (")[0]}</a>
                   {app && !r && <button className="btn btn-sm btn-primary" onClick={() => track(s.id, s.name, "drafted")}>Prepare request</button>}
                   {r?.draft && <button className="btn btn-sm" onClick={async () => { try { await navigator.clipboard.writeText(r.draft); say("Copied"); } catch { say("Select the text and copy it"); } }}><Copy />Copy</button>}
+                  {s.id === "legislative-fund" && app && (
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      disabled={pptxBusy}
+                      onClick={async () => {
+                        setPptxBusy(true);
+                        try {
+                          await downloadLegFundPptx(app, club, r?.amount || need || requestTotal(app));
+                          say("Legislative Fund deck downloaded. Edit every slide before you present.");
+                        } catch {
+                          say("Could not build the PowerPoint", "error");
+                        } finally {
+                          setPptxBusy(false);
+                        }
+                      }}
+                    >
+                      {pptxBusy ? <><Spinner />Building deck</> : <><Download />Slide deck (.pptx)</>}
+                    </button>
+                  )}
                   {r && r.status !== "awarded" && <button className="btn btn-sm btn-ghost" onClick={() => track(s.id, s.name, "applied")}>Mark applied</button>}
                   {r && r.status === "applied" && <><button className="btn btn-sm btn-ghost" onClick={() => track(s.id, s.name, "awarded")}>Mark awarded</button><button className="btn btn-sm btn-ghost" onClick={() => track(s.id, s.name, "declined")}>Mark declined</button></>}
                 </div>

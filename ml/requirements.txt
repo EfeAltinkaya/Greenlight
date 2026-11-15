@@ -1,0 +1,7 @@
+scikit-learn==1.5.2
+pandas==2.2.3
+numpy==2.1.3
+# Optional for BGE v1.5 / SetFit v2 (not required for hash-parity v1):
+# sentence-transformers==3.3.1
+# setfit==1.1.0
+# optimum[onnxruntime]==1.23.3

@@ -1,6 +1,7 @@
 // Checks every sponsor email before a club sees it. Adapted from Chancery's drafting gates
 // (github.com/JainamTJain/chancery-public): prompt rules ask, these validators enforce.
 // A draft that fails never reaches the outreach queue.
+import { addBusinessDays } from "./bizDays";
 
 /** Phrases that make a cold email read as mass mail or AI filler (from Chancery's banned list). */
 export const BANNED = [
@@ -106,12 +107,5 @@ export function followUpAllowed(status: string, followUp: string, today: string)
 
 /** +5 business days from a send date (skips Sat/Sun). */
 export function followUpDate(sentISO: string, businessDays = 5): string {
-  const d = new Date(sentISO + "T12:00:00Z");
-  let left = businessDays;
-  while (left > 0) {
-    d.setUTCDate(d.getUTCDate() + 1);
-    const day = d.getUTCDay();
-    if (day !== 0 && day !== 6) left -= 1;
-  }
-  return d.toISOString().slice(0, 10);
+  return addBusinessDays(sentISO, businessDays);
 }

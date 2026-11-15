@@ -49,7 +49,7 @@ Honest framing: Greenlight Models are small classifiers we trained on USC club-f
 
 ## Documents
 
-Real exports from proven libraries: Greenlight Check PDF (`@react-pdf/renderer`), budget/ledger `.xlsx` (`exceljs`), in-kind agreement / decision letter (`.docx`), Legislative Fund deck (`pptxgenjs`), calendar (`.ics`). Credits on `/sources`.
+Real exports from proven libraries in `src/lib/export/`: Greenlight Check PDF (`checkPdf.tsx` + `@react-pdf/renderer`), ledger `.xlsx` (`ledgerExcel.ts` + `exceljs`), in-kind agreement `.docx` (`agreementDocx.ts` + `docx`), Legislative Fund six-section deck (`legFundPptx.ts` + `pptxgenjs`), outreach CSV, calendar (`.ics` via `eventTimeline.ts`). Quote PDFs can fall back to `unpdf` text extraction when Claude is offline. Credits on `/sources`. Models suggest only (confirmable "Did you mean…?"); `engine.ts` decides pass/fail.
 
 ## Where rules live
 

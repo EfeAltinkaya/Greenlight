@@ -1,0 +1,281 @@
+text,label,source,split
+Catered dinner for 80 from Panda Express,food,team_written,test
+Chipotle catering trays for club mixer,food,team_written,test
+Boxed lunches for career panel attendees,food,team_written,test
+Pizza for build night from listed vendor,food,team_written,test
+Breakfast burritos for early workshop,food,team_written,test
+Vegan catering for cultural night,food,team_written,test
+Snack boxes for study session,food,team_written,test
+Dinner buffet for networking event,food,team_written,test
+Bluetooth speaker for the club room,durable,team_written,test
+Reusable glass plates for banquet,durable,team_written,test
+Club uniforms and jerseys,durable,team_written,test
+Laptop for robotics team,durable,team_written,test
+Power drill set for makerspace,durable,team_written,test
+Ceramic tableware for hospitality events,durable,team_written,test
+Folding tables for recurring meetings,durable,team_written,test
+Camera for club media kit,durable,team_written,test
+Gift cards for hackathon winners,gift,team_written,test
+Amazon gift cards as raffle prizes,gift,team_written,test
+Visa gift cards for contest awards,gift,team_written,test
+Prize gift cards for trivia night,gift,team_written,test
+Target gift cards for volunteers,gift,team_written,test
+Starbucks gift cards for speakers,gift,team_written,test
+Gift card giveaway for members,gift,team_written,test
+Cash-equivalent prizes for winners,gift,team_written,test
+Paper plates and napkins for mixer,supplies,team_written,test
+Single-use craft supplies for workshop,supplies,team_written,test
+Markers and poster paper,supplies,team_written,test
+Disposable utensils for picnic,supplies,team_written,test
+Name tags and stickers for conference,supplies,team_written,test
+Tape glue and scissors for craft night,supplies,team_written,test
+Plastic cups for lemonade stand,supplies,team_written,test
+Amazon robot kits single use supplies,supplies,team_written,test
+Club t-shirts for new members,tshirt,team_written,test
+Event t-shirts for 5k volunteers,tshirt,team_written,test
+Printed tees for hackathon staff,tshirt,team_written,test
+Member shirts with club logo,tshirt,team_written,test
+Cotton tees for orientation,tshirt,team_written,test
+Tournament team shirts,tshirt,team_written,test
+Volunteer t-shirts for cleanup day,tshirt,team_written,test
+Branded tees for club fair,tshirt,team_written,test
+Stickers with club logo for fair,promo_merch,team_written,test
+Branded pens and tote bags,promo_merch,team_written,test
+Banners for club booth,promo_merch,team_written,test
+Lanyards with club name,promo_merch,team_written,test
+Buttons and pins for members,promo_merch,team_written,test
+Water bottles with logo,promo_merch,team_written,test
+Branded notebooks for recruits,promo_merch,team_written,test
+Table runner with club branding,promo_merch,team_written,test
+DJ and performer fee for showcase,performer,team_written,test
+Live band for cultural night,performer,team_written,test
+Spoken word artist honorarium,performer,team_written,test
+Dance troupe performance fee,performer,team_written,test
+Guest musician for concert,performer,team_written,test
+Comedy act for variety show,performer,team_written,test
+DJ for social mixer,performer,team_written,test
+Choreographer fee for showcase,performer,team_written,test
+Bovard Auditorium rental and staffing,venue,team_written,test
+Room rental in TCC for workshop,venue,team_written,test
+Outdoor plaza reservation fee,venue,team_written,test
+Theater space rental for play,venue,team_written,test
+Conference room booking fee,venue,team_written,test
+Gym rental for tournament,venue,team_written,test
+Gallery space for exhibition,venue,team_written,test
+Classroom AV room reservation,venue,team_written,test
+Programs and posters printing,printing,team_written,test
+Color flyers for club fair,printing,team_written,test
+Large format poster for symposium,printing,team_written,test
+Booklets for conference agenda,printing,team_written,test
+Tickets printed for show,printing,team_written,test
+Brochures for outreach,printing,team_written,test
+Signage printing for booth,printing,team_written,test
+Program book for recital,printing,team_written,test
+Wine for alumni reception,alcohol,team_written,test
+Beer for of-age social,alcohol,team_written,test
+Champagne toast supplies,alcohol,team_written,test
+Bar service for gala,alcohol,team_written,test
+Alcoholic beverages for mixer,alcohol,team_written,test
+Cocktail ingredients for fundraiser,alcohol,team_written,test
+Keg for graduate social,alcohol,team_written,test
+Liquor for of-age event,alcohol,team_written,test
+Uber rides for off-campus volunteers,rideshare,team_written,test
+Lyft to venue for performers,rideshare,team_written,test
+Car rental for supply run,rideshare,team_written,test
+Rideshare for elderly guests,rideshare,team_written,test
+Uber XL for equipment transport,rideshare,team_written,test
+Lyft credits for speakers,rideshare,team_written,test
+Rental van for retreat,rideshare,team_written,test
+Taxi vouchers for attendees,rideshare,team_written,test
+Round-trip flights to conference,airfare,team_written,test
+Airfare for competition team,airfare,team_written,test
+Plane tickets for nationals,airfare,team_written,test
+Flight to academic conference,airfare,team_written,test
+Airline tickets for officers,airfare,team_written,test
+Domestic airfare for workshop,airfare,team_written,test
+Flights for debate tournament,airfare,team_written,test
+Air travel for invited speaker,airfare,team_written,test
+Hotel rooms for conference team,lodging,team_written,test
+Airbnb for competition weekend,lodging,team_written,test
+Motel stay near venue,lodging,team_written,test
+Hotel for visiting speakers,lodging,team_written,test
+Lodging for nationals trip,lodging,team_written,test
+Hostel beds for service trip,lodging,team_written,test
+Hotel block for club retreat,lodging,team_written,test
+Overnight lodging for tournament,lodging,team_written,test
+Miscellaneous event insurance fee,other,team_written,test
+Uncategorized club expense,other,team_written,test
+General contingency for event,other,team_written,test
+Misc logistics cost,other,team_written,test
+Other line not fitting categories,other,team_written,test
+Catch-all event support,other,team_written,test
+Undefined support cost,other,team_written,test
+General operating for event day,other,team_written,test
+Food for 50 students from USC Hospitality,food,rules_doc,train
+Catered meal within $35 per person,food,rules_doc,train
+On-campus catered reception,food,seed_app,train
+Lunch for conference volunteers,food,team_written,train
+Dinner for invited speakers,food,team_written,train
+Refreshments for open house,food,team_written,train
+Tacos for club kickoff,food,team_written,train
+Sushi platters for awards night,food,synthetic,train
+Sandwiches for midterm review,food,synthetic,train
+Coffee and pastries for morning session,food,synthetic,train
+Barbecue for community picnic,food,synthetic,train
+Thai catering for cultural fair,food,synthetic,train
+Electronics that last beyond one event,durable,rules_doc,train
+Glass or ceramic dinnerware,durable,rules_doc,train
+Reusable equipment for the organization,durable,rules_doc,train
+Tool kit for workshop space,durable,team_written,train
+Projector owned by the club,durable,team_written,train
+Microphone stand for performances,durable,team_written,train
+Storage bins for costumes,durable,team_written,train
+Sewing machine for costume shop,durable,synthetic,train
+Club banner hardware poles,durable,synthetic,train
+Whiteboard for office,durable,synthetic,train
+Printer for club use,durable,synthetic,train
+Tablet for check-in desk,durable,synthetic,train
+Gift cards are not fundable,gift,rules_doc,train
+Prizes purchased as gift cards,gift,rules_doc,train
+Raffle prizes as store gift cards,gift,seed_app,train
+Uber gift cards for guests,gift,team_written,train
+iTunes gift cards for winners,gift,team_written,train
+DoorDash gift cards as prizes,gift,team_written,train
+Best Buy gift cards for hackathon,gift,team_written,train
+Grocery gift cards for food drive raffle,gift,synthetic,train
+Movie gift cards for social,gift,synthetic,train
+Bookstore gift cards for scholars,gift,synthetic,train
+Restaurant gift cards for judges,gift,synthetic,train
+Spa gift cards for auction,gift,synthetic,train
+Paper goods for one-time event,supplies,rules_doc,train
+Consumable craft materials,supplies,rules_doc,train
+Build night supplies from Amazon,supplies,seed_app,train
+Paint for mural day,supplies,team_written,train
+Foam boards for posters,supplies,team_written,train
+String lights disposable set,supplies,team_written,train
+Balloons and streamers pack,supplies,team_written,train
+Clipboards for registration,supplies,synthetic,train
+Trash bags for cleanup,supplies,synthetic,train
+First aid kit consumables,supplies,synthetic,train
+Badge holders for one conference,supplies,synthetic,train
+Sticky notes for brainstorm,supplies,synthetic,train
+T-shirts as promotional apparel,tshirt,rules_doc,train
+Shirts for event staff,tshirt,seed_app,train
+Hoodies labeled as shirts only if tees,tshirt,team_written,train
+Polo shirts for officers,tshirt,team_written,train
+Race day t-shirts,tshirt,team_written,train
+Conference staff tees,tshirt,team_written,train
+Welcome week shirts,tshirt,synthetic,train
+Intramural team shirts,tshirt,synthetic,train
+Fundraising walk tees,tshirt,synthetic,train
+Alumni weekend shirts,tshirt,synthetic,train
+Design competition tees,tshirt,synthetic,train
+Orientation leader shirts,tshirt,synthetic,train
+Promotional merchandise and swag,promo_merch,rules_doc,train
+Stickers banners and giveaways,promo_merch,seed_app,train
+Keychains for career fair,promo_merch,team_written,train
+Laptop stickers pack,promo_merch,team_written,train
+Club magnets for fridge,promo_merch,team_written,train
+Branded hats for parade,promo_merch,team_written,train
+Wristbands for festival,promo_merch,synthetic,train
+Flyer holders with logo,promo_merch,synthetic,train
+Vinyl decals for club car,promo_merch,synthetic,train
+Embroidered patches,promo_merch,synthetic,train
+Custom pins for officers,promo_merch,synthetic,train
+Branded umbrellas for giveaway,promo_merch,synthetic,train
+Performers and DJs are ineligible,performer,rules_doc,train
+Talent fees for entertainment,performer,rules_doc,train
+DJ for spring formal,performer,seed_app,train
+Violinist for gala,performer,team_written,train
+Hip hop crew performance,performer,team_written,train
+Jazz combo for reception,performer,team_written,train
+Magician for family day,performer,team_written,train
+A cappella guest group,performer,synthetic,train
+Emcee fee for awards,performer,synthetic,train
+Martial arts demo performers,performer,synthetic,train
+Poetry slam featured artists,performer,synthetic,train
+Orchestra guest soloist,performer,synthetic,train
+Venue and facility rental,venue,rules_doc,train
+Staffing for reserved venues,venue,rules_doc,train
+Hall rental for banquet,venue,seed_app,train
+Park picnic shelter fee,venue,team_written,train
+Studio rental for rehearsal,venue,team_written,train
+Ballroom for formal,venue,team_written,train
+Lab space reservation,venue,team_written,train
+Amphitheater for concert,venue,synthetic,train
+Library event room fee,venue,synthetic,train
+Courtyard reservation,venue,synthetic,train
+Practice room block booking,venue,synthetic,train
+Museum gallery rental,venue,synthetic,train
+Printing of programs and materials,printing,rules_doc,train
+Posters for event publicity,printing,seed_app,train
+Name tents for dinner,printing,team_written,train
+Certificates printing,printing,team_written,train
+Menu cards for banquet,printing,team_written,train
+Handout packets for workshop,printing,team_written,train
+Banner print for parade,printing,synthetic,train
+Zine printing for arts night,printing,synthetic,train
+Score sheets for contest,printing,synthetic,train
+Maps printed for scavenger hunt,printing,synthetic,train
+Invitation cards,printing,synthetic,train
+Table tents for mixer,printing,synthetic,train
+Alcohol is not fundable,alcohol,rules_doc,train
+Any alcoholic beverages,alcohol,rules_doc,train
+Wine tasting tickets,alcohol,team_written,train
+Beer tasting event supplies,alcohol,team_written,train
+Open bar deposit,alcohol,team_written,train
+Spirits for of-age dinner,alcohol,team_written,train
+Alcohol permit fee tied to drinks,alcohol,synthetic,train
+Mimosa bar for brunch,alcohol,synthetic,train
+Sangria for cultural night,alcohol,synthetic,train
+Hard seltzer for social,alcohol,synthetic,train
+Whiskey tasting kit,alcohol,synthetic,train
+Prosecco for awards,alcohol,synthetic,train
+Rideshare and rental cars ineligible,rideshare,rules_doc,train
+Uber Lyft car rental not funded,rideshare,rules_doc,train
+Shared ride to service site,rideshare,team_written,train
+Airport rideshare for guest,rideshare,team_written,train
+Zipcar day rental,rideshare,team_written,train
+Enterprise van rental,rideshare,team_written,train
+Lyft for late night safety,rideshare,synthetic,train
+Uber for judge pickup,rideshare,synthetic,train
+Car share for grocery run,rideshare,synthetic,train
+Rides to trailhead,rideshare,synthetic,train
+Shuttle rideshare alternative,rideshare,synthetic,train
+Driver for VIP guest,rideshare,synthetic,train
+Airfare for approved travel,airfare,rules_doc,train
+Plane tickets for competition,airfare,seed_app,train
+Southwest flights to Austin,airfare,team_written,train
+United tickets to Chicago,airfare,team_written,train
+Delta airfare for regionals,airfare,team_written,train
+JetBlue to east coast meet,airfare,team_written,train
+Alaska air to Seattle,airfare,synthetic,train
+Spirit flights for hackathon,airfare,synthetic,train
+American Airlines to DC,airfare,synthetic,train
+Frontier to Denver contest,airfare,synthetic,train
+Hawaiian air for island meet,airfare,synthetic,train
+Baggage fees with airfare,airfare,synthetic,train
+Lodging for travel events,lodging,rules_doc,train
+Hotel for away competition,lodging,seed_app,train
+Marriott for conference,lodging,team_written,train
+Hilton near convention center,lodging,team_written,train
+Hostel in San Francisco,lodging,team_written,train
+Campus hotel guest rooms,lodging,team_written,train
+Shared Airbnb for team of eight,lodging,synthetic,train
+Motel 6 for overnight,lodging,synthetic,train
+Extended stay for workshop week,lodging,synthetic,train
+Bed and breakfast for guests,lodging,synthetic,train
+University lodging rate,lodging,synthetic,train
+Cabin rental for retreat,lodging,synthetic,train
+Other eligible expenses,other,rules_doc,train
+Misc line from sample app,other,seed_app,train
+Sundry event costs,other,team_written,train
+Assorted small fees,other,team_written,train
+General event support,other,team_written,train
+Unspecified materials,other,team_written,train
+Mixed logistics,other,synthetic,train
+Other programmatic costs,other,synthetic,train
+Residual budget line,other,synthetic,train
+Flexible event fund,other,synthetic,train
+Catchall supplies adjacent,other,synthetic,train
+Non-specific support,other,synthetic,train

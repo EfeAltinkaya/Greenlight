@@ -3,8 +3,11 @@
 // approve more than the rules allow or claim nothing was excluded when lines were.
 // Pattern borrowed from Chancery: instructions ask, validators enforce.
 import { RULES } from "@/data/rules";
+import { addBusinessDays } from "./bizDays";
 import { money, requestItems, requestTotal } from "./engine";
 import type { Application, Check, Club } from "./types";
+
+export { addBusinessDays } from "./bizDays";
 
 export type Outcome = "approved" | "partial" | "denied";
 
@@ -144,17 +147,6 @@ export function emailProblems(email: string, f: DecisionFacts): string[] {
     if (!allowed.has(Math.round(Number(m[1])))) { p.push(`It mentions $${m[1]}, which is not part of this decision.`); break; }
   }
   return p;
-}
-
-/** Add n business days (Mon-Fri) to an ISO date. */
-export function addBusinessDays(iso: string, n: number) {
-  const d = new Date(iso + "T12:00:00Z");
-  while (n > 0) {
-    d.setUTCDate(d.getUTCDate() + 1);
-    const w = d.getUTCDay();
-    if (w !== 0 && w !== 6) n--;
-  }
-  return d.toISOString().slice(0, 10);
 }
 
 /** For an application returned to the club: when the fix was due, and whether that has passed. */

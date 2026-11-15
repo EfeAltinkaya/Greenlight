@@ -282,3 +282,21 @@ drop policy if exists campus_claims_write on public.campus_claims;
 create policy campus_claims_write on public.campus_claims for all to authenticated
   using (club_id = my_club() or my_role() = 'usg')
   with check (club_id = my_club() or my_role() = 'usg');
+
+-- Greenlight Models: officer corrections and confirmed labels for retraining.
+create table if not exists public.training_examples (
+  id text primary key,
+  task text not null check (task in ('items', 'board', 'replies', 'vendor')),
+  text text not null,
+  label text not null,
+  source text not null check (source in ('officer_correction', 'reviewer_decision', 'reply_confirmed')),
+  club_id_hash text,
+  created_at timestamptz not null default now()
+);
+alter table public.training_examples enable row level security;
+drop policy if exists training_examples_insert on public.training_examples;
+create policy training_examples_insert on public.training_examples for insert to authenticated
+  with check (true);
+drop policy if exists training_examples_read on public.training_examples;
+create policy training_examples_read on public.training_examples for select to authenticated
+  using (my_role() = 'usg');

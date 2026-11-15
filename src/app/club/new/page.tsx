@@ -7,8 +7,11 @@ import { authFetch } from "@/lib/apiClient";
 import { newId, store, useCurrentClub } from "@/lib/store";
 import { fmtDate, lookupDeadline, runChecks, todayISO } from "@/lib/engine";
 import { makeRequestId } from "@/lib/requestId";
+import { routeBoard, type BoardSuggestion } from "@/lib/models";
+import type { BoardId } from "@/data/rules";
 import type { Application, EventInfo } from "@/lib/types";
 import type { Intake } from "@/lib/ai";
+import { ModelSuggestion } from "@/components/ModelSuggestion";
 import { stepOf, Spinner, useToast } from "@/components/ui";
 import { useSession } from "@/lib/session";
 
@@ -31,8 +34,30 @@ export default function NewRequest() {
   const [busy, setBusy] = useState(false);
   const [toast, say] = useToast();
   const [err, setErr] = useState("");
+  const [boardSug, setBoardSug] = useState<BoardSuggestion | null>(null);
+  const [pickedBoard, setPickedBoard] = useState<BoardId | null>(null);
+  const [boardDismissed, setBoardDismissed] = useState("");
   const previewSix = previewDate ? lookupDeadline(previewDate, false) : null;
   const previewNine = previewDate ? lookupDeadline(previewDate, true) : null;
+
+  useEffect(() => {
+    let off = false;
+    const t = window.setTimeout(() => {
+      void routeBoard(text).then((r) => {
+        if (off) return;
+        if (!r || boardDismissed === text) {
+          setBoardSug(null);
+          return;
+        }
+        setBoardSug(r);
+        if (!pickedBoard) setPickedBoard(r.label as BoardId);
+      });
+    }, 450);
+    return () => {
+      off = true;
+      window.clearTimeout(t);
+    };
+  }, [text, boardDismissed, pickedBoard]);
 
   async function build() {
     if (text.trim().length < 12) { setErr("Add a sentence or two about the event first: what, when, where, how many people and what it costs."); return say("Add a sentence or two about the event first", "error"); }
@@ -43,7 +68,12 @@ export default function NewRequest() {
       const j = (await r.json()) as { data?: Intake; offline?: boolean; error?: string };
       if (!r.ok || !j.data) throw new Error(j.error ?? "Could not read that description. Try adding the date and costs.");
       const d = j.data;
-      const event: EventInfo = { ...d.event, board: d.board, boardReason: d.boardReason };
+      const board = pickedBoard ?? d.board;
+      const boardReason =
+        pickedBoard && pickedBoard !== d.board
+          ? `You picked ${pickedBoard} from Greenlight Models; intake also suggested ${d.board}.`
+          : d.boardReason;
+      const event: EventInfo = { ...d.event, board, boardReason };
       const id = newId();
       let app: Application = {
         id, requestId: makeRequestId(id), clubId: club.id, sample: false, event,
@@ -125,6 +155,27 @@ export default function NewRequest() {
           autoFocus
         />
         {err && <p id="describe-msg" className="small field-error" role="alert"><AlertTriangle />{err}</p>}
+        {boardSug && (
+          <ModelSuggestion
+            task="board"
+            text={text}
+            summary={`Looks like: ${boardSug.display} (${Math.round(boardSug.p * 100)}%)`}
+            detail={
+              boardSug.top2.length
+                ? boardSug.top2.map((t) => `${t.display} ${Math.round(t.p * 100)}%`).join(" · ")
+                : undefined
+            }
+            correctLabel={pickedBoard ?? boardSug.label}
+            onAccept={() => {
+              setPickedBoard(boardSug.label as BoardId);
+            }}
+            onDismiss={() => {
+              setBoardDismissed(text);
+              setBoardSug(null);
+              setPickedBoard(null);
+            }}
+          />
+        )}
         <hr className="hr" />
         <div className="between">
           <div className="row" style={{ gap: 8 }}>

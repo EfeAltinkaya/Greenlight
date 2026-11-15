@@ -15,7 +15,9 @@ import {
   totalsBySource,
   usgSemesterStats,
 } from "@/lib/ledger";
+import { downloadLedgerXlsx } from "@/lib/export/ledgerExcel";
 import { store, useCurrentClub, useStore } from "@/lib/store";
+import { Spinner } from "@/components/ui";
 
 type View = "event" | "source" | "lines";
 
@@ -23,6 +25,7 @@ export default function LedgerPage() {
   const { ledger } = useStore();
   const club = useCurrentClub();
   const [view, setView] = useState<View>("event");
+  const [xlsxBusy, setXlsxBusy] = useState(false);
 
   useEffect(() => {
     if (!club.sample) store.ensureExampleLedger(club.id);
@@ -46,6 +49,15 @@ export default function LedgerPage() {
     a.click();
   }
 
+  async function downloadXlsx() {
+    setXlsxBusy(true);
+    try {
+      await downloadLedgerXlsx(mine, club.name);
+    } finally {
+      setXlsxBusy(false);
+    }
+  }
+
   function printPdf() {
     window.print();
   }
@@ -60,6 +72,7 @@ export default function LedgerPage() {
         </div>
         <div className="row" style={{ gap: 8 }}>
           <button type="button" className="btn" onClick={downloadCsv}><Download />CSV</button>
+          <button type="button" className="btn" disabled={xlsxBusy} onClick={downloadXlsx}>{xlsxBusy ? <><Spinner />Excel</> : <><Download />Excel (.xlsx)</>}</button>
           <button type="button" className="btn" onClick={printPdf}><Download />Print / PDF</button>
         </div>
       </div>

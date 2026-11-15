@@ -1,0 +1,127 @@
+text,label,source,split
+We would love to support this event,interested,team_written,test
+Yes we can provide the prize package,interested,team_written,test
+Count us in for in-kind catering,interested,team_written,test
+Happy to sponsor the swag,interested,team_written,test
+This fits our campus goals; let's proceed,interested,team_written,test
+We can do $500 in product,interested,team_written,test
+Excited to partner with your club,interested,team_written,test
+Approved on our side; send the vendor invoice,interested,team_written,test
+Can you send the attendance estimate?,needs_more_info,team_written,test
+What date is the event again?,needs_more_info,team_written,test
+Please share the budget breakdown,needs_more_info,team_written,test
+Who else is sponsoring?,needs_more_info,team_written,test
+Need more detail on the audience majors,needs_more_info,team_written,test
+Could you clarify the in-kind ask?,needs_more_info,team_written,test
+Send the flyer when you have it,needs_more_info,team_written,test
+What recognition would we receive?,needs_more_info,team_written,test
+We cannot support this semester,declined,team_written,test
+Budget is allocated for the year,declined,team_written,test
+Not a fit for our brand this time,declined,team_written,test
+Passing on this opportunity,declined,team_written,test
+We have to decline politely,declined,team_written,test
+Unable to sponsor club events now,declined,team_written,test
+No capacity for new campus asks,declined,team_written,test
+Please remove us from the list,declined,team_written,test
+I'm out of office until Monday,out_of_office,team_written,test
+OOO returning next week,out_of_office,team_written,test
+On vacation through Friday,out_of_office,team_written,test
+Away from email until the 20th,out_of_office,team_written,test
+Automatic reply: out of office,out_of_office,team_written,test
+I am traveling and will reply later,out_of_office,team_written,test
+Currently out of the office,out_of_office,team_written,test
+Back in the office next Tuesday,out_of_office,team_written,test
+Please reach out to Jordan on our campus team,referral_to_someone_else,team_written,test
+Forwarding you to our university relations lead,referral_to_someone_else,team_written,test
+Alex handles USC sponsorships; cc'd,referral_to_someone_else,team_written,test
+Contact our LA office instead,referral_to_someone_else,team_written,test
+I am not the right person; try campus recruiting,referral_to_someone_else,team_written,test
+Looping in my colleague who owns this,referral_to_someone_else,team_written,test
+Please email sponsors@company.com,referral_to_someone_else,team_written,test
+Sam on the brand team can help,referral_to_someone_else,team_written,test
+Delivery failed: mailbox unavailable,wrong_person_or_bounce,team_written,test
+This address is no longer active,wrong_person_or_bounce,team_written,test
+I left the company last month,wrong_person_or_bounce,team_written,test
+Wrong person; I never worked sponsorships,wrong_person_or_bounce,team_written,test
+Undeliverable message returned,wrong_person_or_bounce,team_written,test
+Bounce: user unknown,wrong_person_or_bounce,team_written,test
+I am not at that email anymore,wrong_person_or_bounce,team_written,test
+Mailer-daemon delivery status failure,wrong_person_or_bounce,team_written,test
+Please unsubscribe me from further emails,unsubscribe,team_written,test
+Remove me from your mailing list,unsubscribe,team_written,test
+Do not contact me again,unsubscribe,team_written,test
+Opt out of club sponsorship emails,unsubscribe,team_written,test
+Stop sending these requests,unsubscribe,team_written,test
+Unsubscribe from all outreach,unsubscribe,team_written,test
+Take me off the list immediately,unsubscribe,team_written,test
+No more emails please,unsubscribe,team_written,test
+Interested in sponsoring,interested,team_written,train
+We want to help with food,interested,team_written,train
+Positive reply wanting to fund,interested,team_written,train
+Yes please send the agreement,interested,team_written,train
+Asking for more information,needs_more_info,team_written,train
+Need details before deciding,needs_more_info,team_written,train
+Can you explain the package?,needs_more_info,team_written,train
+What is the deadline to commit?,needs_more_info,team_written,train
+Declining the sponsorship ask,declined,team_written,train
+Not interested this cycle,declined,team_written,train
+We will skip this event,declined,team_written,train
+Cannot fund at this time,declined,team_written,train
+Out of office auto-reply,out_of_office,team_written,train
+Limited email access this week,out_of_office,team_written,train
+Parental leave until March,out_of_office,team_written,train
+Conference travel all week,out_of_office,team_written,train
+Referring you to another contact,referral_to_someone_else,team_written,train
+Try our education partnerships team,referral_to_someone_else,team_written,train
+Wrong desk; here's the right email,referral_to_someone_else,team_written,train
+My manager owns budgets; forwarding,referral_to_someone_else,team_written,train
+Hard bounce from mail server,wrong_person_or_bounce,team_written,train
+Address rejected by recipient domain,wrong_person_or_bounce,team_written,train
+Person no longer with the firm,wrong_person_or_bounce,team_written,train
+Wrong department entirely,wrong_person_or_bounce,team_written,train
+Unsubscribe request,unsubscribe,team_written,train
+Opt out now,unsubscribe,team_written,train
+Remove this address,unsubscribe,team_written,train
+Cease contact,unsubscribe,team_written,train
+We can cover the gifts in kind,interested,synthetic,train
+Sounds great we are in,interested,synthetic,train
+Our team approved the ask,interested,synthetic,train
+Looking forward to sponsoring,interested,synthetic,train
+We will pay the vendor directly,interested,synthetic,train
+Confirmed interest from marketing,interested,synthetic,train
+Happy to discuss next steps to fund,interested,synthetic,train
+Yes that amount works for us,interested,synthetic,train
+Please share photos from last year,needs_more_info,synthetic,train
+How many students typically attend?,needs_more_info,synthetic,train
+Is this open to all USC students?,needs_more_info,synthetic,train
+Need the W9 or vendor info,needs_more_info,synthetic,train
+Clarify the deliverables for us,needs_more_info,synthetic,train
+What logo size on the banner?,needs_more_info,synthetic,train
+Send the draft agreement,needs_more_info,synthetic,train
+More context on club membership,needs_more_info,synthetic,train
+Hard pass from our team,declined,synthetic,train
+Out of budget for Q2,declined,synthetic,train
+Does not align with focus areas,declined,synthetic,train
+Sorry we cannot help,declined,synthetic,train
+We must decline,declined,synthetic,train
+No sponsorship available,declined,synthetic,train
+Not moving forward,declined,synthetic,train
+Passing this year,declined,synthetic,train
+Will respond when I return,out_of_office,synthetic,train
+Holiday break until January,out_of_office,synthetic,train
+Sick leave this week,out_of_office,synthetic,train
+Remote with delayed replies,out_of_office,synthetic,train
+Inbox on pause until Monday,out_of_office,synthetic,train
+Annual leave in progress,out_of_office,synthetic,train
+Not checking email daily,out_of_office,synthetic,train
+Back online after the holiday,out_of_office,synthetic,train
+Please talk to the foundation,referral_to_someone_else,synthetic,train
+Campus ambassador is better suited,referral_to_someone_else,synthetic,train
+HR campus team handles this,referral_to_someone_else,synthetic,train
+Marketing community lead cc'd,referral_to_someone_else,synthetic,train
+Regional lead for California,referral_to_someone_else,synthetic,train
+Please message the recruiter listed,referral_to_someone_else,synthetic,train
+I am routing this to partnerships,referral_to_someone_else,synthetic,train
+Someone else will reply from our team,referral_to_someone_else,synthetic,train
+Never heard of your club ask,wrong_person_or_bounce,synthetic,train
+This inbox is for press only,wrong_person_or_bounce,synthetic,train

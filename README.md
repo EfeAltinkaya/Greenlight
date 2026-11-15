@@ -24,13 +24,15 @@ npm run smoke   # fetch every demo route (needs a built server, or pass a base U
 
 ## Demo script
 
+Slogan: **Your Highway to Capital.** From idea to event, without a red light.
+
 1. **Landing** — scroll the Robotics Build Night story; watch the stoplight go red → amber → green. Open **I run a club**.
 2. **Plan an event** — pick **Hackathon with catering** (or write your own). The deadline appears when you pick a date. **Build my application**.
-3. **Fix** — Cap food, swap to a listed vendor, move gift cards to sponsors. Verdict becomes **Matches the guidelines**.
-4. **Submit** — attach the sample quote, enter UEPA, draft answers, **Submit to USG**.
+3. **Fix** — Cap food, swap to a listed vendor (confirm "Did you mean…?" if Fuse suggests one), move gift cards to sponsors. Verdict becomes **Matches the guidelines**.
+4. **Submit** — attach the sample quote, enter UEPA, draft answers, **Submit to USG**. Open **Greenlight Check** and **Download PDF**.
 5. **USG** — open the queue (Matches first). Use **Approve once fixed** with a condition, or fund and send the decision email.
-6. **Find the rest** — **Other USC money** prepares a draft for lines USG will not cover (writes the ledger). **Sponsors** → Companies: if another club holds a company, you see the campus-claim message instead of send.
-7. **Ledger** — stacked bar reaches coverage across USG, other USC, and sponsors. Export CSV for next year's treasurer.
+6. **Find the rest** — **Other USC money** prepares a draft for lines USG will not cover (writes the ledger). For Legislative Fund, download the six-section **Slide deck (.pptx)**. **Sponsors** → Companies: if another club holds a company, you see the campus-claim message instead of send. Export **Outreach CSV** from the Outreach tab.
+7. **Ledger** — stacked bar reaches coverage across USG, other USC, and sponsors. Export **CSV** or **Excel (.xlsx)** for next year's treasurer.
 
 "Reset demo data" in the sidebar restores the sample applications and ledger.
 

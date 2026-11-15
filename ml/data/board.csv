@@ -1,0 +1,115 @@
+text,label,source,split
+Career panel with alumni in consulting,professional,team_written,test
+Research symposium for undergrads,professional,team_written,test
+Resume workshop with recruiters,professional,team_written,test
+Tech talk by industry engineers,professional,team_written,test
+Case competition prep session,professional,team_written,test
+Academic conference on campus,professional,team_written,test
+Lab tour for STEM majors,professional,team_written,test
+Networking night with employers,professional,team_written,test
+Beach cleanup with local nonprofit,philanthropy,team_written,test
+Food drive packing event,philanthropy,team_written,test
+Habitat for Humanity build day,philanthropy,team_written,test
+Tutoring underserved middle schoolers,philanthropy,team_written,test
+Charity 5k for children's hospital,philanthropy,team_written,test
+Blood drive with Red Cross,philanthropy,team_written,test
+Community garden volunteer day,philanthropy,team_written,test
+Homeless shelter meal service,philanthropy,team_written,test
+Club mixer for new members,social,team_written,test
+Game night in the TCC,social,team_written,test
+Startup founder social,social,team_written,test
+Welcome week ice cream social,social,team_written,test
+Intramural sports kickoff,social,team_written,test
+Movie night on the lawn,social,team_written,test
+Student org fair booth social,social,team_written,test
+Casual networking picnic,social,team_written,test
+Spring dance showcase,arts,team_written,test
+Student art gallery opening,arts,team_written,test
+Orchestra concert in Bovard,arts,team_written,test
+Theater one-act festival,arts,team_written,test
+A cappella invitational,arts,team_written,test
+Film screening and talkback,arts,team_written,test
+Photography exhibition,arts,team_written,test
+Cultural dance performance,arts,team_written,test
+Events that advance professional careers,professional,rules_doc,train
+Academic research project showcase,professional,rules_doc,train
+Viterbi industry night,professional,fy26_report,train
+Marshall alumni careers evening,professional,fy26_report,train
+Robotics Build Night professional skills,professional,seed_app,train
+Mock interviews with alumni,professional,team_written,train
+Patent workshop for inventors,professional,team_written,train
+Data science meetup,professional,team_written,train
+Finance club speaker series,professional,team_written,train
+Community service projects,philanthropy,rules_doc,train
+Philanthropy fund service events,philanthropy,rules_doc,train
+Shoreline cleanup sample,philanthropy,seed_app,train
+Service trip packing party,philanthropy,fy26_report,train
+Clothing donation sorting,philanthropy,team_written,train
+Senior center visit day,philanthropy,team_written,train
+Park restoration volunteer,philanthropy,team_written,train
+Literacy tutoring Saturday,philanthropy,team_written,train
+Social and recreational events,social,rules_doc,train
+Startup-oriented club gatherings,social,rules_doc,train
+Dance social sample,social,seed_app,train
+Recreation fund mixers,social,fy26_report,train
+Trivia night for members,social,team_written,train
+Potluck for apartment residents,social,team_written,train
+Board game tournament,social,team_written,train
+Sunset hike meetup,social,team_written,train
+Performing and visual arts events,arts,rules_doc,train
+Arts fund showcases,arts,rules_doc,train
+Southside Dance Collective spring show,arts,seed_app,train
+Visual arts exhibition FY26,arts,fy26_report,train
+Jazz ensemble concert,arts,team_written,train
+Improv comedy night,arts,team_written,train
+Ballet workshop showing,arts,team_written,train
+Sculpture garden opening,arts,team_written,train
+Pre-med panel with doctors,professional,synthetic,train
+Law school admissions talk,professional,synthetic,train
+Startup pitch practice with mentors,professional,synthetic,train
+Engineering design review night,professional,synthetic,train
+Consulting club case night,professional,synthetic,train
+Research poster session,professional,synthetic,train
+Internship prep bootcamp,professional,synthetic,train
+Women in STEM mentoring dinner,professional,synthetic,train
+Product management workshop,professional,synthetic,train
+Cybersecurity career fair booth,professional,synthetic,train
+Architecture portfolio review,professional,synthetic,train
+Accounting CPA pathway night,professional,synthetic,train
+UX research methods workshop,professional,synthetic,train
+Animal shelter walk,philanthropy,synthetic,train
+Disaster relief kit packing,philanthropy,synthetic,train
+Refugee welcome dinner service,philanthropy,synthetic,train
+Tree planting in LA,philanthropy,synthetic,train
+Soup kitchen shift,philanthropy,synthetic,train
+Mentoring foster youth,philanthropy,synthetic,train
+Hospital volunteer appreciation,philanthropy,synthetic,train
+School supply drive,philanthropy,synthetic,train
+Neighborhood mural cleanup,philanthropy,synthetic,train
+Disability sports volunteer,philanthropy,synthetic,train
+Environmental education booth,philanthropy,synthetic,train
+Civic engagement canvassing training,philanthropy,synthetic,train
+Nonprofit fundraising gala support,philanthropy,synthetic,train
+Community health fair staffing,philanthropy,synthetic,train
+Karaoke night,social,synthetic,train
+Club birthday celebration,social,synthetic,train
+End of semester hangout,social,synthetic,train
+Coffee chat with freshmen,social,synthetic,train
+Dodgeball social,social,synthetic,train
+Paint night casual,social,synthetic,train
+Escape room team building,social,synthetic,train
+Brunch meetup off campus,social,synthetic,train
+Holiday cookie exchange,social,synthetic,train
+Campus scavenger hunt,social,synthetic,train
+Open mic casual night,social,synthetic,train
+Sports watch party,social,synthetic,train
+Friendship bracelet workshop,social,synthetic,train
+Study break carnival,social,synthetic,train
+Poetry slam finals,arts,synthetic,train
+Student-directed play,arts,synthetic,train
+Choir holiday concert,arts,synthetic,train
+Fashion design runway,arts,synthetic,train
+Animation short festival,arts,synthetic,train
+Drum circle performance,arts,synthetic,train
+Classical guitar recital,arts,synthetic,train
+Mural unveiling ceremony,arts,synthetic,train

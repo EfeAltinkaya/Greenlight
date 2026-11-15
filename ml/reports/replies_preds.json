@@ -1,0 +1,1640 @@
+[
+  {
+    "text": "We would love to support this event",
+    "label": "interested",
+    "probs": {
+      "declined": 0.15476095515971247,
+      "interested": 0.26828687586212674,
+      "needs_more_info": 0.1402574221859219,
+      "out_of_office": 0.11614760291912,
+      "referral_to_someone_else": 0.15280476048986344,
+      "unsubscribe": 0.07687103901501731,
+      "wrong_person_or_bounce": 0.09087134436823817
+    }
+  },
+  {
+    "text": "Yes we can provide the prize package",
+    "label": "interested",
+    "probs": {
+      "declined": 0.11956676528108523,
+      "interested": 0.32654697123666004,
+      "needs_more_info": 0.15832124383148394,
+      "out_of_office": 0.09714734159098831,
+      "referral_to_someone_else": 0.14310906880295263,
+      "unsubscribe": 0.06721756000136211,
+      "wrong_person_or_bounce": 0.08809104925546778
+    }
+  },
+  {
+    "text": "Count us in for in-kind catering",
+    "label": "interested",
+    "probs": {
+      "declined": 0.11874149083117994,
+      "interested": 0.26727928798334216,
+      "needs_more_info": 0.1529657098333097,
+      "out_of_office": 0.12973513995206182,
+      "referral_to_someone_else": 0.1439634260026671,
+      "unsubscribe": 0.07689600146584576,
+      "wrong_person_or_bounce": 0.11041894393159347
+    }
+  },
+  {
+    "text": "Happy to sponsor the swag",
+    "label": "interested",
+    "probs": {
+      "declined": 0.1341147066619059,
+      "interested": 0.30218981804849254,
+      "needs_more_info": 0.13835384982125992,
+      "out_of_office": 0.11188915019931965,
+      "referral_to_someone_else": 0.14631738343499784,
+      "unsubscribe": 0.07470267138461224,
+      "wrong_person_or_bounce": 0.09243242044941187
+    }
+  },
+  {
+    "text": "This fits our campus goals; let's proceed",
+    "label": "interested",
+    "probs": {
+      "declined": 0.13357333192913143,
+      "interested": 0.21114674671050934,
+      "needs_more_info": 0.17688705776463212,
+      "out_of_office": 0.10850469900375427,
+      "referral_to_someone_else": 0.2057662774751633,
+      "unsubscribe": 0.08413714030432329,
+      "wrong_person_or_bounce": 0.0799847468124862
+    }
+  },
+  {
+    "text": "We can do $500 in product",
+    "label": "interested",
+    "probs": {
+      "declined": 0.14962919412146358,
+      "interested": 0.2815528917428581,
+      "needs_more_info": 0.14941632929897408,
+      "out_of_office": 0.09722680943141707,
+      "referral_to_someone_else": 0.13215762258743963,
+      "unsubscribe": 0.08203898677117487,
+      "wrong_person_or_bounce": 0.1079781660466727
+    }
+  },
+  {
+    "text": "Excited to partner with your club",
+    "label": "interested",
+    "probs": {
+      "declined": 0.11135392650545137,
+      "interested": 0.23862456802928,
+      "needs_more_info": 0.15200450056232376,
+      "out_of_office": 0.12043393293993998,
+      "referral_to_someone_else": 0.18129740125112684,
+      "unsubscribe": 0.07615152862658345,
+      "wrong_person_or_bounce": 0.12013414208529441
+    }
+  },
+  {
+    "text": "Approved on our side; send the vendor invoice",
+    "label": "interested",
+    "probs": {
+      "declined": 0.10808128287637439,
+      "interested": 0.2548467706682985,
+      "needs_more_info": 0.15815822713512762,
+      "out_of_office": 0.10346325087499139,
+      "referral_to_someone_else": 0.15524830440230206,
+      "unsubscribe": 0.09792134311832773,
+      "wrong_person_or_bounce": 0.12228082092457825
+    }
+  },
+  {
+    "text": "Can you send the attendance estimate?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.12476404147146211,
+      "interested": 0.14399356254465262,
+      "needs_more_info": 0.17575869416166087,
+      "out_of_office": 0.16133911199731682,
+      "referral_to_someone_else": 0.1687002434278449,
+      "unsubscribe": 0.1025541899438067,
+      "wrong_person_or_bounce": 0.12289015645325597
+    }
+  },
+  {
+    "text": "What date is the event again?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.1752262864187223,
+      "interested": 0.0962932577108669,
+      "needs_more_info": 0.19409716104858196,
+      "out_of_office": 0.2145396470482092,
+      "referral_to_someone_else": 0.10742812806962883,
+      "unsubscribe": 0.08931571735685548,
+      "wrong_person_or_bounce": 0.12309980234713526
+    }
+  },
+  {
+    "text": "Please share the budget breakdown",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.1479031566386388,
+      "interested": 0.18176746499449142,
+      "needs_more_info": 0.23250940822965468,
+      "out_of_office": 0.12790025588136433,
+      "referral_to_someone_else": 0.14843793640854977,
+      "unsubscribe": 0.07154441881704149,
+      "wrong_person_or_bounce": 0.08993735903025955
+    }
+  },
+  {
+    "text": "Who else is sponsoring?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.15909584007105,
+      "interested": 0.24536674585031212,
+      "needs_more_info": 0.149561148324102,
+      "out_of_office": 0.08755207549352573,
+      "referral_to_someone_else": 0.1873625145206036,
+      "unsubscribe": 0.07247229999141665,
+      "wrong_person_or_bounce": 0.09858937574899009
+    }
+  },
+  {
+    "text": "Need more detail on the audience majors",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.13066098155664763,
+      "interested": 0.11668668608817445,
+      "needs_more_info": 0.24047547258525837,
+      "out_of_office": 0.10988316961158529,
+      "referral_to_someone_else": 0.17515213903229984,
+      "unsubscribe": 0.0801040316650197,
+      "wrong_person_or_bounce": 0.1470375194610149
+    }
+  },
+  {
+    "text": "Could you clarify the in-kind ask?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.12463876837210791,
+      "interested": 0.17868182782554257,
+      "needs_more_info": 0.21575963822501204,
+      "out_of_office": 0.09902693298829023,
+      "referral_to_someone_else": 0.14437266950942707,
+      "unsubscribe": 0.09152458097278908,
+      "wrong_person_or_bounce": 0.14599558210683125
+    }
+  },
+  {
+    "text": "Send the flyer when you have it",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.1292539120223444,
+      "interested": 0.1650467477736876,
+      "needs_more_info": 0.17275054974865076,
+      "out_of_office": 0.16434039603451756,
+      "referral_to_someone_else": 0.14399001012017631,
+      "unsubscribe": 0.11147353843758012,
+      "wrong_person_or_bounce": 0.11314484586304327
+    }
+  },
+  {
+    "text": "What recognition would we receive?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.12426953217150091,
+      "interested": 0.19473673087196175,
+      "needs_more_info": 0.22532665799961682,
+      "out_of_office": 0.08961421123378152,
+      "referral_to_someone_else": 0.18340981106291526,
+      "unsubscribe": 0.06758076743791393,
+      "wrong_person_or_bounce": 0.11506228922230988
+    }
+  },
+  {
+    "text": "We cannot support this semester",
+    "label": "declined",
+    "probs": {
+      "declined": 0.22242301880876567,
+      "interested": 0.10171346368886959,
+      "needs_more_info": 0.13730914208230596,
+      "out_of_office": 0.13914358512858233,
+      "referral_to_someone_else": 0.1382268250328984,
+      "unsubscribe": 0.1248015292707161,
+      "wrong_person_or_bounce": 0.13638243598786204
+    }
+  },
+  {
+    "text": "Budget is allocated for the year",
+    "label": "declined",
+    "probs": {
+      "declined": 0.1629574537251175,
+      "interested": 0.1822450245959478,
+      "needs_more_info": 0.19418601170310493,
+      "out_of_office": 0.13460398843742533,
+      "referral_to_someone_else": 0.14388825542938732,
+      "unsubscribe": 0.06955172876296005,
+      "wrong_person_or_bounce": 0.11256753734605704
+    }
+  },
+  {
+    "text": "Not a fit for our brand this time",
+    "label": "declined",
+    "probs": {
+      "declined": 0.2225607703675142,
+      "interested": 0.14307509704165025,
+      "needs_more_info": 0.1407227700181954,
+      "out_of_office": 0.10367128421190197,
+      "referral_to_someone_else": 0.12457936626742855,
+      "unsubscribe": 0.10056221330213035,
+      "wrong_person_or_bounce": 0.16482849879117914
+    }
+  },
+  {
+    "text": "Passing on this opportunity",
+    "label": "declined",
+    "probs": {
+      "declined": 0.2081864351768368,
+      "interested": 0.18632377081660345,
+      "needs_more_info": 0.14075830029294387,
+      "out_of_office": 0.10945435555952082,
+      "referral_to_someone_else": 0.15149982186112967,
+      "unsubscribe": 0.10263958936814781,
+      "wrong_person_or_bounce": 0.10113772692481766
+    }
+  },
+  {
+    "text": "We have to decline politely",
+    "label": "declined",
+    "probs": {
+      "declined": 0.20418593802495313,
+      "interested": 0.14106179486020567,
+      "needs_more_info": 0.10109290918453258,
+      "out_of_office": 0.10751952228122118,
+      "referral_to_someone_else": 0.11242730179556117,
+      "unsubscribe": 0.19753284031470103,
+      "wrong_person_or_bounce": 0.13617969353882522
+    }
+  },
+  {
+    "text": "Unable to sponsor club events now",
+    "label": "declined",
+    "probs": {
+      "declined": 0.23956063412010895,
+      "interested": 0.10933023562225345,
+      "needs_more_info": 0.12343220118764675,
+      "out_of_office": 0.1273523635128228,
+      "referral_to_someone_else": 0.1201703756604311,
+      "unsubscribe": 0.10653626573510289,
+      "wrong_person_or_bounce": 0.17361792416163402
+    }
+  },
+  {
+    "text": "No capacity for new campus asks",
+    "label": "declined",
+    "probs": {
+      "declined": 0.15651466688741208,
+      "interested": 0.1037893965376351,
+      "needs_more_info": 0.17945263511252313,
+      "out_of_office": 0.13118367041133938,
+      "referral_to_someone_else": 0.15362222000509587,
+      "unsubscribe": 0.11437446548358389,
+      "wrong_person_or_bounce": 0.16106294556241063
+    }
+  },
+  {
+    "text": "Please remove us from the list",
+    "label": "declined",
+    "probs": {
+      "declined": 0.1655867246290971,
+      "interested": 0.0870610426297907,
+      "needs_more_info": 0.10553310782659128,
+      "out_of_office": 0.10792562962591987,
+      "referral_to_someone_else": 0.10615464912453082,
+      "unsubscribe": 0.28707528074382344,
+      "wrong_person_or_bounce": 0.14066356542024683
+    }
+  },
+  {
+    "text": "I'm out of office until Monday",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.1494012100620664,
+      "interested": 0.08358009937957234,
+      "needs_more_info": 0.11253421755727787,
+      "out_of_office": 0.3075160557578454,
+      "referral_to_someone_else": 0.0966405213559925,
+      "unsubscribe": 0.14070355718163716,
+      "wrong_person_or_bounce": 0.10962433870560837
+    }
+  },
+  {
+    "text": "OOO returning next week",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.14419925409985365,
+      "interested": 0.11938799721724407,
+      "needs_more_info": 0.13769142150729105,
+      "out_of_office": 0.2831584263776074,
+      "referral_to_someone_else": 0.12260334754118034,
+      "unsubscribe": 0.09983289829288153,
+      "wrong_person_or_bounce": 0.09312665496394186
+    }
+  },
+  {
+    "text": "On vacation through Friday",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.14296870149381616,
+      "interested": 0.1266130454182663,
+      "needs_more_info": 0.14211229196578665,
+      "out_of_office": 0.29491430635092336,
+      "referral_to_someone_else": 0.10311248233775847,
+      "unsubscribe": 0.09547861240312974,
+      "wrong_person_or_bounce": 0.09480056003031917
+    }
+  },
+  {
+    "text": "Away from email until the 20th",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.12852539403500401,
+      "interested": 0.08275548713853481,
+      "needs_more_info": 0.11443868552687164,
+      "out_of_office": 0.2817258662011882,
+      "referral_to_someone_else": 0.10538736487769079,
+      "unsubscribe": 0.15927900030869427,
+      "wrong_person_or_bounce": 0.1278882019120163
+    }
+  },
+  {
+    "text": "Automatic reply: out of office",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.11904603905499359,
+      "interested": 0.09385957557355441,
+      "needs_more_info": 0.11267043035796151,
+      "out_of_office": 0.24101592837499175,
+      "referral_to_someone_else": 0.13306394504786057,
+      "unsubscribe": 0.16332882893880643,
+      "wrong_person_or_bounce": 0.13701525265183173
+    }
+  },
+  {
+    "text": "I am traveling and will reply later",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.11420234520819457,
+      "interested": 0.16300246961368534,
+      "needs_more_info": 0.14557326097680376,
+      "out_of_office": 0.21641916175540446,
+      "referral_to_someone_else": 0.14427184341594804,
+      "unsubscribe": 0.11392252895929261,
+      "wrong_person_or_bounce": 0.10260839007067139
+    }
+  },
+  {
+    "text": "Currently out of the office",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.145298738137351,
+      "interested": 0.09810140531089317,
+      "needs_more_info": 0.1249058506225704,
+      "out_of_office": 0.25569705877766497,
+      "referral_to_someone_else": 0.11785925107398791,
+      "unsubscribe": 0.1410510429868299,
+      "wrong_person_or_bounce": 0.11708665309070274
+    }
+  },
+  {
+    "text": "Back in the office next Tuesday",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.11880887606641698,
+      "interested": 0.12704840464228778,
+      "needs_more_info": 0.12862988676699721,
+      "out_of_office": 0.2926764110154456,
+      "referral_to_someone_else": 0.13334373044006917,
+      "unsubscribe": 0.09109925670511884,
+      "wrong_person_or_bounce": 0.10839343436366448
+    }
+  },
+  {
+    "text": "Please reach out to Jordan on our campus team",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.123482948284836,
+      "interested": 0.1486934727826487,
+      "needs_more_info": 0.14671518825566454,
+      "out_of_office": 0.12958725907450616,
+      "referral_to_someone_else": 0.22549011625023027,
+      "unsubscribe": 0.10888220625520133,
+      "wrong_person_or_bounce": 0.11714880909691315
+    }
+  },
+  {
+    "text": "Forwarding you to our university relations lead",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.09587311092966029,
+      "interested": 0.1478353591353396,
+      "needs_more_info": 0.13743427787420429,
+      "out_of_office": 0.1178630026214732,
+      "referral_to_someone_else": 0.2883642648286952,
+      "unsubscribe": 0.09508248924882172,
+      "wrong_person_or_bounce": 0.11754749536180564
+    }
+  },
+  {
+    "text": "Alex handles USC sponsorships; cc'd",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.13887084796817165,
+      "interested": 0.20547152795588544,
+      "needs_more_info": 0.15435603807486545,
+      "out_of_office": 0.09662597457972483,
+      "referral_to_someone_else": 0.2249576776131734,
+      "unsubscribe": 0.06733249466794895,
+      "wrong_person_or_bounce": 0.11238543914023034
+    }
+  },
+  {
+    "text": "Contact our LA office instead",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.1539004726911472,
+      "interested": 0.1129955416750378,
+      "needs_more_info": 0.11246346790823701,
+      "out_of_office": 0.11894191314698112,
+      "referral_to_someone_else": 0.15342392221674053,
+      "unsubscribe": 0.16779304143588655,
+      "wrong_person_or_bounce": 0.18048164092596986
+    }
+  },
+  {
+    "text": "I am not the right person; try campus recruiting",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.14529320001100018,
+      "interested": 0.10536371155972889,
+      "needs_more_info": 0.1450641914772943,
+      "out_of_office": 0.09834956090392578,
+      "referral_to_someone_else": 0.21011859916895487,
+      "unsubscribe": 0.12482033215751069,
+      "wrong_person_or_bounce": 0.17099040472158544
+    }
+  },
+  {
+    "text": "Looping in my colleague who owns this",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.1385647671537118,
+      "interested": 0.1262374781324655,
+      "needs_more_info": 0.1422047802932018,
+      "out_of_office": 0.12954221943931604,
+      "referral_to_someone_else": 0.16182670722045833,
+      "unsubscribe": 0.1198597493375763,
+      "wrong_person_or_bounce": 0.18176429842327013
+    }
+  },
+  {
+    "text": "Please email sponsors@company.com",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.1255425240182919,
+      "interested": 0.1856311968338462,
+      "needs_more_info": 0.13641411393289066,
+      "out_of_office": 0.12859044351299304,
+      "referral_to_someone_else": 0.1943431115901793,
+      "unsubscribe": 0.11201645814659127,
+      "wrong_person_or_bounce": 0.11746215196520766
+    }
+  },
+  {
+    "text": "Sam on the brand team can help",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.12423445633987851,
+      "interested": 0.23657388474586544,
+      "needs_more_info": 0.13225417937157624,
+      "out_of_office": 0.10825036786873764,
+      "referral_to_someone_else": 0.21669042256237447,
+      "unsubscribe": 0.07046236552581887,
+      "wrong_person_or_bounce": 0.11153432358574869
+    }
+  },
+  {
+    "text": "Delivery failed: mailbox unavailable",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.14159554514115033,
+      "interested": 0.09968328427711343,
+      "needs_more_info": 0.12600771296059193,
+      "out_of_office": 0.15063870899264442,
+      "referral_to_someone_else": 0.10803882021476903,
+      "unsubscribe": 0.11123350108016246,
+      "wrong_person_or_bounce": 0.26280242733356834
+    }
+  },
+  {
+    "text": "This address is no longer active",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.11557211546833171,
+      "interested": 0.07401915286041133,
+      "needs_more_info": 0.11744153721901772,
+      "out_of_office": 0.14444495119562792,
+      "referral_to_someone_else": 0.10757216289864235,
+      "unsubscribe": 0.2294272594339614,
+      "wrong_person_or_bounce": 0.21152282092400757
+    }
+  },
+  {
+    "text": "I left the company last month",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.1575991918432288,
+      "interested": 0.10586712000468564,
+      "needs_more_info": 0.12221269761488007,
+      "out_of_office": 0.20642190265117655,
+      "referral_to_someone_else": 0.13021878519362862,
+      "unsubscribe": 0.13728760743715576,
+      "wrong_person_or_bounce": 0.14039269525524462
+    }
+  },
+  {
+    "text": "Wrong person; I never worked sponsorships",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.17757106718278112,
+      "interested": 0.11004089043267838,
+      "needs_more_info": 0.11627026801286129,
+      "out_of_office": 0.09363133368427062,
+      "referral_to_someone_else": 0.1554568880647381,
+      "unsubscribe": 0.10645734501562291,
+      "wrong_person_or_bounce": 0.24057220760704756
+    }
+  },
+  {
+    "text": "Undeliverable message returned",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.15085253449097136,
+      "interested": 0.09200315195786578,
+      "needs_more_info": 0.12658119183688898,
+      "out_of_office": 0.14643535307684,
+      "referral_to_someone_else": 0.12486902109619542,
+      "unsubscribe": 0.14091505748596195,
+      "wrong_person_or_bounce": 0.21834369005527654
+    }
+  },
+  {
+    "text": "Bounce: user unknown",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.14140475825227758,
+      "interested": 0.11204084544428919,
+      "needs_more_info": 0.14265013131747972,
+      "out_of_office": 0.10397095187327499,
+      "referral_to_someone_else": 0.14162492458984424,
+      "unsubscribe": 0.11484412875818636,
+      "wrong_person_or_bounce": 0.2434642597646479
+    }
+  },
+  {
+    "text": "I am not at that email anymore",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.12807604000610953,
+      "interested": 0.07376646057344885,
+      "needs_more_info": 0.10254541131252042,
+      "out_of_office": 0.21981794144284397,
+      "referral_to_someone_else": 0.13150716932688514,
+      "unsubscribe": 0.1729483670358494,
+      "wrong_person_or_bounce": 0.17133861030234276
+    }
+  },
+  {
+    "text": "Mailer-daemon delivery status failure",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.11623775932915904,
+      "interested": 0.10650564953551422,
+      "needs_more_info": 0.13480755325297303,
+      "out_of_office": 0.1705597519094299,
+      "referral_to_someone_else": 0.1227362529711663,
+      "unsubscribe": 0.120062657835739,
+      "wrong_person_or_bounce": 0.22909037516601846
+    }
+  },
+  {
+    "text": "Please unsubscribe me from further emails",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.11780231447239822,
+      "interested": 0.08420828013126866,
+      "needs_more_info": 0.08979425523983933,
+      "out_of_office": 0.14600130370199504,
+      "referral_to_someone_else": 0.11728276119917572,
+      "unsubscribe": 0.3033694478351142,
+      "wrong_person_or_bounce": 0.14154163742020875
+    }
+  },
+  {
+    "text": "Remove me from your mailing list",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.10554434869260423,
+      "interested": 0.07096549876763344,
+      "needs_more_info": 0.08989283993342069,
+      "out_of_office": 0.12538547228067323,
+      "referral_to_someone_else": 0.11333431379088443,
+      "unsubscribe": 0.3187471631042975,
+      "wrong_person_or_bounce": 0.17613036343048627
+    }
+  },
+  {
+    "text": "Do not contact me again",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.13712805092414146,
+      "interested": 0.06333567587784285,
+      "needs_more_info": 0.07673180801341563,
+      "out_of_office": 0.14304698652628642,
+      "referral_to_someone_else": 0.0934475136689051,
+      "unsubscribe": 0.32927127063266326,
+      "wrong_person_or_bounce": 0.1570386943567453
+    }
+  },
+  {
+    "text": "Opt out of club sponsorship emails",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.15716817500989994,
+      "interested": 0.11588699929146588,
+      "needs_more_info": 0.12013457278850084,
+      "out_of_office": 0.133912590367279,
+      "referral_to_someone_else": 0.13518111008840175,
+      "unsubscribe": 0.18935669639561045,
+      "wrong_person_or_bounce": 0.14835985605884208
+    }
+  },
+  {
+    "text": "Stop sending these requests",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.141625319994975,
+      "interested": 0.08171823371778802,
+      "needs_more_info": 0.08632900560294057,
+      "out_of_office": 0.1325838305667643,
+      "referral_to_someone_else": 0.09681045526147204,
+      "unsubscribe": 0.31666281552863,
+      "wrong_person_or_bounce": 0.14427033932743022
+    }
+  },
+  {
+    "text": "Unsubscribe from all outreach",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.13025404257910825,
+      "interested": 0.0901613990561684,
+      "needs_more_info": 0.09384264491852588,
+      "out_of_office": 0.14240375903387345,
+      "referral_to_someone_else": 0.11579674712195065,
+      "unsubscribe": 0.29220089238409447,
+      "wrong_person_or_bounce": 0.1353405149062788
+    }
+  },
+  {
+    "text": "Take me off the list immediately",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.1419707439361592,
+      "interested": 0.08777560983677912,
+      "needs_more_info": 0.11172638024527248,
+      "out_of_office": 0.1560580084731897,
+      "referral_to_someone_else": 0.10561265588981598,
+      "unsubscribe": 0.26238031293691977,
+      "wrong_person_or_bounce": 0.13447628868186362
+    }
+  },
+  {
+    "text": "No more emails please",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.12469066997297164,
+      "interested": 0.07895731041078698,
+      "needs_more_info": 0.08467292952176997,
+      "out_of_office": 0.1816791211678462,
+      "referral_to_someone_else": 0.10351394962529711,
+      "unsubscribe": 0.28281566458761703,
+      "wrong_person_or_bounce": 0.1436703547137111
+    }
+  },
+  {
+    "text": "Interested in sponsoring",
+    "label": "interested",
+    "probs": {
+      "declined": 0.13526805752934554,
+      "interested": 0.2736679670621924,
+      "needs_more_info": 0.16253425648649272,
+      "out_of_office": 0.08375886867004538,
+      "referral_to_someone_else": 0.16865574352655197,
+      "unsubscribe": 0.07981183231033359,
+      "wrong_person_or_bounce": 0.09630327441503833
+    }
+  },
+  {
+    "text": "We want to help with food",
+    "label": "interested",
+    "probs": {
+      "declined": 0.13214317167746586,
+      "interested": 0.2819883325762315,
+      "needs_more_info": 0.14072427317757685,
+      "out_of_office": 0.1101725636097762,
+      "referral_to_someone_else": 0.1692542430146194,
+      "unsubscribe": 0.07184364788262362,
+      "wrong_person_or_bounce": 0.09387376806170666
+    }
+  },
+  {
+    "text": "Positive reply wanting to fund",
+    "label": "interested",
+    "probs": {
+      "declined": 0.12221062001087972,
+      "interested": 0.29621458994653743,
+      "needs_more_info": 0.12688280984276368,
+      "out_of_office": 0.10952790134791178,
+      "referral_to_someone_else": 0.16100778156549383,
+      "unsubscribe": 0.08394047624619022,
+      "wrong_person_or_bounce": 0.10021582104022342
+    }
+  },
+  {
+    "text": "Yes please send the agreement",
+    "label": "interested",
+    "probs": {
+      "declined": 0.09950251743976916,
+      "interested": 0.24676254724043747,
+      "needs_more_info": 0.15700138928307414,
+      "out_of_office": 0.11966605676289284,
+      "referral_to_someone_else": 0.155676447868334,
+      "unsubscribe": 0.12431263500369912,
+      "wrong_person_or_bounce": 0.09707840640179316
+    }
+  },
+  {
+    "text": "Asking for more information",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.11192824531013047,
+      "interested": 0.15032464854599722,
+      "needs_more_info": 0.269595206859911,
+      "out_of_office": 0.11235877441975048,
+      "referral_to_someone_else": 0.1592414081238021,
+      "unsubscribe": 0.08676329610417521,
+      "wrong_person_or_bounce": 0.10978842063623358
+    }
+  },
+  {
+    "text": "Need details before deciding",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.12681733615090982,
+      "interested": 0.14161224597223085,
+      "needs_more_info": 0.31400707082715523,
+      "out_of_office": 0.1072482841551418,
+      "referral_to_someone_else": 0.12919180085716112,
+      "unsubscribe": 0.07686053664068791,
+      "wrong_person_or_bounce": 0.10426272539671326
+    }
+  },
+  {
+    "text": "Can you explain the package?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.12166386224287797,
+      "interested": 0.15406132222177532,
+      "needs_more_info": 0.27763566726446365,
+      "out_of_office": 0.08690851447315398,
+      "referral_to_someone_else": 0.13485776065434305,
+      "unsubscribe": 0.08692164651282372,
+      "wrong_person_or_bounce": 0.1379512266305623
+    }
+  },
+  {
+    "text": "What is the deadline to commit?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.13869075150138388,
+      "interested": 0.12379082278079956,
+      "needs_more_info": 0.23360337678641183,
+      "out_of_office": 0.1623547621339657,
+      "referral_to_someone_else": 0.13518055977812354,
+      "unsubscribe": 0.09826661776628771,
+      "wrong_person_or_bounce": 0.10811310925302793
+    }
+  },
+  {
+    "text": "Declining the sponsorship ask",
+    "label": "declined",
+    "probs": {
+      "declined": 0.22394160382558811,
+      "interested": 0.15191648058273816,
+      "needs_more_info": 0.12531556041675632,
+      "out_of_office": 0.09520146767508599,
+      "referral_to_someone_else": 0.13390205749215278,
+      "unsubscribe": 0.15635760704745805,
+      "wrong_person_or_bounce": 0.11336522296022065
+    }
+  },
+  {
+    "text": "Not interested this cycle",
+    "label": "declined",
+    "probs": {
+      "declined": 0.2812021920748806,
+      "interested": 0.0897472714743681,
+      "needs_more_info": 0.10087200011572577,
+      "out_of_office": 0.14396034165557528,
+      "referral_to_someone_else": 0.07932268965037464,
+      "unsubscribe": 0.18396674023799767,
+      "wrong_person_or_bounce": 0.12092876479107785
+    }
+  },
+  {
+    "text": "We will skip this event",
+    "label": "declined",
+    "probs": {
+      "declined": 0.28167866414947484,
+      "interested": 0.10435356710051515,
+      "needs_more_info": 0.10528990772869583,
+      "out_of_office": 0.14753152221857646,
+      "referral_to_someone_else": 0.08527798049518659,
+      "unsubscribe": 0.14230962353771806,
+      "wrong_person_or_bounce": 0.133558734769833
+    }
+  },
+  {
+    "text": "Cannot fund at this time",
+    "label": "declined",
+    "probs": {
+      "declined": 0.25221696160683554,
+      "interested": 0.13579979382302743,
+      "needs_more_info": 0.11562064142905751,
+      "out_of_office": 0.14169194524682094,
+      "referral_to_someone_else": 0.1065530869304409,
+      "unsubscribe": 0.12498018827002055,
+      "wrong_person_or_bounce": 0.12313738269379707
+    }
+  },
+  {
+    "text": "Out of office auto-reply",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.10964734626276885,
+      "interested": 0.08582040704082719,
+      "needs_more_info": 0.09546911640011131,
+      "out_of_office": 0.2546599845076777,
+      "referral_to_someone_else": 0.13891500198807097,
+      "unsubscribe": 0.16707663611430723,
+      "wrong_person_or_bounce": 0.1484115076862368
+    }
+  },
+  {
+    "text": "Limited email access this week",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.12519962555022865,
+      "interested": 0.07555886519196346,
+      "needs_more_info": 0.1186798359032746,
+      "out_of_office": 0.2962600800409989,
+      "referral_to_someone_else": 0.11960390088940213,
+      "unsubscribe": 0.12445008617251702,
+      "wrong_person_or_bounce": 0.14024760625161528
+    }
+  },
+  {
+    "text": "Parental leave until March",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.1244629639448403,
+      "interested": 0.12564042246248722,
+      "needs_more_info": 0.13371081581464803,
+      "out_of_office": 0.3084665413117313,
+      "referral_to_someone_else": 0.11744909535773732,
+      "unsubscribe": 0.10163697504167611,
+      "wrong_person_or_bounce": 0.08863318606687969
+    }
+  },
+  {
+    "text": "Conference travel all week",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.12683218036257926,
+      "interested": 0.11727751087539069,
+      "needs_more_info": 0.15154453084554492,
+      "out_of_office": 0.26483518280499796,
+      "referral_to_someone_else": 0.1533371045763539,
+      "unsubscribe": 0.08279622169786928,
+      "wrong_person_or_bounce": 0.10337726883726403
+    }
+  },
+  {
+    "text": "Referring you to another contact",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.0909318272856193,
+      "interested": 0.1388769121336284,
+      "needs_more_info": 0.15086191596146148,
+      "out_of_office": 0.12704717812889263,
+      "referral_to_someone_else": 0.2342484634964892,
+      "unsubscribe": 0.13045847878675132,
+      "wrong_person_or_bounce": 0.12757522420715758
+    }
+  },
+  {
+    "text": "Try our education partnerships team",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.11601748069160456,
+      "interested": 0.2091370873980414,
+      "needs_more_info": 0.1377238113417217,
+      "out_of_office": 0.10150990240213263,
+      "referral_to_someone_else": 0.28617905942249927,
+      "unsubscribe": 0.05919108086511081,
+      "wrong_person_or_bounce": 0.09024157787888963
+    }
+  },
+  {
+    "text": "Wrong desk; here's the right email",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.08945238867164976,
+      "interested": 0.08824987147782135,
+      "needs_more_info": 0.14225862432762926,
+      "out_of_office": 0.16133336214364805,
+      "referral_to_someone_else": 0.19706422170004353,
+      "unsubscribe": 0.12887995251262394,
+      "wrong_person_or_bounce": 0.19276157916658418
+    }
+  },
+  {
+    "text": "My manager owns budgets; forwarding",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.1213500820495242,
+      "interested": 0.15075543717308335,
+      "needs_more_info": 0.13662525799681122,
+      "out_of_office": 0.12826806489819284,
+      "referral_to_someone_else": 0.2157875953347687,
+      "unsubscribe": 0.09635604517692414,
+      "wrong_person_or_bounce": 0.15085751737069555
+    }
+  },
+  {
+    "text": "Hard bounce from mail server",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.12506275931808972,
+      "interested": 0.0977519770042551,
+      "needs_more_info": 0.10429876944949842,
+      "out_of_office": 0.1461551524320429,
+      "referral_to_someone_else": 0.11147120628908216,
+      "unsubscribe": 0.1194657319283246,
+      "wrong_person_or_bounce": 0.295794403578707
+    }
+  },
+  {
+    "text": "Address rejected by recipient domain",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.10978102697020796,
+      "interested": 0.0912644515065229,
+      "needs_more_info": 0.11010785879449249,
+      "out_of_office": 0.09371905316309022,
+      "referral_to_someone_else": 0.13139470972256254,
+      "unsubscribe": 0.14728379404745207,
+      "wrong_person_or_bounce": 0.31644910579567187
+    }
+  },
+  {
+    "text": "Person no longer with the firm",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.14777323148459628,
+      "interested": 0.11267379275247796,
+      "needs_more_info": 0.12093534101205473,
+      "out_of_office": 0.12592494274993551,
+      "referral_to_someone_else": 0.13401270911313953,
+      "unsubscribe": 0.11729867842741301,
+      "wrong_person_or_bounce": 0.24138130446038303
+    }
+  },
+  {
+    "text": "Wrong department entirely",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.1487418372297938,
+      "interested": 0.07715250529343669,
+      "needs_more_info": 0.11764371263645493,
+      "out_of_office": 0.097840263273597,
+      "referral_to_someone_else": 0.13004838451835746,
+      "unsubscribe": 0.1298915254089285,
+      "wrong_person_or_bounce": 0.2986817716394317
+    }
+  },
+  {
+    "text": "Unsubscribe request",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.12421644030634839,
+      "interested": 0.08919749994259667,
+      "needs_more_info": 0.09535575047411335,
+      "out_of_office": 0.11806896518128293,
+      "referral_to_someone_else": 0.088129230773215,
+      "unsubscribe": 0.3528438200351423,
+      "wrong_person_or_bounce": 0.13218829328730142
+    }
+  },
+  {
+    "text": "Opt out now",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.1527517516784422,
+      "interested": 0.10031452860030264,
+      "needs_more_info": 0.09019017676865328,
+      "out_of_office": 0.1378635145391402,
+      "referral_to_someone_else": 0.08811468286390499,
+      "unsubscribe": 0.33186108327729136,
+      "wrong_person_or_bounce": 0.09890426227226541
+    }
+  },
+  {
+    "text": "Remove this address",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.1022736045423759,
+      "interested": 0.05774363893891445,
+      "needs_more_info": 0.08509523686898943,
+      "out_of_office": 0.08906020899079707,
+      "referral_to_someone_else": 0.09433610227672667,
+      "unsubscribe": 0.4020581786134775,
+      "wrong_person_or_bounce": 0.16943302976871896
+    }
+  },
+  {
+    "text": "Cease contact",
+    "label": "unsubscribe",
+    "probs": {
+      "declined": 0.1293715317648845,
+      "interested": 0.07822315379001427,
+      "needs_more_info": 0.07942303246788043,
+      "out_of_office": 0.14502564415399485,
+      "referral_to_someone_else": 0.10042142595269687,
+      "unsubscribe": 0.3404191510113133,
+      "wrong_person_or_bounce": 0.12711606085921573
+    }
+  },
+  {
+    "text": "We can cover the gifts in kind",
+    "label": "interested",
+    "probs": {
+      "declined": 0.12561460703163066,
+      "interested": 0.29860100496942255,
+      "needs_more_info": 0.14167682865197143,
+      "out_of_office": 0.1266205740245869,
+      "referral_to_someone_else": 0.1355865886281713,
+      "unsubscribe": 0.0690146423386548,
+      "wrong_person_or_bounce": 0.10288575435556242
+    }
+  },
+  {
+    "text": "Sounds great we are in",
+    "label": "interested",
+    "probs": {
+      "declined": 0.13401597942816032,
+      "interested": 0.29618289382825513,
+      "needs_more_info": 0.14085683936997687,
+      "out_of_office": 0.11286082133205635,
+      "referral_to_someone_else": 0.13111192323883009,
+      "unsubscribe": 0.08818536017495138,
+      "wrong_person_or_bounce": 0.09678618262776985
+    }
+  },
+  {
+    "text": "Our team approved the ask",
+    "label": "interested",
+    "probs": {
+      "declined": 0.11629746209318413,
+      "interested": 0.2576225831458137,
+      "needs_more_info": 0.15190109415105774,
+      "out_of_office": 0.09821436371043994,
+      "referral_to_someone_else": 0.18836079580088871,
+      "unsubscribe": 0.0769456553008209,
+      "wrong_person_or_bounce": 0.11065804579779483
+    }
+  },
+  {
+    "text": "Looking forward to sponsoring",
+    "label": "interested",
+    "probs": {
+      "declined": 0.13671860749410913,
+      "interested": 0.3108454277046556,
+      "needs_more_info": 0.14679266119138834,
+      "out_of_office": 0.10299172425833686,
+      "referral_to_someone_else": 0.15299986907703503,
+      "unsubscribe": 0.06825248363936685,
+      "wrong_person_or_bounce": 0.08139922663510818
+    }
+  },
+  {
+    "text": "We will pay the vendor directly",
+    "label": "interested",
+    "probs": {
+      "declined": 0.11470237474494341,
+      "interested": 0.2975961516213784,
+      "needs_more_info": 0.13382656563111658,
+      "out_of_office": 0.09713999505500015,
+      "referral_to_someone_else": 0.1456016910348964,
+      "unsubscribe": 0.0854071299315753,
+      "wrong_person_or_bounce": 0.1257260919810896
+    }
+  },
+  {
+    "text": "Confirmed interest from marketing",
+    "label": "interested",
+    "probs": {
+      "declined": 0.11257516373738785,
+      "interested": 0.2861577127937458,
+      "needs_more_info": 0.16073706512563554,
+      "out_of_office": 0.09960159408601342,
+      "referral_to_someone_else": 0.1465650408314758,
+      "unsubscribe": 0.08022538388995616,
+      "wrong_person_or_bounce": 0.11413803953578541
+    }
+  },
+  {
+    "text": "Happy to discuss next steps to fund",
+    "label": "interested",
+    "probs": {
+      "declined": 0.1426919619824937,
+      "interested": 0.265851186328958,
+      "needs_more_info": 0.16184309858801493,
+      "out_of_office": 0.1173430663013461,
+      "referral_to_someone_else": 0.1588255650510428,
+      "unsubscribe": 0.0693628882791464,
+      "wrong_person_or_bounce": 0.08408223346899818
+    }
+  },
+  {
+    "text": "Yes that amount works for us",
+    "label": "interested",
+    "probs": {
+      "declined": 0.12147747741779721,
+      "interested": 0.34967434622645244,
+      "needs_more_info": 0.13733707171564266,
+      "out_of_office": 0.1016077330861854,
+      "referral_to_someone_else": 0.12320256469338618,
+      "unsubscribe": 0.08498068733918747,
+      "wrong_person_or_bounce": 0.08172011952134865
+    }
+  },
+  {
+    "text": "Please share photos from last year",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.15852503386738354,
+      "interested": 0.12779648759831044,
+      "needs_more_info": 0.22526102697097447,
+      "out_of_office": 0.16034368389902467,
+      "referral_to_someone_else": 0.12568742714661096,
+      "unsubscribe": 0.08820942156917909,
+      "wrong_person_or_bounce": 0.11417691894851688
+    }
+  },
+  {
+    "text": "How many students typically attend?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.11948121661453667,
+      "interested": 0.12500686456676446,
+      "needs_more_info": 0.2751556443477594,
+      "out_of_office": 0.11834717307381541,
+      "referral_to_someone_else": 0.18421798787912017,
+      "unsubscribe": 0.07313328506614832,
+      "wrong_person_or_bounce": 0.10465782845185563
+    }
+  },
+  {
+    "text": "Is this open to all USC students?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.11245964678464178,
+      "interested": 0.14578564212670556,
+      "needs_more_info": 0.23838541572311064,
+      "out_of_office": 0.12262713612424829,
+      "referral_to_someone_else": 0.16890424765321443,
+      "unsubscribe": 0.09074807331674291,
+      "wrong_person_or_bounce": 0.12108983827133638
+    }
+  },
+  {
+    "text": "Need the W9 or vendor info",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.10564657906878668,
+      "interested": 0.14022599328163757,
+      "needs_more_info": 0.2602821307651135,
+      "out_of_office": 0.13260301190582238,
+      "referral_to_someone_else": 0.14246616970193485,
+      "unsubscribe": 0.08603673967349372,
+      "wrong_person_or_bounce": 0.13273937560321125
+    }
+  },
+  {
+    "text": "Clarify the deliverables for us",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.11752344750842944,
+      "interested": 0.19030935809205438,
+      "needs_more_info": 0.2440220458167494,
+      "out_of_office": 0.10075567904267797,
+      "referral_to_someone_else": 0.13833662295359314,
+      "unsubscribe": 0.08315068209209117,
+      "wrong_person_or_bounce": 0.12590216449440444
+    }
+  },
+  {
+    "text": "What logo size on the banner?",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.1476741554955853,
+      "interested": 0.14471083440308974,
+      "needs_more_info": 0.24853939433766728,
+      "out_of_office": 0.11115952685162367,
+      "referral_to_someone_else": 0.1396586321565176,
+      "unsubscribe": 0.0940574994282686,
+      "wrong_person_or_bounce": 0.11419995732724778
+    }
+  },
+  {
+    "text": "Send the draft agreement",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.11389571443921416,
+      "interested": 0.1725812899265314,
+      "needs_more_info": 0.1966119198371123,
+      "out_of_office": 0.1122588368499733,
+      "referral_to_someone_else": 0.1662931769551664,
+      "unsubscribe": 0.11940466985389327,
+      "wrong_person_or_bounce": 0.11895439213810904
+    }
+  },
+  {
+    "text": "More context on club membership",
+    "label": "needs_more_info",
+    "probs": {
+      "declined": 0.12652151387570817,
+      "interested": 0.13887758710656967,
+      "needs_more_info": 0.23905342367922555,
+      "out_of_office": 0.11011896882343972,
+      "referral_to_someone_else": 0.17370498040148027,
+      "unsubscribe": 0.07439697141971655,
+      "wrong_person_or_bounce": 0.13732655469386004
+    }
+  },
+  {
+    "text": "Hard pass from our team",
+    "label": "declined",
+    "probs": {
+      "declined": 0.22098299986281464,
+      "interested": 0.14275224112179594,
+      "needs_more_info": 0.1370808385036645,
+      "out_of_office": 0.10512433407241237,
+      "referral_to_someone_else": 0.165731127274076,
+      "unsubscribe": 0.08564094040885642,
+      "wrong_person_or_bounce": 0.14268751875637997
+    }
+  },
+  {
+    "text": "Out of budget for Q2",
+    "label": "declined",
+    "probs": {
+      "declined": 0.23281934921209663,
+      "interested": 0.152617593896196,
+      "needs_more_info": 0.14629062693556139,
+      "out_of_office": 0.14249914288529406,
+      "referral_to_someone_else": 0.11965303237540739,
+      "unsubscribe": 0.09566387409194699,
+      "wrong_person_or_bounce": 0.1104563806034975
+    }
+  },
+  {
+    "text": "Does not align with focus areas",
+    "label": "declined",
+    "probs": {
+      "declined": 0.23264865793472775,
+      "interested": 0.0949178682693688,
+      "needs_more_info": 0.1600666420227778,
+      "out_of_office": 0.11314872453908328,
+      "referral_to_someone_else": 0.13779374566128297,
+      "unsubscribe": 0.09480502978115964,
+      "wrong_person_or_bounce": 0.16661933179159974
+    }
+  },
+  {
+    "text": "Sorry we cannot help",
+    "label": "declined",
+    "probs": {
+      "declined": 0.2264102921024937,
+      "interested": 0.1365811489429846,
+      "needs_more_info": 0.11629372608637577,
+      "out_of_office": 0.10751204034843145,
+      "referral_to_someone_else": 0.11752908040310336,
+      "unsubscribe": 0.13729014443618448,
+      "wrong_person_or_bounce": 0.15838356768042666
+    }
+  },
+  {
+    "text": "We must decline",
+    "label": "declined",
+    "probs": {
+      "declined": 0.2705464737534476,
+      "interested": 0.12444118784934659,
+      "needs_more_info": 0.10248454591990065,
+      "out_of_office": 0.09288864484352347,
+      "referral_to_someone_else": 0.09297882513223293,
+      "unsubscribe": 0.2061638340935286,
+      "wrong_person_or_bounce": 0.11049648840802012
+    }
+  },
+  {
+    "text": "No sponsorship available",
+    "label": "declined",
+    "probs": {
+      "declined": 0.23701859202028142,
+      "interested": 0.13460844109664638,
+      "needs_more_info": 0.12584204157709855,
+      "out_of_office": 0.11550820647906708,
+      "referral_to_someone_else": 0.12912842469987332,
+      "unsubscribe": 0.10445396099675426,
+      "wrong_person_or_bounce": 0.15344033313027894
+    }
+  },
+  {
+    "text": "Not moving forward",
+    "label": "declined",
+    "probs": {
+      "declined": 0.29636729157121716,
+      "interested": 0.08503088572365856,
+      "needs_more_info": 0.0939387180982726,
+      "out_of_office": 0.1417301451021419,
+      "referral_to_someone_else": 0.1082532138065059,
+      "unsubscribe": 0.12381116737110702,
+      "wrong_person_or_bounce": 0.15086857832709688
+    }
+  },
+  {
+    "text": "Passing this year",
+    "label": "declined",
+    "probs": {
+      "declined": 0.2220388727755552,
+      "interested": 0.13585192741855967,
+      "needs_more_info": 0.17218899882832323,
+      "out_of_office": 0.16790072324710137,
+      "referral_to_someone_else": 0.12132870438458768,
+      "unsubscribe": 0.07981239470158845,
+      "wrong_person_or_bounce": 0.10087837864428435
+    }
+  },
+  {
+    "text": "Will respond when I return",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.1182070787602706,
+      "interested": 0.1453113157922197,
+      "needs_more_info": 0.13120998833112346,
+      "out_of_office": 0.22517342523340708,
+      "referral_to_someone_else": 0.14081592041162566,
+      "unsubscribe": 0.13223961472249698,
+      "wrong_person_or_bounce": 0.10704265674885655
+    }
+  },
+  {
+    "text": "Holiday break until January",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.13698970417908823,
+      "interested": 0.10979282013698313,
+      "needs_more_info": 0.12016557327748216,
+      "out_of_office": 0.3380871714654567,
+      "referral_to_someone_else": 0.08673460493373517,
+      "unsubscribe": 0.10582229566386823,
+      "wrong_person_or_bounce": 0.10240783034338632
+    }
+  },
+  {
+    "text": "Sick leave this week",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.13561206443658974,
+      "interested": 0.10560382704410197,
+      "needs_more_info": 0.11898902251825116,
+      "out_of_office": 0.34440651815362505,
+      "referral_to_someone_else": 0.11366310260127317,
+      "unsubscribe": 0.09336449126245944,
+      "wrong_person_or_bounce": 0.08836097398369945
+    }
+  },
+  {
+    "text": "Remote with delayed replies",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.11607549449766867,
+      "interested": 0.10994619153469022,
+      "needs_more_info": 0.10760805980165188,
+      "out_of_office": 0.24027402949311402,
+      "referral_to_someone_else": 0.14192544840094712,
+      "unsubscribe": 0.12632574886202277,
+      "wrong_person_or_bounce": 0.1578450274099053
+    }
+  },
+  {
+    "text": "Inbox on pause until Monday",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.11454646444355546,
+      "interested": 0.08865618438080929,
+      "needs_more_info": 0.10355220468888572,
+      "out_of_office": 0.33337052208423074,
+      "referral_to_someone_else": 0.09769972574488021,
+      "unsubscribe": 0.13862266739660278,
+      "wrong_person_or_bounce": 0.12355223126103569
+    }
+  },
+  {
+    "text": "Annual leave in progress",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.1416110299852872,
+      "interested": 0.14969615988527502,
+      "needs_more_info": 0.14318615248157374,
+      "out_of_office": 0.253294792081688,
+      "referral_to_someone_else": 0.13764873741430614,
+      "unsubscribe": 0.08211463163291403,
+      "wrong_person_or_bounce": 0.09244849651895597
+    }
+  },
+  {
+    "text": "Not checking email daily",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.13452554841545467,
+      "interested": 0.06087101252292892,
+      "needs_more_info": 0.08868289634335703,
+      "out_of_office": 0.273068569889664,
+      "referral_to_someone_else": 0.09741940409804657,
+      "unsubscribe": 0.19094992905640817,
+      "wrong_person_or_bounce": 0.15448263967414072
+    }
+  },
+  {
+    "text": "Back online after the holiday",
+    "label": "out_of_office",
+    "probs": {
+      "declined": 0.120024383719168,
+      "interested": 0.12553411684664886,
+      "needs_more_info": 0.11749487354155277,
+      "out_of_office": 0.300381051149636,
+      "referral_to_someone_else": 0.10852775908049851,
+      "unsubscribe": 0.12223790277166624,
+      "wrong_person_or_bounce": 0.10579991289082966
+    }
+  },
+  {
+    "text": "Please talk to the foundation",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.14742709928908196,
+      "interested": 0.16251306766215556,
+      "needs_more_info": 0.16617206995757405,
+      "out_of_office": 0.10956697908976161,
+      "referral_to_someone_else": 0.20075411540952334,
+      "unsubscribe": 0.09030128329220896,
+      "wrong_person_or_bounce": 0.12326538529969455
+    }
+  },
+  {
+    "text": "Campus ambassador is better suited",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.12786458000237003,
+      "interested": 0.14432293175159203,
+      "needs_more_info": 0.15551217639663,
+      "out_of_office": 0.0974986029768656,
+      "referral_to_someone_else": 0.25195496706681064,
+      "unsubscribe": 0.08957075367019598,
+      "wrong_person_or_bounce": 0.13327598813553576
+    }
+  },
+  {
+    "text": "HR campus team handles this",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.11652900478225388,
+      "interested": 0.13836130910948252,
+      "needs_more_info": 0.15898500109460345,
+      "out_of_office": 0.1329249525144571,
+      "referral_to_someone_else": 0.2703365148402927,
+      "unsubscribe": 0.08379737062323238,
+      "wrong_person_or_bounce": 0.09906584703567783
+    }
+  },
+  {
+    "text": "Marketing community lead cc'd",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.11823788507655321,
+      "interested": 0.1642706432776532,
+      "needs_more_info": 0.14186036789669043,
+      "out_of_office": 0.0975835269899582,
+      "referral_to_someone_else": 0.27793599626032656,
+      "unsubscribe": 0.08012058876115628,
+      "wrong_person_or_bounce": 0.11999099173766223
+    }
+  },
+  {
+    "text": "Regional lead for California",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.13687722570754673,
+      "interested": 0.15022723177839206,
+      "needs_more_info": 0.15592370704842348,
+      "out_of_office": 0.12270892397353196,
+      "referral_to_someone_else": 0.2483148369451014,
+      "unsubscribe": 0.07660589820590347,
+      "wrong_person_or_bounce": 0.10934217634110098
+    }
+  },
+  {
+    "text": "Please message the recruiter listed",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.0951161362408901,
+      "interested": 0.13124730940616605,
+      "needs_more_info": 0.1677210057884973,
+      "out_of_office": 0.12812541745333736,
+      "referral_to_someone_else": 0.23671853651660424,
+      "unsubscribe": 0.1102387488992073,
+      "wrong_person_or_bounce": 0.13083284569529746
+    }
+  },
+  {
+    "text": "I am routing this to partnerships",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.12737135772238906,
+      "interested": 0.18157893141775322,
+      "needs_more_info": 0.14113980140757415,
+      "out_of_office": 0.10745651040673404,
+      "referral_to_someone_else": 0.24117494856935973,
+      "unsubscribe": 0.09173614389605547,
+      "wrong_person_or_bounce": 0.10954230658013435
+    }
+  },
+  {
+    "text": "Someone else will reply from our team",
+    "label": "referral_to_someone_else",
+    "probs": {
+      "declined": 0.10955842520841946,
+      "interested": 0.18024567077403067,
+      "needs_more_info": 0.13003068684250263,
+      "out_of_office": 0.13579742046716894,
+      "referral_to_someone_else": 0.2337504751621403,
+      "unsubscribe": 0.08916627111663597,
+      "wrong_person_or_bounce": 0.12145105042910212
+    }
+  },
+  {
+    "text": "Never heard of your club ask",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.14535458490445163,
+      "interested": 0.10438939314096132,
+      "needs_more_info": 0.1471311932279197,
+      "out_of_office": 0.10651050569554353,
+      "referral_to_someone_else": 0.12905544868989074,
+      "unsubscribe": 0.09923600260349444,
+      "wrong_person_or_bounce": 0.26832287173773867
+    }
+  },
+  {
+    "text": "This inbox is for press only",
+    "label": "wrong_person_or_bounce",
+    "probs": {
+      "declined": 0.12403079809735769,
+      "interested": 0.10816365392773476,
+      "needs_more_info": 0.12157697265021988,
+      "out_of_office": 0.13906605944291364,
+      "referral_to_someone_else": 0.11860276803293053,
+      "unsubscribe": 0.16415318802921464,
+      "wrong_person_or_bounce": 0.22440655981962876
+    }
+  }
+]

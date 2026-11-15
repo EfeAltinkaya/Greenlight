@@ -2,14 +2,15 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, Check, Copy, Printer } from "lucide-react";
+import { ArrowLeft, Check, Copy, Download, Printer } from "lucide-react";
 import { BOARDS } from "@/data/rules";
 import { fmtDate, lookupDeadline, matchVendor, money, needsNineWeeks, nineWeekReason, requestItems, requestTotal, runChecks, score, vendorStatus } from "@/lib/engine";
+import { downloadCheckPdf } from "@/lib/export/checkPdf";
 import { greenlightCheckText } from "@/lib/greenlightCheck";
 import { requestIdOf } from "@/lib/requestId";
 import { RULES_VERSION, greenlightVerdict } from "@/lib/verdict";
 import { useStore } from "@/lib/store";
-import { CheckItem, LEVEL, useToast } from "@/components/ui";
+import { CheckItem, LEVEL, Spinner, useToast } from "@/components/ui";
 import { VerdictPill } from "@/components/VerdictPill";
 
 export default function GreenlightCheckPage() {
@@ -19,6 +20,7 @@ export default function GreenlightCheckPage() {
   const club = app ? clubs.find((c) => c.id === app.clubId) : null;
   const [toast, say] = useToast();
   const [copied, setCopied] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
 
   if (!app || !club) {
     return (
@@ -48,6 +50,21 @@ export default function GreenlightCheckPage() {
     }
   }
 
+  async function savePdf() {
+    const a = app;
+    const c = club;
+    if (!a || !c) return;
+    setPdfBusy(true);
+    try {
+      await downloadCheckPdf(a, c);
+      say("Greenlight Check PDF downloaded");
+    } catch {
+      say("Could not build the PDF. Use Print instead.", "error");
+    } finally {
+      setPdfBusy(false);
+    }
+  }
+
   return (
     <>
       {toast}
@@ -60,6 +77,7 @@ export default function GreenlightCheckPage() {
         </div>
         <div className="row" style={{ gap: 8 }}>
           <button className="btn" onClick={copy}>{copied ? <><Check />Copied</> : <><Copy />Copy text</>}</button>
+          <button className="btn" disabled={pdfBusy} onClick={savePdf}>{pdfBusy ? <><Spinner />Building PDF</> : <><Download />Download PDF</>}</button>
           <button className="btn btn-primary" onClick={() => window.print()}><Printer />Print</button>
         </div>
       </div>

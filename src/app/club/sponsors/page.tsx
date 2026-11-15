@@ -12,6 +12,7 @@ import { newId, store, useCurrentClub, useStore } from "@/lib/store";
 import type { Outreach, OutreachStatus, SponsorPackage } from "@/lib/types";
 import { MAJORS, SCHOOL_MAJORS, SPONSORS, linkedInAlumni, linkedInRecruiters, universityPage, type Major, type Sponsor } from "@/data/sponsors";
 import { AiTag, Spinner, useToast } from "@/components/ui";
+import { ReplyModelHint } from "@/components/ReplyModelHint";
 import { Reveal } from "@/components/Motion";
 import { SponsorInbox } from "@/components/Inbox";
 import { DealsList } from "@/components/DealsList";
@@ -312,6 +313,7 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
   const [extra, setExtra] = useState<{ kind: "follow-up" | "reply"; subject: string; body: string } | null>(null);
   const [theirs, setTheirs] = useState("");
   const [note, setNote] = useState("");
+  const [replyLabel, setReplyLabel] = useState<string | null>(null);
   const [others, setOthers] = useState(0);
   useEffect(() => { otherClubsTalking(o.sponsorId, o.clubId).then(setOthers); }, [o.sponsorId, o.clubId]);
   const [offline, setOffline] = useState<boolean | null>(null);
@@ -414,7 +416,15 @@ function OutreachDetail({ o, pool, say, onClose }: { o: Outreach; pool: Sponsor[
           {o.status === "replied" && (
             <div className="inset stack-xs" style={{ padding: 12 }}>
               <strong className="small">Answer their reply</strong>
-              <textarea className="textarea" style={{ minHeight: 80, fontSize: 13.5 }} value={theirs} onChange={(e) => setTheirs(e.target.value)} placeholder="Paste what they wrote" aria-label="Their message" />
+              <textarea className="textarea" style={{ minHeight: 80, fontSize: 13.5 }} value={theirs} onChange={(e) => { setTheirs(e.target.value); setReplyLabel(null); }} placeholder="Paste what they wrote" aria-label="Their message" />
+              <ReplyModelHint
+                text={theirs}
+                onAcceptLabel={(label, display) => {
+                  setReplyLabel(label);
+                  if (!note.trim()) setNote(`(${display}) `);
+                }}
+              />
+              {replyLabel && <span className="tiny faint">Reply tagged as {replyLabel}</span>}
               <input className="input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Your answer in a few words, e.g. yes tues 3pm works, ask about their budget" aria-label="Your short answer" />
               <span className="tiny faint">Greenlight writes the full reply from your note and never adds a date, amount or promise you did not give.</span>
               <button className="btn btn-sm" style={{ justifySelf: "start" }} onClick={() => more("reply")} disabled={busy || !note.trim()}><MessageSquareReply />Write the reply</button>

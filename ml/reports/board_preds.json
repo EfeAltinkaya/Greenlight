@@ -1,0 +1,1142 @@
+[
+  {
+    "text": "Career panel with alumni in consulting",
+    "label": "professional",
+    "probs": {
+      "arts": 0.1091428926972221,
+      "philanthropy": 0.1772799954980676,
+      "professional": 0.573276274755358,
+      "social": 0.1403008370493523
+    }
+  },
+  {
+    "text": "Research symposium for undergrads",
+    "label": "professional",
+    "probs": {
+      "arts": 0.22829116557439902,
+      "philanthropy": 0.14315378929144915,
+      "professional": 0.4445734008767989,
+      "social": 0.18398164425735303
+    }
+  },
+  {
+    "text": "Resume workshop with recruiters",
+    "label": "professional",
+    "probs": {
+      "arts": 0.12033483808333785,
+      "philanthropy": 0.24769751676399138,
+      "professional": 0.4790981917257087,
+      "social": 0.15286945342696207
+    }
+  },
+  {
+    "text": "Tech talk by industry engineers",
+    "label": "professional",
+    "probs": {
+      "arts": 0.1108312391439441,
+      "philanthropy": 0.13994278949353467,
+      "professional": 0.5842112237865875,
+      "social": 0.16501474757593382
+    }
+  },
+  {
+    "text": "Case competition prep session",
+    "label": "professional",
+    "probs": {
+      "arts": 0.18072325573215256,
+      "philanthropy": 0.20958222560428655,
+      "professional": 0.4128221441431597,
+      "social": 0.19687237452040116
+    }
+  },
+  {
+    "text": "Academic conference on campus",
+    "label": "professional",
+    "probs": {
+      "arts": 0.2277961821086501,
+      "philanthropy": 0.15341008514780202,
+      "professional": 0.38180771058908475,
+      "social": 0.23698602215446313
+    }
+  },
+  {
+    "text": "Lab tour for STEM majors",
+    "label": "professional",
+    "probs": {
+      "arts": 0.2420984373873068,
+      "philanthropy": 0.16974086510560582,
+      "professional": 0.4012534849090662,
+      "social": 0.18690721259802126
+    }
+  },
+  {
+    "text": "Networking night with employers",
+    "label": "professional",
+    "probs": {
+      "arts": 0.11514889342135656,
+      "philanthropy": 0.14951880936448408,
+      "professional": 0.4258580832360416,
+      "social": 0.3094742139781177
+    }
+  },
+  {
+    "text": "Beach cleanup with local nonprofit",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.11035179245172924,
+      "philanthropy": 0.6029943763123309,
+      "professional": 0.1122337038046181,
+      "social": 0.17442012743132174
+    }
+  },
+  {
+    "text": "Food drive packing event",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.17627194147028719,
+      "philanthropy": 0.36795354649192824,
+      "professional": 0.2082426598414777,
+      "social": 0.24753185219630697
+    }
+  },
+  {
+    "text": "Habitat for Humanity build day",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.15506315506600338,
+      "philanthropy": 0.4329257417028493,
+      "professional": 0.18693979970976207,
+      "social": 0.22507130352138516
+    }
+  },
+  {
+    "text": "Tutoring underserved middle schoolers",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.16150879385766365,
+      "philanthropy": 0.35938500794338124,
+      "professional": 0.28991040378906324,
+      "social": 0.1891957944098918
+    }
+  },
+  {
+    "text": "Charity 5k for children's hospital",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.19494346212642918,
+      "philanthropy": 0.5109461872131963,
+      "professional": 0.14891860752896588,
+      "social": 0.1451917431314086
+    }
+  },
+  {
+    "text": "Blood drive with Red Cross",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.1583145659852182,
+      "philanthropy": 0.5039420541429365,
+      "professional": 0.163095538101088,
+      "social": 0.1746478417707574
+    }
+  },
+  {
+    "text": "Community garden volunteer day",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.1529743205757355,
+      "philanthropy": 0.5339554282309542,
+      "professional": 0.10782823178156287,
+      "social": 0.2052420194117474
+    }
+  },
+  {
+    "text": "Homeless shelter meal service",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.10641956346978727,
+      "philanthropy": 0.5792706302695402,
+      "professional": 0.10249202587413533,
+      "social": 0.2118177803865373
+    }
+  },
+  {
+    "text": "Club mixer for new members",
+    "label": "social",
+    "probs": {
+      "arts": 0.15645345988280068,
+      "philanthropy": 0.1686894215845385,
+      "professional": 0.18363534003625723,
+      "social": 0.49122177849640347
+    }
+  },
+  {
+    "text": "Game night in the TCC",
+    "label": "social",
+    "probs": {
+      "arts": 0.19278740278578646,
+      "philanthropy": 0.12148286977913524,
+      "professional": 0.21519443579587727,
+      "social": 0.47053529163920094
+    }
+  },
+  {
+    "text": "Startup founder social",
+    "label": "social",
+    "probs": {
+      "arts": 0.12518031543459718,
+      "philanthropy": 0.2174579527027844,
+      "professional": 0.34075398568754145,
+      "social": 0.31660774617507703
+    }
+  },
+  {
+    "text": "Welcome week ice cream social",
+    "label": "social",
+    "probs": {
+      "arts": 0.15724470715671518,
+      "philanthropy": 0.24210368384203496,
+      "professional": 0.157526268771035,
+      "social": 0.443125340230215
+    }
+  },
+  {
+    "text": "Intramural sports kickoff",
+    "label": "social",
+    "probs": {
+      "arts": 0.2676291125235436,
+      "philanthropy": 0.18862387612448683,
+      "professional": 0.24048111523910426,
+      "social": 0.30326589611286536
+    }
+  },
+  {
+    "text": "Movie night on the lawn",
+    "label": "social",
+    "probs": {
+      "arts": 0.2536437532499381,
+      "philanthropy": 0.23262792843566119,
+      "professional": 0.18594457285778185,
+      "social": 0.32778374545661887
+    }
+  },
+  {
+    "text": "Student org fair booth social",
+    "label": "social",
+    "probs": {
+      "arts": 0.20936433511625874,
+      "philanthropy": 0.19426950847036414,
+      "professional": 0.2313968511695845,
+      "social": 0.3649693052437927
+    }
+  },
+  {
+    "text": "Casual networking picnic",
+    "label": "social",
+    "probs": {
+      "arts": 0.12003788876496894,
+      "philanthropy": 0.22082243104520158,
+      "professional": 0.23515818470614608,
+      "social": 0.42398149548368347
+    }
+  },
+  {
+    "text": "Spring dance showcase",
+    "label": "arts",
+    "probs": {
+      "arts": 0.45612284026044103,
+      "philanthropy": 0.1345886512511193,
+      "professional": 0.18062103405014313,
+      "social": 0.2286674744382966
+    }
+  },
+  {
+    "text": "Student art gallery opening",
+    "label": "arts",
+    "probs": {
+      "arts": 0.49390657926258946,
+      "philanthropy": 0.1516434643294449,
+      "professional": 0.1633722119462502,
+      "social": 0.19107774446171544
+    }
+  },
+  {
+    "text": "Orchestra concert in Bovard",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5306470468040705,
+      "philanthropy": 0.15761397761894447,
+      "professional": 0.13841245764805735,
+      "social": 0.1733265179289277
+    }
+  },
+  {
+    "text": "Theater one-act festival",
+    "label": "arts",
+    "probs": {
+      "arts": 0.49745781930559463,
+      "philanthropy": 0.15441769085422163,
+      "professional": 0.16690934931679943,
+      "social": 0.18121514052338417
+    }
+  },
+  {
+    "text": "A cappella invitational",
+    "label": "arts",
+    "probs": {
+      "arts": 0.38805956635800454,
+      "philanthropy": 0.16261863680818248,
+      "professional": 0.18075373443023957,
+      "social": 0.26856806240357356
+    }
+  },
+  {
+    "text": "Film screening and talkback",
+    "label": "arts",
+    "probs": {
+      "arts": 0.3052934175075926,
+      "philanthropy": 0.15953223589447071,
+      "professional": 0.3343340005659045,
+      "social": 0.2008403460320321
+    }
+  },
+  {
+    "text": "Photography exhibition",
+    "label": "arts",
+    "probs": {
+      "arts": 0.48357298993442677,
+      "philanthropy": 0.14777254179075566,
+      "professional": 0.21217301607378575,
+      "social": 0.15648145220103177
+    }
+  },
+  {
+    "text": "Cultural dance performance",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5648189796315619,
+      "philanthropy": 0.13395523558833727,
+      "professional": 0.14816466682926446,
+      "social": 0.15306111795083632
+    }
+  },
+  {
+    "text": "Events that advance professional careers",
+    "label": "professional",
+    "probs": {
+      "arts": 0.20767461865160453,
+      "philanthropy": 0.17902918123558192,
+      "professional": 0.4283360186805991,
+      "social": 0.1849601814322144
+    }
+  },
+  {
+    "text": "Academic research project showcase",
+    "label": "professional",
+    "probs": {
+      "arts": 0.24173255498174478,
+      "philanthropy": 0.15717404852681421,
+      "professional": 0.45968932377028016,
+      "social": 0.1414040727211609
+    }
+  },
+  {
+    "text": "Viterbi industry night",
+    "label": "professional",
+    "probs": {
+      "arts": 0.2263098531861277,
+      "philanthropy": 0.12989449405379772,
+      "professional": 0.3525329943999967,
+      "social": 0.2912626583600778
+    }
+  },
+  {
+    "text": "Marshall alumni careers evening",
+    "label": "professional",
+    "probs": {
+      "arts": 0.1655976375764146,
+      "philanthropy": 0.1812133451231225,
+      "professional": 0.3906570851478803,
+      "social": 0.26253193215258264
+    }
+  },
+  {
+    "text": "Robotics Build Night professional skills",
+    "label": "professional",
+    "probs": {
+      "arts": 0.16663693298079257,
+      "philanthropy": 0.1581231029174984,
+      "professional": 0.4232741184189528,
+      "social": 0.2519658456827563
+    }
+  },
+  {
+    "text": "Mock interviews with alumni",
+    "label": "professional",
+    "probs": {
+      "arts": 0.13526314724214578,
+      "philanthropy": 0.16857885917805246,
+      "professional": 0.5002188192050194,
+      "social": 0.19593917437478234
+    }
+  },
+  {
+    "text": "Patent workshop for inventors",
+    "label": "professional",
+    "probs": {
+      "arts": 0.18981279758844485,
+      "philanthropy": 0.1541721245202066,
+      "professional": 0.4951032093399388,
+      "social": 0.16091186855140974
+    }
+  },
+  {
+    "text": "Data science meetup",
+    "label": "professional",
+    "probs": {
+      "arts": 0.16553883567379923,
+      "philanthropy": 0.15602763504100173,
+      "professional": 0.43379818730179764,
+      "social": 0.24463534198340148
+    }
+  },
+  {
+    "text": "Finance club speaker series",
+    "label": "professional",
+    "probs": {
+      "arts": 0.16410823202452116,
+      "philanthropy": 0.1611765526681101,
+      "professional": 0.4368710895202226,
+      "social": 0.23784412578714614
+    }
+  },
+  {
+    "text": "Community service projects",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.13288844112232964,
+      "philanthropy": 0.5994375214066572,
+      "professional": 0.13796806318069602,
+      "social": 0.1297059742903172
+    }
+  },
+  {
+    "text": "Philanthropy fund service events",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.24528644909241584,
+      "philanthropy": 0.3969686189347726,
+      "professional": 0.17045927287526538,
+      "social": 0.1872856590975461
+    }
+  },
+  {
+    "text": "Shoreline cleanup sample",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.14312154210727623,
+      "philanthropy": 0.5124602378402733,
+      "professional": 0.18228109784588584,
+      "social": 0.1621371222065646
+    }
+  },
+  {
+    "text": "Service trip packing party",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.13480818343854126,
+      "philanthropy": 0.4277169787823758,
+      "professional": 0.16538156089656844,
+      "social": 0.27209327688251456
+    }
+  },
+  {
+    "text": "Clothing donation sorting",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.1318733137248016,
+      "philanthropy": 0.5524732689467191,
+      "professional": 0.12847851132561422,
+      "social": 0.187174906002865
+    }
+  },
+  {
+    "text": "Senior center visit day",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.1979517925700026,
+      "philanthropy": 0.3210683362619696,
+      "professional": 0.1648536088203393,
+      "social": 0.31612626234768854
+    }
+  },
+  {
+    "text": "Park restoration volunteer",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.12425398939357644,
+      "philanthropy": 0.6006726716262214,
+      "professional": 0.11443366281490615,
+      "social": 0.16063967616529598
+    }
+  },
+  {
+    "text": "Literacy tutoring Saturday",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.17841467551528717,
+      "philanthropy": 0.33383480046684694,
+      "professional": 0.2522012666588719,
+      "social": 0.23554925735899396
+    }
+  },
+  {
+    "text": "Social and recreational events",
+    "label": "social",
+    "probs": {
+      "arts": 0.1950847802406178,
+      "philanthropy": 0.18012023876316838,
+      "professional": 0.15149912344708336,
+      "social": 0.47329585754913045
+    }
+  },
+  {
+    "text": "Startup-oriented club gatherings",
+    "label": "social",
+    "probs": {
+      "arts": 0.1239381118000068,
+      "philanthropy": 0.13219363267478088,
+      "professional": 0.3416078876525495,
+      "social": 0.40226036787266284
+    }
+  },
+  {
+    "text": "Dance social sample",
+    "label": "social",
+    "probs": {
+      "arts": 0.2578117517163559,
+      "philanthropy": 0.1706391682160196,
+      "professional": 0.18787344193686212,
+      "social": 0.3836756381307623
+    }
+  },
+  {
+    "text": "Recreation fund mixers",
+    "label": "social",
+    "probs": {
+      "arts": 0.1785968757735806,
+      "philanthropy": 0.34386128783306874,
+      "professional": 0.12991791080308715,
+      "social": 0.3476239255902636
+    }
+  },
+  {
+    "text": "Trivia night for members",
+    "label": "social",
+    "probs": {
+      "arts": 0.16361934074815773,
+      "philanthropy": 0.10760985953793936,
+      "professional": 0.26222033961732566,
+      "social": 0.4665504600965773
+    }
+  },
+  {
+    "text": "Potluck for apartment residents",
+    "label": "social",
+    "probs": {
+      "arts": 0.1587775211641499,
+      "philanthropy": 0.2981495161027297,
+      "professional": 0.13285231835845784,
+      "social": 0.41022064437466255
+    }
+  },
+  {
+    "text": "Board game tournament",
+    "label": "social",
+    "probs": {
+      "arts": 0.22788499151825034,
+      "philanthropy": 0.15404278706065533,
+      "professional": 0.23217086115001817,
+      "social": 0.38590136027107613
+    }
+  },
+  {
+    "text": "Sunset hike meetup",
+    "label": "social",
+    "probs": {
+      "arts": 0.18090371039512917,
+      "philanthropy": 0.23692211106288041,
+      "professional": 0.182019876662595,
+      "social": 0.4001543018793953
+    }
+  },
+  {
+    "text": "Performing and visual arts events",
+    "label": "arts",
+    "probs": {
+      "arts": 0.580886958193655,
+      "philanthropy": 0.11726220930130798,
+      "professional": 0.15588404391177293,
+      "social": 0.14596678859326412
+    }
+  },
+  {
+    "text": "Arts fund showcases",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5329605517684574,
+      "philanthropy": 0.1937875446174568,
+      "professional": 0.14335888661546523,
+      "social": 0.12989301699862071
+    }
+  },
+  {
+    "text": "Southside Dance Collective spring show",
+    "label": "arts",
+    "probs": {
+      "arts": 0.4557544289561154,
+      "philanthropy": 0.15116460119041836,
+      "professional": 0.14439436940621825,
+      "social": 0.2486866004472479
+    }
+  },
+  {
+    "text": "Visual arts exhibition FY26",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5127590845548391,
+      "philanthropy": 0.1268084267256089,
+      "professional": 0.22482316370764818,
+      "social": 0.13560932501190376
+    }
+  },
+  {
+    "text": "Jazz ensemble concert",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5280157198098645,
+      "philanthropy": 0.12328442937214179,
+      "professional": 0.15190900813991126,
+      "social": 0.19679084267808256
+    }
+  },
+  {
+    "text": "Improv comedy night",
+    "label": "arts",
+    "probs": {
+      "arts": 0.34797718704681607,
+      "philanthropy": 0.11003131659118287,
+      "professional": 0.21969615119976946,
+      "social": 0.3222953451622317
+    }
+  },
+  {
+    "text": "Ballet workshop showing",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5760413277231086,
+      "philanthropy": 0.10975440301636595,
+      "professional": 0.17610742402745852,
+      "social": 0.13809684523306706
+    }
+  },
+  {
+    "text": "Sculpture garden opening",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5260895679193253,
+      "philanthropy": 0.19962995970370695,
+      "professional": 0.1251695083301907,
+      "social": 0.149110964046777
+    }
+  },
+  {
+    "text": "Pre-med panel with doctors",
+    "label": "professional",
+    "probs": {
+      "arts": 0.14791792406591966,
+      "philanthropy": 0.19894895849837993,
+      "professional": 0.5167973551829612,
+      "social": 0.13633576225273927
+    }
+  },
+  {
+    "text": "Law school admissions talk",
+    "label": "professional",
+    "probs": {
+      "arts": 0.16160843115752427,
+      "philanthropy": 0.18722361876505192,
+      "professional": 0.4661220431957337,
+      "social": 0.1850459068816901
+    }
+  },
+  {
+    "text": "Startup pitch practice with mentors",
+    "label": "professional",
+    "probs": {
+      "arts": 0.1337734993170988,
+      "philanthropy": 0.18043516319747854,
+      "professional": 0.5200495477403069,
+      "social": 0.16574178974511578
+    }
+  },
+  {
+    "text": "Engineering design review night",
+    "label": "professional",
+    "probs": {
+      "arts": 0.18666846537154633,
+      "philanthropy": 0.12049015455316245,
+      "professional": 0.44563999925154335,
+      "social": 0.2472013808237478
+    }
+  },
+  {
+    "text": "Consulting club case night",
+    "label": "professional",
+    "probs": {
+      "arts": 0.12686010033754547,
+      "philanthropy": 0.16342045704865196,
+      "professional": 0.40297644273386873,
+      "social": 0.30674299987993375
+    }
+  },
+  {
+    "text": "Research poster session",
+    "label": "professional",
+    "probs": {
+      "arts": 0.18177013773070022,
+      "philanthropy": 0.19161373398822282,
+      "professional": 0.44725070586901644,
+      "social": 0.17936542241206058
+    }
+  },
+  {
+    "text": "Internship prep bootcamp",
+    "label": "professional",
+    "probs": {
+      "arts": 0.1299074292293402,
+      "philanthropy": 0.2527980282166938,
+      "professional": 0.43741013523149214,
+      "social": 0.1798844073224739
+    }
+  },
+  {
+    "text": "Women in STEM mentoring dinner",
+    "label": "professional",
+    "probs": {
+      "arts": 0.17346433816645346,
+      "philanthropy": 0.19523405427138457,
+      "professional": 0.3987621843190253,
+      "social": 0.23253942324313662
+    }
+  },
+  {
+    "text": "Product management workshop",
+    "label": "professional",
+    "probs": {
+      "arts": 0.16934639375948604,
+      "philanthropy": 0.18489652618378308,
+      "professional": 0.4984879387172515,
+      "social": 0.14726914133947955
+    }
+  },
+  {
+    "text": "Cybersecurity career fair booth",
+    "label": "professional",
+    "probs": {
+      "arts": 0.15363032967618243,
+      "philanthropy": 0.20133038434279865,
+      "professional": 0.4696081522178002,
+      "social": 0.17543113376321878
+    }
+  },
+  {
+    "text": "Architecture portfolio review",
+    "label": "professional",
+    "probs": {
+      "arts": 0.2211957454014282,
+      "philanthropy": 0.2157030600923296,
+      "professional": 0.4184567974146175,
+      "social": 0.1446443970916248
+    }
+  },
+  {
+    "text": "Accounting CPA pathway night",
+    "label": "professional",
+    "probs": {
+      "arts": 0.1629906294832669,
+      "philanthropy": 0.16043633588741296,
+      "professional": 0.4337740307878258,
+      "social": 0.24279900384149433
+    }
+  },
+  {
+    "text": "UX research methods workshop",
+    "label": "professional",
+    "probs": {
+      "arts": 0.1922242988073624,
+      "philanthropy": 0.1462460431840009,
+      "professional": 0.5197818519917599,
+      "social": 0.14174780601687684
+    }
+  },
+  {
+    "text": "Animal shelter walk",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.1369971136595867,
+      "philanthropy": 0.5858292015034597,
+      "professional": 0.11094264043237442,
+      "social": 0.16623104440457923
+    }
+  },
+  {
+    "text": "Disaster relief kit packing",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.10487144161152771,
+      "philanthropy": 0.5562514777077029,
+      "professional": 0.1888393623485751,
+      "social": 0.15003771833219423
+    }
+  },
+  {
+    "text": "Refugee welcome dinner service",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.14370952993532488,
+      "philanthropy": 0.5060124088723613,
+      "professional": 0.12784900120356513,
+      "social": 0.2224290599887486
+    }
+  },
+  {
+    "text": "Tree planting in LA",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.18227687787074973,
+      "philanthropy": 0.4845345627590622,
+      "professional": 0.17683957253630478,
+      "social": 0.1563489868338833
+    }
+  },
+  {
+    "text": "Soup kitchen shift",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.1547281814036396,
+      "philanthropy": 0.4213016742542256,
+      "professional": 0.1749640707589363,
+      "social": 0.24900607358319857
+    }
+  },
+  {
+    "text": "Mentoring foster youth",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.1411330328186004,
+      "philanthropy": 0.4749691179556641,
+      "professional": 0.22866762271178295,
+      "social": 0.1552302265139526
+    }
+  },
+  {
+    "text": "Hospital volunteer appreciation",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.12045425826329809,
+      "philanthropy": 0.5576756258563528,
+      "professional": 0.14701607099174221,
+      "social": 0.17485404488860692
+    }
+  },
+  {
+    "text": "School supply drive",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.13882640035259403,
+      "philanthropy": 0.4754309165673721,
+      "professional": 0.20370634978301416,
+      "social": 0.18203633329701965
+    }
+  },
+  {
+    "text": "Neighborhood mural cleanup",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.19641242964660754,
+      "philanthropy": 0.5047733456966701,
+      "professional": 0.11873469112346682,
+      "social": 0.18007953353325556
+    }
+  },
+  {
+    "text": "Disability sports volunteer",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.10179739681555874,
+      "philanthropy": 0.5449766838109277,
+      "professional": 0.15275739828352444,
+      "social": 0.20046852108998922
+    }
+  },
+  {
+    "text": "Environmental education booth",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.20417011702567622,
+      "philanthropy": 0.334030237548312,
+      "professional": 0.29089860822789665,
+      "social": 0.170901037198115
+    }
+  },
+  {
+    "text": "Civic engagement canvassing training",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.2109315204368566,
+      "philanthropy": 0.3719869275915864,
+      "professional": 0.23457566759455165,
+      "social": 0.1825058843770054
+    }
+  },
+  {
+    "text": "Nonprofit fundraising gala support",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.19228345310099806,
+      "philanthropy": 0.4450524881807417,
+      "professional": 0.17882322568193093,
+      "social": 0.18384083303632925
+    }
+  },
+  {
+    "text": "Community health fair staffing",
+    "label": "philanthropy",
+    "probs": {
+      "arts": 0.12608206524464027,
+      "philanthropy": 0.5100639420908822,
+      "professional": 0.21572743620423954,
+      "social": 0.14812655646023798
+    }
+  },
+  {
+    "text": "Karaoke night",
+    "label": "social",
+    "probs": {
+      "arts": 0.2886477750811166,
+      "philanthropy": 0.12059069545876411,
+      "professional": 0.15196371073387094,
+      "social": 0.4387978187262484
+    }
+  },
+  {
+    "text": "Club birthday celebration",
+    "label": "social",
+    "probs": {
+      "arts": 0.22226354291546058,
+      "philanthropy": 0.14233153247135205,
+      "professional": 0.16646903577923208,
+      "social": 0.4689358888339553
+    }
+  },
+  {
+    "text": "End of semester hangout",
+    "label": "social",
+    "probs": {
+      "arts": 0.15130286566427353,
+      "philanthropy": 0.1665606777439888,
+      "professional": 0.19893981685159448,
+      "social": 0.4831966397401432
+    }
+  },
+  {
+    "text": "Coffee chat with freshmen",
+    "label": "social",
+    "probs": {
+      "arts": 0.1463174699565421,
+      "philanthropy": 0.16582932799785446,
+      "professional": 0.29283511374223054,
+      "social": 0.395018088303373
+    }
+  },
+  {
+    "text": "Dodgeball social",
+    "label": "social",
+    "probs": {
+      "arts": 0.13241774962829686,
+      "philanthropy": 0.17823280280241638,
+      "professional": 0.16178043685633417,
+      "social": 0.5275690107129526
+    }
+  },
+  {
+    "text": "Paint night casual",
+    "label": "social",
+    "probs": {
+      "arts": 0.20957461736483157,
+      "philanthropy": 0.1850307042220677,
+      "professional": 0.18894344745768485,
+      "social": 0.4164512309554158
+    }
+  },
+  {
+    "text": "Escape room team building",
+    "label": "social",
+    "probs": {
+      "arts": 0.18667757825195896,
+      "philanthropy": 0.2181840555912029,
+      "professional": 0.2652362552794358,
+      "social": 0.32990211087740234
+    }
+  },
+  {
+    "text": "Brunch meetup off campus",
+    "label": "social",
+    "probs": {
+      "arts": 0.13801019024555433,
+      "philanthropy": 0.14151548950592902,
+      "professional": 0.17435900462616402,
+      "social": 0.5461153156223526
+    }
+  },
+  {
+    "text": "Holiday cookie exchange",
+    "label": "social",
+    "probs": {
+      "arts": 0.15478014548927505,
+      "philanthropy": 0.2901394167258308,
+      "professional": 0.16114608156611934,
+      "social": 0.3939343562187748
+    }
+  },
+  {
+    "text": "Campus scavenger hunt",
+    "label": "social",
+    "probs": {
+      "arts": 0.16565563934896052,
+      "philanthropy": 0.23278175517865626,
+      "professional": 0.2335630778084804,
+      "social": 0.36799952766390276
+    }
+  },
+  {
+    "text": "Open mic casual night",
+    "label": "social",
+    "probs": {
+      "arts": 0.21213720074974685,
+      "philanthropy": 0.13361101435077713,
+      "professional": 0.22220146905470345,
+      "social": 0.43205031584477255
+    }
+  },
+  {
+    "text": "Sports watch party",
+    "label": "social",
+    "probs": {
+      "arts": 0.19423323260934494,
+      "philanthropy": 0.16537473708272202,
+      "professional": 0.1765675208893918,
+      "social": 0.46382450941854125
+    }
+  },
+  {
+    "text": "Friendship bracelet workshop",
+    "label": "social",
+    "probs": {
+      "arts": 0.22517345390287932,
+      "philanthropy": 0.2573177190964281,
+      "professional": 0.21035643304978627,
+      "social": 0.3071523939509064
+    }
+  },
+  {
+    "text": "Study break carnival",
+    "label": "social",
+    "probs": {
+      "arts": 0.21366174494578732,
+      "philanthropy": 0.1911118948530028,
+      "professional": 0.20977484539590055,
+      "social": 0.3854515148053093
+    }
+  },
+  {
+    "text": "Poetry slam finals",
+    "label": "arts",
+    "probs": {
+      "arts": 0.4279442856188794,
+      "philanthropy": 0.16066759885912174,
+      "professional": 0.16582793033470103,
+      "social": 0.24556018518729777
+    }
+  },
+  {
+    "text": "Student-directed play",
+    "label": "arts",
+    "probs": {
+      "arts": 0.3375380918020398,
+      "philanthropy": 0.15193904556599233,
+      "professional": 0.2401919801393262,
+      "social": 0.2703308824926418
+    }
+  },
+  {
+    "text": "Choir holiday concert",
+    "label": "arts",
+    "probs": {
+      "arts": 0.481324303828183,
+      "philanthropy": 0.2007696387302506,
+      "professional": 0.10465108291182769,
+      "social": 0.21325497452973882
+    }
+  },
+  {
+    "text": "Fashion design runway",
+    "label": "arts",
+    "probs": {
+      "arts": 0.3321641807571508,
+      "philanthropy": 0.17159841962181183,
+      "professional": 0.3073129204527599,
+      "social": 0.18892447916827745
+    }
+  },
+  {
+    "text": "Animation short festival",
+    "label": "arts",
+    "probs": {
+      "arts": 0.49042664219382986,
+      "philanthropy": 0.16707741982313482,
+      "professional": 0.1638517453177954,
+      "social": 0.17864419266523984
+    }
+  },
+  {
+    "text": "Drum circle performance",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5253337444195918,
+      "philanthropy": 0.15639446141041213,
+      "professional": 0.14606080934125956,
+      "social": 0.17221098482873642
+    }
+  },
+  {
+    "text": "Classical guitar recital",
+    "label": "arts",
+    "probs": {
+      "arts": 0.5938315183696263,
+      "philanthropy": 0.11995281132043922,
+      "professional": 0.14209017204800545,
+      "social": 0.14412549826192914
+    }
+  },
+  {
+    "text": "Mural unveiling ceremony",
+    "label": "arts",
+    "probs": {
+      "arts": 0.47591427862650215,
+      "philanthropy": 0.23242471493240324,
+      "professional": 0.15672110040006662,
+      "social": 0.13493990604102804
+    }
+  }
+]

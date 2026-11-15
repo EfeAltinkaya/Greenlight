@@ -4,6 +4,7 @@ import { ArrowLeftRight, FileUp, HandCoins, Trash2, Undo2 } from "lucide-react";
 import { ITEM_CATEGORIES, INELIGIBLE } from "@/data/rules";
 import { cateringSuggestions, deadlineSwitchHint, fmtDate, listedVendorsOfType, matchVendor, money } from "@/lib/engine";
 import type { Check, CheckLevel, LineItem } from "@/lib/types";
+import { LineModelHints } from "./LineModelHints";
 import { LEVEL, Spinner } from "./ui";
 
 const order: CheckLevel[] = ["fail", "warn", "pass", "info"];
@@ -94,6 +95,16 @@ export function BudgetTable({ items, checks, editable, onChange, onQuote, eventD
                     </select>
                   </label>
                 </div>
+                {!i.toSponsor && (
+                  <LineModelHints
+                    itemId={i.id}
+                    itemText={i.item}
+                    vendorText={i.vendor}
+                    category={i.category}
+                    onCategory={(c) => set(i.id, { category: c })}
+                    onVendor={(name) => set(i.id, { vendor: name, vendorConfirmed: false })}
+                  />
+                )}
                 {vm?.kind === "not_listed" && (
                   <div className="inset stack-sm" style={{ padding: "10px 12px", gap: 8 }}>
                     <span className="small" style={{ color: "var(--fail)", fontWeight: 600 }}>{i.vendor || "This vendor"} is not on USG&apos;s Vendor List.</span>

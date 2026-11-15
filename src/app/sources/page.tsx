@@ -64,15 +64,17 @@ export default function SourcesPage() {
           <p className="small muted">Proven public packages Greenlight uses for documents, matching, dates and models. Versions are pinned in package.json / ml/requirements.txt.</p>
           <ul className="stack-sm" style={{ listStyle: "none", padding: 0 }}>
             {[
-              ["@react-pdf/renderer", "https://github.com/diegomura/react-pdf", "Greenlight Check and ledger PDFs"],
-              ["exceljs", "https://github.com/exceljs/exceljs", "USG budget sheet .xlsx export"],
-              ["docx", "https://github.com/dolanmiu/docx", "In-kind agreement and decision letter Word files"],
-              ["pptxgenjs", "https://github.com/gitbrent/PptxGenJS", "Legislative Fund slide deck"],
+              ["@react-pdf/renderer", "https://github.com/diegomura/react-pdf", "Greenlight Check PDF"],
+              ["exceljs", "https://github.com/exceljs/exceljs", "Ledger / USG-ish budget .xlsx export"],
+              ["docx", "https://github.com/dolanmiu/docx", "In-kind agreement Word file"],
+              ["pptxgenjs", "https://github.com/gitbrent/PptxGenJS", "Legislative Fund six-section slide deck"],
               ["ics", "https://github.com/adamgibbons/ics", "Event timeline calendar export"],
               ["fuse.js", "https://github.com/krisk/Fuse", "Fuzzy vendor matching against the Vendor List"],
               ["date-fns", "https://github.com/date-fns/date-fns", "Business-day helpers (deadlines still from USG sheet)"],
               ["fast-check", "https://github.com/dubzzz/fast-check", "Property tests for money math"],
+              ["unpdf", "https://github.com/unjs/unpdf", "Offline PDF text extraction for vendor quotes"],
               ["BAAI/bge-small-en-v1.5", "https://huggingface.co/BAAI/bge-small-en-v1.5", "Shared encoder for Greenlight Models (MIT)"],
+              ["Xenova/bge-small-en-v1.5", "https://huggingface.co/Xenova/bge-small-en-v1.5", "ONNX q8 encoder served in-browser via Transformers.js"],
               ["@huggingface/transformers", "https://github.com/huggingface/transformers.js", "In-browser ONNX inference for model heads"],
             ].map(([name, url, why]) => (
               <li key={name} className="stack-xs" style={{ padding: "10px 0", borderTop: "1px solid var(--line-2)" }}>
